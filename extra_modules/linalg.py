@@ -91,13 +91,13 @@ linalg_c.free_f64m.argtypes = [Cfloat64_matrix_t]
 linalg_c.free_f64m.restype = ctypes.c_void_p
 
 linalg_c.copy_f16m.argtypes = [Cfloat16_matrix_t]
-linalg_c.copy_f16m.restype = Cfloat16_matrix_t
+linalg_c.copy_f16m.restype = Cfloat16_matrix_res_t
 
 linalg_c.copy_f32m.argtypes = [Cfloat32_matrix_t]
-linalg_c.copy_f32m.restype = Cfloat32_matrix_t
+linalg_c.copy_f32m.restype = Cfloat32_matrix_res_t
 
 linalg_c.copy_f64m.argtypes = [Cfloat64_matrix_t]
-linalg_c.copy_f64m.restype = Cfloat64_matrix_t
+linalg_c.copy_f64m.restype = Cfloat64_matrix_res_t
 
 linalg_c.f16m_fill.argtypes = [ctypes.c_size_t, ctypes.c_size_t, float16_t]
 linalg_c.f16m_fill.restype = Cfloat16_matrix_res_t
@@ -375,7 +375,7 @@ class f16_matrix:
         return f16_matrix(res)
 
     def copy(self):
-        c_res: Cfloat16_matrix_res_t = linalg_c.f16m_copy(self.m)
+        c_res: Cfloat16_matrix_res_t = linalg_c.copy_f16m(self.m)
         err: int = getattr(c_res, 'err')
         res: Cfloat16_matrix_t = getattr(c_res, 'res')
         if err != 0:
@@ -560,7 +560,7 @@ class f32_matrix:
         return f32_matrix(res)
     
     def copy(self):
-        c_res: Cfloat32_matrix_res_t = linalg_c.f32m_copy(self.m)
+        c_res: Cfloat32_matrix_res_t = linalg_c.copy_f32m(self.m)
         err: int = getattr(c_res, 'err')
         res: Cfloat32_matrix_t = getattr(c_res, 'res')
         if err != 0:
@@ -745,7 +745,7 @@ class f64_matrix:
         return f64_matrix(res)
     
     def copy(self):
-        c_res: Cfloat64_matrix_res_t = linalg_c.f64m_copy(self.m)
+        c_res: Cfloat64_matrix_res_t = linalg_c.copy_f64m(self.m)
         err: int = getattr(c_res, 'err')
         res: Cfloat64_matrix_t = getattr(c_res, 'res')
         if err != 0:

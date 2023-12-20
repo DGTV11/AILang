@@ -112,7 +112,7 @@ KEYWORDS = [
     'continue',
     'break',
     'protect',
-    'typify',
+    'typeof',
 ]
 
 class Token:

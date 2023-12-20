@@ -1092,7 +1092,7 @@ class Parser:
             if res.error: return res
             return res.success(var_def)
         
-        elif self.current_tok.matches(TT_KEYWORD, 'typify'):
+        elif self.current_tok.matches(TT_KEYWORD, 'typeof'):
             res.register_adv()
             self.advance()
 
