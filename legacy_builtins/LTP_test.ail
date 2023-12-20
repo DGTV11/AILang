@@ -1,9 +1,0 @@
-# /usr/local/bin/python3.10 "/Volumes/Data stuffs/Python/AILang/AILang.py" '/Volumes/Data stuffs/Python/AILang/builtins/LTP_test.ail' 
-
-print("LTP Test")
-
-load_module("math")
-
-write_to_python(math_ia2nna(range(1000001, 2000001)), "test.ser")
-
-print("DONE WRITING")
