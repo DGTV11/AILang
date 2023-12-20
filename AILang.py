@@ -1098,7 +1098,7 @@ class Parser:
 
             pos_start = self.current_tok.pos_start.copy()
             expr = res.register(self.expr())
-            if res.error: return res #TODO: CHECK ERROR MESSAGE
+            if res.error: return res 
 
             return res.success(TypifyNode(expr, pos_start, self.current_tok.pos_start.copy()))
         
@@ -1153,19 +1153,27 @@ class Parser:
         res = ParseResult()
 
         if self.current_tok.matches(TT_KEYWORD, 'var'): mode = 1
-        elif self.current_tok.matches(TT_KEYWORD, 'mut'): 
+        elif self.current_tok.matches(TT_KEYWORD, 'mut'):
+            res.register_adv()
+            self.advance()
+
             if not self.current_tok.matches(TT_KEYWORD, 'var'):
                 return res.failure(err.InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
                     "Expected var"
                 ))
+            
             mode = 0
         elif self.current_tok.matches(TT_KEYWORD, 'const'): 
+            res.register_adv()
+            self.advance()
+
             if not self.current_tok.matches(TT_KEYWORD, 'var'):
                 return res.failure(err.InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
                     "Expected var"
                 ))
+            
             mode = 2
         else:
             return res.failure(err.InvalidSyntaxError(
@@ -1634,11 +1642,11 @@ def run(fn, text, progpath = None, st:SymbolTable = global_symbol_table, is_stri
     return result.value, result.error
 
 
-#DEBUG
+'''
 if __name__ == "__main__":
     fn = "/Volumes/Data stuffs/Python/AILang/Tests/test.ail"
     try:
-        with open(fn, 'r') as f:
+
             script = f.read()
     except Exception as e:
         raise IOError(f'Failed to load script "{fn}"\n' + str(e))
@@ -1669,4 +1677,7 @@ if __name__ == "__main__": #TODO: find way to add CLI decorators
         
     else:
         raise IndexError(f'Too many arguments (0 or 1 argument(s) expected, {len(sys.argv) - 1} given)')
-'''
+
+''''''
+
+''''''

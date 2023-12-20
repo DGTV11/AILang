@@ -1,4 +1,4 @@
-let n: Integer = input_int("Please input number: ")
+const n: Integer = input_int("Please input number: ")
 
 if n == 0b then
     print(0b)
