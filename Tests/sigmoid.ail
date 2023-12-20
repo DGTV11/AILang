@@ -1,0 +1,10 @@
+load_module("math")
+let e: MultiFloatConst = math.mf_e
+
+func sigmoid(x: MultiFloat) -> MultiFloat: 1.0md / (1.0md + e**-x)
+
+let x: MultiFloat = input_multi_float("Please input float: ", 3b)
+
+print(x)
+
+print(sigmoid(x))

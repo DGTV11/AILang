@@ -1,0 +1,9 @@
+let n: Integer = input_int("Please input number: ")
+
+if n == 0b then
+    print(0b)
+else
+    while true then
+        print(1b)
+    end
+end

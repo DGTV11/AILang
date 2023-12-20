@@ -1,0 +1,2339 @@
+# Imports
+from extra_modules.results import *
+from extra_modules.position import *
+import extra_modules.Errors as err
+import extra_modules.Warnings as wrn
+import extra_modules.mfmath as mfmath
+import extra_modules.numbers as numbers
+import extra_modules.linalg as linalg
+
+from dataclasses import dataclass
+from copy import deepcopy
+import weakref
+import os
+import importlib
+import importlib.util
+import ctypes
+import string
+
+# Constants
+## Index types
+INDEX_TYPE_INT      = 'int'
+INDEX_TYPE_FLOAT    = 'float'
+INDEX_TYPE_KEY      = 'key'
+    
+# Main datatypes
+## BaseValue and Type types
+class BaseValue:
+    def __init__(self):
+        self.set_pos()
+        self.set_context()
+        self.type = 'BaseValue'
+
+    def set_pos(self, pos_start=None, pos_end=None):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+        return self
+
+    def set_context(self, context=None):
+        self.context = context
+        return self
+    
+    '''
+    def is_truthy(self):
+        if (x := getattr(self, 'value', None)):
+            if type(x) is str:
+                return len(x) != 0
+            elif type(x) is int or type(x) is float:
+                return x != 0
+        elif (x := getattr(self, 'elements', None)):
+            if type(x) is dict:
+                return len(x) != 0
+            elif type(x) is list or type(x) is collections.deque:
+                def is_tech_filled(_list):
+                    if len(_list) == 0:
+                        return False
+                    elif len(_list) == 1 and type(_list) is list or type(_list) is collections.deque:
+                        return is_tech_filled(_list[0])
+                    else:
+                        return True
+                return is_tech_filled(x)
+        elif (x := getattr(self, 'context', None)):
+            x: Context
+            return len(x.symbol_table.symbols) != 0
+    '''
+
+    def add_by(self, other):
+        return None, self.illegal_operation(other)
+        
+    def sub_by(self, other):
+        return None, self.illegal_operation(other)
+        
+    def mult_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def matmult_by(self, other):
+        return None, self.illegal_operation(other)
+        
+    def div_by(self, other):
+        return None, self.illegal_operation(other)
+        
+    def pow_by(self, other):
+        return None, self.illegal_operation(other)
+        
+    def get_comparison_eq(self, other):
+        return None, self.illegal_operation(other)
+        
+    def get_comparison_ne(self, other):
+        return None, self.illegal_operation(other)
+        
+    def get_comparison_lt(self, other):
+        return None, self.illegal_operation(other)
+        
+    def get_comparison_gt(self, other):
+        return None, self.illegal_operation(other)
+        
+    def get_comparison_lte(self, other):
+        return None, self.illegal_operation(other)
+        
+    def get_comparison_gte(self, other):
+        return None, self.illegal_operation(other)
+        
+    def and_by(self, other):
+        return None, self.illegal_operation(other)
+        
+    def or_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def bitwise_and_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def bitwise_or_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def bitwise_xor_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def left_shift_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def right_shift_by(self, other):
+        return None, self.illegal_operation(other)
+    
+    def complement(self, other):
+        return None, self.illegal_operation(other)
+    
+    def not_(self):
+        return None, self.illegal_operation()
+    
+    def neg(self):
+        return None, self.illegal_operation()
+    
+    def execute(self):
+        return None, self.illegal_operation()
+    
+    def copy(self):
+        raise Exception('No copy method defined')
+
+    def is_true(self):
+        return False
+
+    def illegal_operation(self, other=None):
+        if other is None: other = self
+        return err.RTError(
+            self.pos_start, other.pos_end,
+            'Illegal operation',
+            self.context
+        )
+    
+    def __len__(self):
+        return RTResult().failure(err.RTError(
+            self.pos_start, self.pos_end,
+            'len() not defined on this type (not an iterable)',
+            self.context
+        ))
+
+class Type(BaseValue):
+    def __init__(self, typename: str|None = None):
+        super().__init__()
+        self.type = 'Type'
+        self.typename = typename
+
+    def is_true(self):
+        return len(self.typename) > 0
+    
+    def copy(self):
+        copy = Type(self.typename)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+        
+    def __str__(self):
+        return f'{"Any" if not self.typename else self.typename}'
+
+    def __repr__(self):
+        return f'Type("{self.__str__()}")'
+Type.Any  = Type()
+Type.Type = Type('Type')
+
+## Null type
+Type.Null       = Type('Null')
+class Null(BaseValue):
+    def __init__(self):
+        super().__init__()
+        self.type = 'Null'
+
+    def is_true(self):
+        return len(self.typename) > 0
+    
+    def copy(self):
+        '''
+        copy = self
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+        '''
+        return self
+        
+    def __str__(self):
+        return 'Null'
+
+    def __repr__(self):
+        return self.__str__()
+Null.null = Null()
+
+## Integer types
+Type.Integer    = Type('Integer')
+class Integer(BaseValue): #BigInteger
+    def __init__(self, value: int):
+        super().__init__()
+        self.type = 'Integer'
+        self.value = value
+
+    def floatify(self):
+        str_repr = str(self.value)
+        float_repr = mfmath.mfloat(str_repr, 3)
+        return MultiFloat(float_repr).set_context(self.context).set_pos(self.pos_start, self.pos_end)
+
+    def add_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(self.value + other.value).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            return self.floatify().add_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(self.value - other.value).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            return self.floatify().sub_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(self.value * other.value).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            return self.floatify().mult_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Integer):
+            if other.value == 0:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+            return Integer(self.value / other.value).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            return self.floatify().div_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def pow_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(self.value ** other.value).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            return self.floatify().pow_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value == other.value)).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            res, error = self.floatify().value.get_comparison_eq(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_ne(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value != other.value)).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            res, error = self.floatify().value.get_comparison_ne(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value < other.value)).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            res, error = self.floatify().value.get_comparison_lt(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value > other.value)).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            res, error = self.floatify().value.get_comparison_gt(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value <= other.value)).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            res, error = self.floatify().value.get_comparison_lte(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value >= other.value)).set_context(self.context), None
+        elif isinstance(other, MultiFloat):
+            res, error = self.floatify().value.get_comparison_gte(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def and_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value and other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def or_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value or other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def bitwise_and_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value & other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_or_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value | other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def bitwise_xor_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value ^ other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def left_shift_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value << other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def right_shift_by(self, other):
+        if isinstance(other, Integer):
+            return Integer(int(self.value >> other.value)).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def complement(self):
+        return Integer(int(~self.value)).set_context(self.context), None
+    
+    def not_(self):
+        return Integer(int(not self.value)).set_context(self.context), None
+    
+    def neg(self):
+        return Integer(int(-self.value)).set_context(self.context), None
+    
+    def copy(self):
+        copy = Integer(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.value != 0
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+Integer.false   = Integer(0)
+Integer.true    = Integer(1)
+
+## Float types
+Type.MultiFloat    = Type('MultiFloat')
+class MultiFloat(BaseValue): #!VERY INEFFICIENT! For backwards compatibility :/
+    def __init__(self, value: mfmath.mfloat):
+        super().__init__()
+        self.type = 'MultiFloat'
+        self.value = value
+
+    def add_by(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.add_by(other.value)
+            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+        elif isinstance(other, Integer):
+            return self.add_by(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.sub_by(other.value)
+            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+        elif isinstance(other, Integer):
+            return self.sub_by(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.mult_by(other.value)
+            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+        elif isinstance(other, Integer):
+            return self.mult_by(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.div_by(other.value)
+            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+        elif isinstance(other, Integer):
+            return self.div_by(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def pow_by(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.pow_by(other.value)
+            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+        elif isinstance(other, Integer):
+            return self.pow_by(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.get_comparison_eq(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
+            return res, err_repr
+        elif isinstance(other, Integer):
+            return self.get_comparison_eq(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_ne(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.get_comparison_ne(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
+            return res, err_repr
+        elif isinstance(other, Integer):
+            return self.get_comparison_ne(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.get_comparison_lt(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
+            return res, err_repr
+        elif isinstance(other, Integer):
+            return self.get_comparison_lt(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.get_comparison_gt(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
+            return res, err_repr
+        elif isinstance(other, Integer):
+            return self.get_comparison_gt(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.get_comparison_lte(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        elif isinstance(other, Integer):
+            return self.get_comparison_lte(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, MultiFloat):
+            res, error = self.value.get_comparison_gte(other.value)
+            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
+            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
+            return res, err_repr
+        elif isinstance(other, Integer):
+            return self.get_comparison_gte(other.floatify())
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def neg(self):
+        return self.mult_by(Integer(-1))
+
+    def copy(self):
+        copy = MultiFloat(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(MultiFloatConst.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+
+Type.MultiFloatConst = Type('MultiFloatConst')
+class MultiFloatConst(MultiFloat): # INEFFICIENT! For backwards compatibility and type conversions
+    const_table = None
+    def __init__(self, row_idx: int):
+        self.set_pos()
+        self.set_context()
+
+        self.type = 'MultiFloatConst'
+        self.row_idx = row_idx
+        self.prec_type = 3
+
+    @property
+    def table(self) -> mfmath.Cmfloat_consts:
+        while MultiFloatConst.const_table is None:
+            MultiFloatConst.const_table, error = mfmath.init_constants()
+            if error != None:
+                wrn.MultiFloatConstTableWarning(self.pos_start, self.pos_end, f'MultiFloat Constant Table could not be created due to error {int(error)}')
+
+        return MultiFloatConst.const_table
+    
+    def del_table(self):
+        MultiFloatConst.const_table = None
+
+    @property
+    def value(self): #for repr/str
+        x, error = mfmath.lookup_const(self.table, ctypes.c_int(self.row_idx), ctypes.c_int(self.prec_type))
+        #print((y:=fpmath.AILang_err_repr(error, self.context, self.pos_start, self.pos_end)).error_name, y.details)
+        return mfmath.mfloat('0.0' if x == None else x, self.prec_type)
+    
+    def add_by(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().add_by(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().add_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().sub_by(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().sub_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().mult_by(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().mult_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().div_by(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().div_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def pow_by(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().pow_by(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().pow_by(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().get_comparison_eq(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().get_comparison_eq(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_ne(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().get_comparison_ne(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().get_comparison_ne(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().get_comparison_lt(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().get_comparison_lt(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().get_comparison_gt(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().get_comparison_gt(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().get_comparison_lte(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().get_comparison_lte(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, MultiFloat):
+            self.prec_type = int(getattr(other.value, "type"))
+            return super().get_comparison_gte(other)
+        elif isinstance(other, Integer):
+            self.prec_type = 3
+            return super().get_comparison_gte(other)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def neg(self):
+        return self.mult_by(-1)
+
+    def __repr__(self):
+        return self.value.__repr__()
+    
+    def __str__(self):
+        return self.value.__str__()
+    
+    def copy(self):
+        copy = MultiFloatConst(self.row_idx)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+    
+    def is_true(self):
+        return self.get_comparison_ne(MultiFloatConst.zero)[0].value
+MultiFloatConst.zero = MultiFloatConst(0)
+
+#FLOAT_TYPES_SET = {'Float16', 'Float32', 'Float64'}
+
+Type.Float16 = Type('Float16')
+class Float16(BaseValue):
+    def __init__(self, value: str|numbers.f16):
+        super().__init__()
+        self.type = 'Float16'
+
+        if type(value) is str:
+            self.value: numbers.f16 = numbers.f16(value)
+        else:
+            self.value: numbers.f16 = value
+
+    def add_by(self, other):
+        if isinstance(other, Float16):
+            res = Float16(self.value + other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Float16):
+            res = Float16(self.value - other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Float16):
+            res = Float16(self.value * other.value)
+            return res, None
+        elif isinstance(other, Integer) and other.value == -1:
+            res = Float16(-self.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Float16):
+            try:
+                res = Float16(self.value / other.value)
+                return res, None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def pow_by(self, other):
+        if isinstance(other, Float16):
+            res = Float16(self.value ^ other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, Float16):
+            res = Integer(int(self.value == other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_ne(self, other):
+        if isinstance(other, Float16):
+            res = Integer(int(self.value != other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, Float16):
+            res = Integer(int(self.value < other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, Float16):
+            res = Integer(int(self.value > other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, Float16):
+            res = Integer(int(self.value <= other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, Float16):
+            res = Integer(int(self.value >= other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def neg(self):
+        return Float16(-self.value)
+
+    def copy(self):
+        copy = MultiFloat(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(Float16.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+Float16.zero = Float16('0')
+
+Type.Float32 = Type('Float32')
+class Float32(BaseValue):
+    def __init__(self, value: str|numbers.f32):
+        super().__init__()
+        self.type = 'Float32'
+
+        if type(value) is str:
+            self.value: numbers.f32 = numbers.f32(value)
+        else:
+            self.value: numbers.f32 = value
+
+    def add_by(self, other):
+        if isinstance(other, Float32):
+            res = Float32(self.value + other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Float32):
+            res = Float32(self.value - other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Float32):
+            res = Float32(self.value * other.value)
+            return res, None
+        elif isinstance(other, Integer) and other.value == -1:
+            res = Float32(-self.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Float32):
+            try:
+                res = Float32(self.value / other.value)
+                return res, None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def pow_by(self, other):
+        if isinstance(other, Float32):
+            res = Float32(self.value ^ other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, Float32):
+            res = Integer(int(self.value == other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_ne(self, other):
+        if isinstance(other, Float32):
+            res = Integer(int(self.value != other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, Float32):
+            res = Integer(int(self.value < other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, Float32):
+            res = Integer(int(self.value > other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, Float32):
+            res = Integer(int(self.value <= other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, Float32):
+            res = Integer(int(self.value >= other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def neg(self):
+        return Float32(-self.value)
+
+    def copy(self):
+        copy = MultiFloat(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(Float32.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+Float32.zero = Float32('0')
+
+Type.Float64 = Type('Float64')
+class Float64(BaseValue):
+    def __init__(self, value: str|numbers.f64):
+        super().__init__()
+        self.type = 'Float64'
+
+        if type(value) is str:
+            self.value: numbers.f64 = numbers.f64(value)
+        else:
+            self.value: numbers.f64 = value
+
+    def add_by(self, other):
+        if isinstance(other, Float64):
+            res = Float64(self.value + other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Float64):
+            res = Float64(self.value - other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Float64):
+            res = Float64(self.value * other.value)
+            return res, None
+        elif isinstance(other, Integer) and other.value == -1:
+            res = Float64(-self.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Float64):
+            try:
+                res = Float64(self.value / other.value)
+                return res, None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def pow_by(self, other):
+        if isinstance(other, Float64):
+            res = Float64(self.value ^ other.value)
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, Float64):
+            res = Integer(int(self.value == other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_ne(self, other):
+        if isinstance(other, Float64):
+            res = Integer(int(self.value != other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, Float64):
+            res = Integer(int(self.value < other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, Float64):
+            res = Integer(int(self.value > other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, Float64):
+            res = Integer(int(self.value <= other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, Float64):
+            res = Integer(int(self.value >= other.value))
+            return res, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def neg(self):
+        return Float64(-self.value)
+
+    def copy(self):
+        copy = MultiFloat(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(Float64.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+Float64.zero = Float64('0')
+
+## Matrix types
+Type.Float16Matrix = Type('Float16Matrix')
+class Float16Matrix(BaseValue):
+    def __init__(self, matrix: linalg.f16_matrix):
+        super().__init__()
+        self.type = 'Float16Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, Float16Matrix):
+            try:
+                return Float16Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Float16Matrix):
+            try:
+                return Float16Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Float16Matrix):
+            try:
+                return Float16Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Float16Matrix):
+            try:
+                return Float16Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, Float16Matrix):
+            try:
+                return Float16Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def not_(self):
+        return Float16Matrix(-self.matrix)
+    
+    def copy(self):
+        try:
+            return Float16Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.CopyWarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
+Type.Float32Matrix = Type('Float32Matrix')
+class Float32Matrix(BaseValue):
+    def __init__(self, matrix: linalg.f32_matrix):
+        super().__init__()
+        self.type = 'Float32Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, Float32Matrix):
+            try:
+                return Float32Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Float32Matrix):
+            try:
+                return Float32Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Float32Matrix):
+            try:
+                return Float32Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Float32Matrix):
+            try:
+                return Float32Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, Float32Matrix):
+            try:
+                return Float32Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def not_(self):
+        return Float32Matrix(-self.matrix)
+    
+    def copy(self):
+        try:
+            return Float32Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.CopyWarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
+Type.Float64Matrix = Type('Float64Matrix')
+class Float64Matrix(BaseValue):
+    def __init__(self, matrix: linalg.f64_matrix):
+        super().__init__()
+        self.type = 'Float64Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, Float64Matrix):
+            try:
+                return Float64Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Float64Matrix):
+            try:
+                return Float64Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Float64Matrix):
+            try:
+                return Float64Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Float64Matrix):
+            try:
+                return Float64Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, Float64Matrix):
+            try:
+                return Float64Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def not_(self):
+        return Float64Matrix(-self.matrix)
+    
+    def copy(self):
+        try:
+            return Float64Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.CopyWarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
+## Array types
+Type.String = Type('String')
+class String(BaseValue):
+    def __init__(self, value):
+        super().__init__()
+        self.type = 'String'
+        self.value = value
+
+    def add_by(self, other):
+        if isinstance(other, String):
+            return String(self.value + other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Integer):
+            return String(self.value * other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def is_true(self):
+        return len(self.value) > 0
+    
+    def copy(self):
+        copy = String(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+        
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return f'"{self.value}"'
+    
+    def __len__(self):
+        return len(self.value)
+
+Type.IterArray = Type('IterArray')
+class IterArray(BaseValue):
+    def __init__(self, elements):
+        super().__init__()
+        self.type = 'IterArray'
+        self.elements: list = elements
+        self.index_type = INDEX_TYPE_INT
+    
+    def add_by(self, other):
+        if isinstance(other, IterArray):
+            new_list = self.copy()
+            new_list.elements.extend(other.elements)
+            return new_list, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Integer):
+            new_list = self.copy()
+            new_list.elements *= other.value
+            return new_list, None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def is_true(self):
+        return len(self.elements) > 0
+    
+    def copy(self):
+        copy = IterArray(self.elements)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+    
+    def __str__(self):
+        return f'[{", ".join([str(x) for x in self.elements])}]'
+
+    def __repr__(self):
+        return self.__str__()
+    
+    def __len__(self):
+        return len(self.elements)
+    
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            try:
+                start, stop, step = index.start, index.stop, index.step
+                return IterArray(self.elements[start:stop:step])
+            except IndexError:
+                return None
+        try:
+            return self.elements[index]
+        except IndexError:
+            return None
+
+    def __setitem__(self, index, value):
+        try:
+            self.elements[index] = value
+            return True
+        except IndexError:
+            return False
+
+## Structure types
+class Structure(BaseValue):
+    def __init__(self, name, elements: dict, _isinstance: bool = False):
+        super().__init__()
+        self.name: str      = name
+        self.type           = f"{name}_Struct"
+        self.elements: dict = elements
+        self.isinstance     = _isinstance
+        
+    def is_true(self):
+        return len(self.elements) > 0
+    
+    def copy(self):
+        # copy = Structure(self.name, self.elements.copy(), self.isinstance)
+        copy = Structure(self.name, deepcopy(self.elements), self.isinstance)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+    
+    def make_instance(self, pos_start: Position, pos_end: Position):
+        ins = Structure(self.name, deepcopy(self.elements), True)
+        ins.set_pos(pos_start, pos_end)
+        ins.set_context(self.context)
+        return ins
+    
+    def free_mem(self):
+        if not self.isinstance:
+            self.context.symbol_table.rm_type(self.type)
+    
+    def __str__(self):
+        name = f'{self.name} [{", ".join(["%s (%s): %s"%(field, "|".join([str(type_) for type_ in value[0]]), value[1]) for field, value in self.elements.items()])}]'
+        if self.isinstance: return f'<Structure instance of ' + name + '>'
+        return '<Structure definition ' + name + '>'
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __len__(self):
+        return len(self.elements)
+
+Type.Namespace = Type('Namespace')
+class Namespace(BaseValue):
+    def __init__(self, name, elements: dict): #TODO: use typing to make this betterrrrrrrrrrrr
+        super().__init__()
+        self.type           = 'Namespace'
+        self.name: str      = name
+        self.elements: dict = elements
+        
+    def is_true(self):
+        return len(self.elements) > 0
+    
+    def copy(self):
+        copy = Namespace(self.name, self.elements.copy())
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+    
+    def __str__(self):
+        return f'<Namespace {self.name}>'
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __len__(self):
+        return len(self.elements)
+
+'''
+class Class(BaseValue): #TODO
+    def __init__(self, name, parent, parent_context, _isinstance: bool = False):
+        super().__init__()
+        self.type = 'Class'
+        self.name: str = name
+        self.parent: Class|None = parent
+
+        #TODO: check if _isinstance in interpreter out of __init__
+        self.parent_symbols: dict = {} if type(self.parent) is None else self.parent.context.symbol_table.symbols
+
+        self.context: Context = Context(self.name, parent_context, self.pos_start, parent_context.strict_mode)
+        self._isinstance = _isinstance
+        self.context.symbol_table.is_cls_ins = self._isinstance
+        
+    def is_true(self):
+        return len(self.context.symbol_table.symbols) > 0
+    
+    def copy(self):
+        copy = Class(self.name, self.parent, self.context.copy(), self._isinstance)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+    
+    def make_instance(self, pos_start: Position, pos_end: Position, arg_nodes):
+        ins = Class(self.name, self.parent, self.context.copy(), True)
+        ins.set_pos(pos_start, pos_end)
+        ins.set_context(self.context)
+        res = RTResult()
+
+        args = []
+        for arg_node in arg_nodes:
+            args.append(res.register(self.visit(arg_node, self.context)))
+            if res.should_return(): return res
+
+        return_value = res.register(value_to_call.execute(node, args))
+        if res.should_return(): return res
+        return_value = return_value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
+        return res.success(return_value)
+
+        return ins
+    
+    def __str__(self):
+        if self._isinstance: return '<class instance of ' + self.name + '>'
+        return '<class definition ' + self.name + '>'
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __len__(self):
+        return len(self.context.symbol_table.symbols)
+Type.Class = Type('Class')
+
+class BaseMethod(BaseValue):
+    def __init__(self, name):
+        super().__init__()
+        self.type = 'BaseMethod'
+        self.name = name
+        self.exec_ctx: Context|None = None
+
+    def generate_new_context(self):
+        self.exec_ctx = Context(self.name, self.context, self.pos_start, self.context.strict_mode)
+        self.exec_ctx.symbol_table: SymbolTable = SymbolTable(self.exec_ctx.parent.symbol_table)
+    
+    def check_args(self, arg_names, args): #TODO (self.methodX())
+        res = RTResult()
+        if len(args) > len(arg_names) or len(args) < len(arg_names):
+            return res.failure(err.RTError(
+            self.pos_start, self.pos_end,
+				f"'{self.name}' takes {len(arg_names)} arguments but {len(args)} {'was' if len(args) == 1 else 'were'} given",
+				self.context
+			))
+        
+        return res.success(Null.null)
+    
+    def populate_args(self, node, arg_names, args):
+        for an, a in zip(arg_names, args):
+            arg_name = an
+            arg_value = a.set_context(self.exec_ctx)
+            self.exec_ctx.symbol_table.set_var(node, self.exec_ctx, arg_name, arg_value, True, True)
+
+    def check_and_populate_args(self, node, arg_names, args):
+        res = RTResult()
+        res.register(self.check_args(arg_names, args))
+        if res.should_return(): return res
+        self.populate_args(node, arg_names, args)
+        return res.success(Null.null)
+
+class Method(BaseMethod):
+    def __init__(self, name, body_node, arg_names, should_auto_return):
+        super().__init__(name)
+        self.type = 'Method'
+        self.body_node = body_node
+        self.arg_names = arg_names
+        self.should_auto_return = should_auto_return
+    
+    def execute(self, node, args):
+        res = RTResult()
+        interpreter = Interpreter()
+        self.generate_new_context()
+
+        res.register(self.check_and_populate_args(node, self.arg_names, args))
+        if res.should_return(): return res
+
+        value = res.register(interpreter.visit(self.body_node, self.exec_ctx))
+        if res.should_return() and res.func_return_value == None: return res 
+
+        if self.should_auto_return:
+            ret_value = value
+        elif res.func_return_value != None and res.func_return_value.is_true():
+            ret_value = res.func_return_value
+        else:
+            ret_value = Null.null
+
+        #ret_value = (value if self.should_auto_return else None) or res.func_return_value or Null.null
+        return res.success(ret_value)
+    
+    def copy(self):
+        copy = Method(self.name, self.body_node, self.arg_names, self.should_auto_return)
+        copy.set_context(self.context)
+        copy.set_pos(self.pos_start, self.pos_end)
+        return copy
+
+    def __repr__(self):
+        return f"<method {self.name}>"
+Type.Method = Type('Method')
+'''
+
+## Function types
+Type.Function = Type('Function')
+class BaseFunction(BaseValue):
+    def __init__(self, name):
+        super().__init__()
+        self.type = 'BaseFunction'
+        self.name = name or '<anonymous>'
+        self.exec_ctx: Context|None = None
+
+    def generate_new_context(self):
+        self.exec_ctx = Context(self.name, self.context, self.pos_start, self.context.strict_mode)
+        self.exec_ctx.symbol_table: SymbolTable = SymbolTable(self.exec_ctx.parent.symbol_table)
+    
+    def check_args(self, arg_prototypes, args):
+        res = RTResult()
+        if len(args) > len(arg_prototypes) or len(args) < len(arg_prototypes):
+            return res.failure(err.RTError(
+            self.pos_start, self.pos_end,
+				f"'{self.name}' takes {len(arg_prototypes)} arguments but {len(args)} {'was' if len(args) == 1 else 'were'} given",
+				self.context
+			))
+        
+        for arg, arg_prototype in zip(args, arg_prototypes):
+            arg_name    = arg_prototype[0]
+            arg_types   = arg_prototype[1]
+            
+            typenamified_types = [t.typename for t in arg_types]
+            if Type.Any.typename not in typenamified_types and arg.type not in typenamified_types:
+                return res.failure(err.RTError(
+                    self.pos_start, self.pos_end,
+                    f"Argument type ({Type(arg.type)}) is not accepted by the type of argument '{arg_name}' of the function '{self.name}' ({"|".join(typenamified_types)})",
+                    self.exec_ctx
+                ))
+        
+        return res.success(Null.null)
+    
+    def populate_args(self, node, arg_prototypes, args):
+        for ap, a in zip(arg_prototypes, args):
+            arg_name    = ap[0]
+            arg_types   = ap[1]
+            arg_value = a.set_context(self.exec_ctx)
+            self.exec_ctx.symbol_table.set_var(node, self.exec_ctx, arg_name, arg_types, arg_value, True, True)
+
+    def check_and_populate_args(self, node, arg_prototypes, args):
+        res = RTResult()
+        res.register(self.check_args(arg_prototypes, args))
+        if res.should_return(): return res
+        self.populate_args(node, arg_prototypes, args)
+        return res.success(Null.null)
+
+class Function(BaseFunction):
+    def __init__(self, name, body_node, arg_prototypes, res_types, should_auto_return):
+        super().__init__(name)
+        self.type = 'Function'
+        self.body_node = body_node
+        self.arg_prototypes = arg_prototypes
+        self.res_types = res_types
+        self.should_auto_return = should_auto_return
+    
+    def execute(self, node, args):
+        res = RTResult()
+        interpreter = Interpreter()
+        self.generate_new_context()
+
+        res.register(self.check_and_populate_args(node, self.arg_prototypes, args))
+        if res.should_return(): return res
+
+        value = res.register(interpreter.visit(self.body_node, self.exec_ctx))
+        if res.should_return() and res.func_return_value == None: return res 
+
+        if self.should_auto_return:
+            ret_value = value
+        elif res.func_return_value is not None and res.func_return_value.is_true():
+            ret_value = res.func_return_value
+        else:
+            ret_value = Null.null
+
+        typenamified_types = [t.typename for t in self.res_types]
+        if Type.Any.typename not in typenamified_types and ret_value.type not in typenamified_types:
+            return res.failure(err.RTError(
+                node.pos_start, node.pos_end,
+                #f"Type of '{value}' ({Type(value.type)}) is not accepted by the return type of the function '{self.name}' ({"|".join(typenamified_types)})",
+                f"Type of return value is not accepted by the return type of the function '{self.name}' ({"|".join(typenamified_types)})",
+                self.exec_ctx
+            ))
+
+        #ret_value = (value if self.should_auto_return else None) or res.func_return_value or Null.null
+        return res.success(ret_value)
+    
+    def copy(self):
+        copy = Function(self.name, self.body_node, self.arg_prototypes, self.res_types, self.should_auto_return)
+        copy.set_context(self.context)
+        copy.set_pos(self.pos_start, self.pos_end)
+        return copy
+
+    def __repr__(self):
+        return f"<function {self.name}>"
+
+Type.BuiltInFunction = Type('BuiltInFunction')
+class BuiltInFunction(BaseFunction):
+    def __init__(self, name):
+        super().__init__(name)
+        self.type = 'BuiltInFunction'
+
+    def execute(self, node, args):
+        res = RTResult()
+        self.generate_new_context()
+
+        method_name = f'execute_{self.name}'
+        method = getattr(self, method_name, self.no_visit_method) 
+
+        #res.register(self.check_and_populate_args(node, [[arg_name, [Type.Any]] for arg_name in method.arg_names], args))
+        res.register(self.check_and_populate_args(node, [arg_prototype for arg_prototype in method.arg_prototypes], args))
+        if res.should_return(): return res
+
+        self.node = node
+        return_value = res.register(method(self.exec_ctx))
+        if res.should_return(): return res
+
+        return res.success(return_value)
+
+    def no_visit_method(self):
+        raise Exception(f'No execute_{self.name} method defined')
+    
+    def copy(self):
+        copy = BuiltInFunction(self.name)
+        copy.set_context(self.context)
+        copy.set_pos(self.pos_start, self.pos_end)
+        return copy
+
+    def __repr__(self):
+        return f"<built-in function {self.name}>"
+    
+    def __str__(self):
+        return self.__repr__()
+    
+    #EXECS
+    
+    def execute_print(self, exec_ctx):
+        print(str(exec_ctx.symbol_table.get_var('value')))
+        return RTResult().success(Null.null)
+    execute_print.arg_prototypes = [['value', [Type.Any]]]
+
+    def execute_stringify(self, exec_ctx):
+        return RTResult().success(String(str(exec_ctx.symbol_table.get_var('value'))))
+    execute_stringify.arg_prototypes = [['value', [Type.Any]]]
+
+    def execute_print_without_end(self, exec_ctx):
+        print(str(exec_ctx.symbol_table.get_var('value')), end='')
+        return RTResult().success(Null.null)
+    execute_print_without_end.arg_prototypes = [['value', [Type.Any]]]
+
+    def execute_get_float_sci_str(self, exec_ctx):
+        return RTResult().success(String(exec_ctx.symbol_table.get_var('value').value.sci_str()))
+    execute_get_float_sci_str.arg_prototypes = [['value', [Type.Float16, Type.Float32, Type.Float64]]]
+
+    def execute_input(self, exec_ctx):
+        text = input(str(exec_ctx.symbol_table.get_var('message').value))
+        return RTResult().success(String(text))
+    execute_input.arg_prototypes = [['message', [Type.Any]]]
+
+    def execute_input_int(self, exec_ctx):
+        while True:
+            try:
+                text = input(str(exec_ctx.symbol_table.get_var('message').value))
+                number = int(text)
+                break
+            except ValueError:
+                print(f"'{text}' must be an integer. Please try again!")
+        return RTResult().success(Integer(number))
+    execute_input_int.arg_prototypes = [['message', [Type.Any]]]
+
+    def execute_input_multi_float(self, exec_ctx): 
+        while True:
+            text = input(str(exec_ctx.symbol_table.get_var('message').value))
+            if text.count('.') == 1 and all(map(lambda d: d in string.digits, text.replace('.', ''))):
+                break
+            else:
+                print(f"'{text}' must be a float. Please try again!")
+        mfloat_repr = mfmath.mfloat(text, exec_ctx.symbol_table.get_var('float_prec').value)
+        return RTResult().success(MultiFloat(mfloat_repr))
+    execute_input_multi_float.arg_prototypes = [['message', [Type.Any]], ['float_prec', [Type.Integer]]]
+
+    def execute_clear(self, exec_ctx):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        return RTResult().success(Null.null)
+    execute_clear.arg_prototypes = []
+
+    def execute_terminal_prompt(self, exec_ctx):
+        os.system(exec_ctx.symbol_table.get_var('prompt'))
+        return RTResult().success(Null.null)
+    execute_terminal_prompt.arg_prototypes = [['prompt', [Type.String]]]
+    
+    def execute_exit(self, exec_ctx):
+        exit()
+    execute_exit.arg_prototypes = []
+
+    def execute_quit(self, exec_ctx):
+        quit()
+    execute_quit.arg_prototypes = []
+
+    def execute_push(self, exec_ctx):
+        iterarray = exec_ctx.symbol_table.get_var('iterarray')
+        value = exec_ctx.symbol_table.get_var('value')
+        
+        iterarray.elements.append(value)
+        return RTResult().success(Null.null)
+    execute_push.arg_prototypes = [['iterarray', [Type.IterArray]], ['value', [Type.Any]]]
+
+    def execute_pop(self, exec_ctx):
+        iterarray = exec_ctx.symbol_table.get_var('iterarray')
+        index = exec_ctx.symbol_table.get_var('index')
+        
+        try:
+            elements = iterarray.elements.pop(index.value)
+        except:
+            return RTResult().failure(err.RTError(
+                    self.pos_start, self.pos_end,
+                    'Index out of range',
+                    exec_ctx
+                ))
+
+        return RTResult().success(elements)
+    execute_pop.arg_prototypes = [['iterarray', [Type.IterArray]], ['index', [Type.Integer]]]
+
+    def execute_len(self, exec_ctx):
+        iterable = exec_ctx.symbol_table.get_var('iterable')
+        res = RTResult()
+        
+        _len = iterable.__len__()
+        
+        if isinstance(_len, RTResult): #WARNING: ELDRICH MONSTER INSIDE THIS COMMENT CAGE@
+            res.register(_len)
+            return res
+
+        len_type = type(_len)
+        if len_type is int or len_type is float:
+            return res.success(Integer(_len))
+        elif len_type is list:
+            return res.success(IterArray(_len))
+        elif len_type is tuple:
+            return res.success(IterArray([item for item in _len]))
+        else: return Null.null
+
+    execute_len.arg_prototypes = [['iterable', [Type.Any]]]
+
+    '''
+    def execute_write_to_python(self, exec_ctx):
+        import serialisation as ser
+        obj = exec_ctx.symbol_table.get_var('value')
+        fn = exec_ctx.symbol_table.get_var('fn')
+        if not isinstance(fn, String):
+            return RTResult().failure(err.RTError(
+                    self.pos_start, self.pos_end,
+                    'First argument must be a filename',
+                    exec_ctx
+                ))
+        sb = ser.SharedBuffer(fn.value)
+        x = sb.write_frm_ail(obj, exec_ctx)
+
+        return x
+
+    execute_write_to_python.arg_names = ['value', 'fn']
+
+    
+    def execute_read_frm_python(self, exec_ctx):
+        import serialisation as ser
+        fn = exec_ctx.symbol_table.get_var('fn')
+        if not isinstance(fn, String):
+            return RTResult().failure(err.RTError(
+                    self.pos_start, self.pos_end,
+                    'Argument must be a filename',
+                    exec_ctx
+                ))
+        sb = ser.SharedBuffer(fn.value)
+        x = sb.read_frm_ail(self, exec_ctx)
+
+        return x
+
+    execute_read_frm_python.arg_names = ['fn']
+
+    def execute_wait_for_write_frm_python(self, exec_ctx):
+        import serialisation as ser
+        fn = exec_ctx.symbol_table.get_var('fn')
+        if not isinstance(fn, String):
+            return RTResult().failure(err.RTError(
+                    self.pos_start, self.pos_end,
+                    'Argument must be a filename',
+                    exec_ctx
+                ))
+        sb = ser.SharedBuffer(fn.value)
+        sb.wait_for_write()
+
+        return RTResult().success(Null.null)
+    execute_wait_for_write_frm_python.arg_names = []
+    '''
+    
+    def execute_exec_prog(self, exec_ctx):
+        fn = exec_ctx.symbol_table.get_var('fn')
+        
+        fn = fn.value
+
+        try:
+            with open(fn, 'r') as f:
+                script = f.read()
+        except Exception as e:
+            return RTResult().failure(err.PLoadError(
+                    self.pos_start, self.pos_end,
+                    f'Failed to load script "{fn}"\n' + str(e),
+                    exec_ctx
+                ))
+        
+        _, error = run(fn, script, progpath=fn, st=exec_ctx.symbol_table)
+
+        if error:
+            return RTResult().failure(err.RTError(
+                    self.pos_start, self.pos_end,
+                    f'Failed to finish executing script "{fn}"\n' +
+                    error.as_str(),
+                    exec_ctx
+                ))
+        
+        return RTResult().success(Null.null)
+    execute_exec_prog.arg_prototypes = [['fn', [Type.String]]]
+
+    def execute_load_module(self, exec_ctx): #TODO: set pos n context of the namespace
+        fn = exec_ctx.symbol_table.get_var('mod_name')
+        
+        fn = fn.value
+
+        out_path_dict = {}
+
+        for path in exec_ctx.symbol_table.get_var('__path__').elements:
+            name, ext = os.path.splitext(os.path.basename(path))
+            out_path_dict[name] = path
+        if fn not in out_path_dict:
+            return RTResult().failure(err.MLoadError(
+                    self.pos_start, self.pos_end,
+                    f'Script "{fn}" not found in __path__',
+                    exec_ctx
+                ))
+        fp = out_path_dict[fn]
+
+        _, ext = os.path.splitext(fp)
+
+        if ext == '.py':
+            try:
+                spec = importlib.util.spec_from_file_location(fn, fp)
+                my_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(my_module)
+
+                module_namespace = Namespace(getattr(my_module, 'module_name'), dict()).set_pos(self.pos_start, self.pos_end).set_context(self.context)
+                for name, value in getattr(my_module, 'to_be_pushed'):
+                    module_namespace.elements[name] = value.set_pos(self.pos_start, self.pos_end).set_context(self.context)
+
+                for symbol_table in SymbolTable.get_global_instances():
+                    symbol_table.set_sys_var(module_namespace.name, module_namespace)
+            except Exception as e:
+                return RTResult().failure(err.MLoadError(
+                        self.pos_start, self.pos_end,
+                        f'Failed to finish executing script "{fp}"\n' + 
+                        str(e),
+                        exec_ctx
+                    ))
+        elif ext == '.ail': # MAKE IT PUT VARS AND FUNCS IN ALL SYMBOL TABLES
+            try:
+                with open(fp, 'r') as f:
+                    script = f.read()
+            except Exception as e:
+                return RTResult().failure(err.MLoadError(
+                        self.pos_start, self.pos_end,
+                        f'Failed to load script "{fp}"\n' + str(e),
+                        exec_ctx
+                    ))
+            _, error = run(fp, script, progpath=fp, st=exec_ctx.symbol_table)
+
+            if error:
+                return RTResult().failure(err.MLoadError(
+                        self.pos_start, self.pos_end,
+                        f'Failed to finish loading module "{fp}"\n' +
+                        error.as_str(),
+                        exec_ctx
+                    ))
+        else:
+            try:
+                init_fp = fp + '/init.py'
+                spec = importlib.util.spec_from_file_location(fn, init_fp)
+                my_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(my_module)
+
+                module_namespace = Namespace(getattr(my_module, 'module_name'), dict()).set_pos(self.pos_start, self.pos_end).set_context(self.context)
+                for name, value in getattr(my_module, 'to_be_pushed'):
+                    module_namespace.elements[name] = value.set_pos(self.pos_start, self.pos_end).set_context(self.context)
+
+                for symbol_table in SymbolTable.get_global_instances():
+                    symbol_table.set_sys_var(module_namespace.name, module_namespace)
+            except Exception as e:
+                return RTResult().failure(err.MLoadError(
+                        self.pos_start, self.pos_end,
+                        f'Failed to finish loading package "{fp}"\n' + 
+                        str(e),
+                        exec_ctx
+                    ))
+        
+        return RTResult().success(Null.null)
+    execute_load_module.arg_prototypes = [['mod_name', [Type.String]]]
+
+    def execute_range(self, exec_ctx):
+        start = exec_ctx.symbol_table.get_var('start')
+        end = exec_ctx.symbol_table.get_var('end')
+        
+        if end.value <= start.value:
+            return RTResult().failure(err.RTError(
+                        self.pos_start, self.pos_end,
+                        'Second argument must be greater than first argument',
+                        exec_ctx
+                    ))
+
+        range_result = IterArray([Integer(n) for n in range(start.value, end.value)])
+
+        return RTResult().success(range_result)
+    execute_range.arg_prototypes = [['start', [Type.Integer]], ['end', [Type.Integer]]]
+
+    def execute_set_multi_float_type(self, exec_ctx):
+        old_number = exec_ctx.symbol_table.get_var('number')
+        target_type = exec_ctx.symbol_table.get_var('type')
+
+        if not isinstance(old_number, MultiFloat): old_float = old_number.floatify()
+        else: old_float = old_number
+
+        raw_new_float, raw_error = old_float.value.set_input_type(target_type.value)
+
+        error = mfmath.AILang_err_repr(raw_error, exec_ctx)
+        if error: return RTResult().failure(error)
+        return RTResult().success(MultiFloat(raw_new_float))
+    execute_set_multi_float_type.arg_prototypes = [['number', [Type.MultiFloat, Type.Integer]], ['type', [Type.Integer]]]
+
+    def execute_map(self, exec_ctx):
+        global r
+        global ctx
+        ctx = exec_ctx
+        r = RTResult()
+        func = ctx.symbol_table.get_var('func')
+        iterarray = ctx.symbol_table.get_var('iterarray')
+
+        if not isinstance(func, BaseFunction):
+            return r.failure(err.RTError(
+                        self.pos_start, self.pos_end,
+                        'First argument must be a function',
+                        ctx
+                    ))
+        
+        if not isinstance(iterarray, IterArray):
+            return r.failure(err.RTError(
+                        self.pos_start, self.pos_end,
+                        'Second argument must be an iterarray',
+                        ctx
+                    ))
+        def x(i):
+            global r
+            global ctx
+            return_value = r.register(func.execute(self.node, [i])).set_pos(self.pos_start, self.pos_end).set_context(ctx)
+            if r.should_return(): return r
+            return return_value
+        mapped = list(map(x, iterarray.elements))
+
+        if r.should_return(): return r
+        return r.success(IterArray(mapped))
+    
+    execute_map.arg_prototypes = [['func', [Type.Function, Type.BuiltInFunction]], ['iterarray', [Type.IterArray]]]
+
+    def execute_float_to_f16(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('x')
+        if x.type == Type.Float32: return RTResult().success(Float16(numbers.f32_to_f16(x.value)))
+        elif x.type == Type.Float64: return RTResult().success(Float16(numbers.f64_to_f16(x.value)))
+    execute_float_to_f16.arg_prototypes = [['x', [Type.Float32, Type.Float64]]]
+
+    def execute_float_to_f32(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('x')
+        if x.type == Type.Float16: return RTResult().success(Float32(numbers.f16_to_f32(x.value)))
+        elif x.type == Type.Float64: return RTResult().success(Float32(numbers.f64_to_f32(x.value)))
+    execute_float_to_f32.arg_prototypes = [['x', [Type.Float16, Type.Float64]]]
+
+    def execute_float_to_f64(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('x')
+        if x.type == Type.Float16: return RTResult().success(Float64(numbers.f16_to_f64(x.value)))
+        elif x.type == Type.Float32: return RTResult().success(Float64(numbers.f32_to_f64(x.value)))
+    execute_float_to_f64.arg_prototypes = [['x', [Type.Float16, Type.Float32]]]
+
+    def execute_matrix_to_f16m(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('m')
+        if x.type == Type.Float32Matrix: return RTResult().success(Float16Matrix(linalg.f32m_to_f16m(x.m)))
+        elif x.type == Type.Float64Matrix: return RTResult().success(Float16Matrix(linalg.f64m_to_f16m(x.m)))
+    execute_matrix_to_f16m.arg_prototypes = [['m', [Type.Float32Matrix, Type.Float64Matrix]]]
+
+    def execute_matrix_to_f32m(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('m')
+        if x.type == Type.Float16Matrix: return RTResult().success(Float32Matrix(linalg.f16m_to_f32m(x.m)))
+        elif x.type == Type.Float64Matrix: return RTResult().success(Float32Matrix(linalg.f64m_to_f32m(x.m)))
+    execute_matrix_to_f32m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float64Matrix]]]
+
+    def execute_matrix_to_f64m(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('m')
+        if x.type == Type.Float16Matrix: return RTResult().success(Float64Matrix(linalg.f16m_to_f64m(x.m)))
+        elif x.type == Type.Float32Matrix: return RTResult().success(Float64Matrix(linalg.f32m_to_f64m(x.m)))
+    execute_matrix_to_f64m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix]]]
+BuiltInFunction.print                           = BuiltInFunction('print')
+BuiltInFunction.stringify                       = BuiltInFunction('stringify')
+BuiltInFunction.print_without_end               = BuiltInFunction('print_without_end')
+BuiltInFunction.get_float_sci_str               = BuiltInFunction('get_float_sci_str')
+BuiltInFunction.input                           = BuiltInFunction('input')
+BuiltInFunction.input_int                       = BuiltInFunction('input_int')
+BuiltInFunction.input_multi_float               = BuiltInFunction('input_multi_float')
+BuiltInFunction.clear                           = BuiltInFunction('clear')
+BuiltInFunction.terminal_prompt                 = BuiltInFunction('terminal_prompt')
+BuiltInFunction.exit                            = BuiltInFunction('exit')
+BuiltInFunction.quit                            = BuiltInFunction('quit')
+BuiltInFunction.reload_shell                    = BuiltInFunction('reload_shell')
+BuiltInFunction.push                            = BuiltInFunction('push')
+BuiltInFunction.pop                             = BuiltInFunction('pop')
+BuiltInFunction.get_item                        = BuiltInFunction('get_item')
+BuiltInFunction.len                             = BuiltInFunction('len')
+# BuiltInFunction.write_to_python                 = BuiltInFunction('write_to_python')
+# BuiltInFunction.read_frm_python                 = BuiltInFunction('read_frm_python')
+# BuiltInFunction.wait_for_write_frm_python       = BuiltInFunction('wait_for_write_frm_python')
+BuiltInFunction.exec_prog                       = BuiltInFunction('exec_prog')
+BuiltInFunction.load_module                     = BuiltInFunction('load_module')
+BuiltInFunction.range                           = BuiltInFunction('range')
+BuiltInFunction.set_multi_float_type            = BuiltInFunction('set_multi_float_type')
+BuiltInFunction.map                             = BuiltInFunction('map')
+BuiltInFunction.float_to_f16                    = BuiltInFunction('float_to_f16')
+BuiltInFunction.float_to_f32                    = BuiltInFunction('float_to_f32')
+BuiltInFunction.float_to_f64                    = BuiltInFunction('float_to_f64')
+BuiltInFunction.float_matrix_to_f16m            = BuiltInFunction('float_to_f16')
+BuiltInFunction.float_matrix_to_f32m            = BuiltInFunction('float_to_f32')
+BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_to_f64')
+
+# Context
+
+@dataclass
+class Symbol:
+    types: list[Type]|tuple[Type]
+    is_raable: bool
+    is_delable: bool
+    value: BaseValue
+
+class SymbolTable: #TODO: Get local var copy thingmabob implemented (global)
+    _global_instances = set()
+
+    def __init__(self, parent=None, is_cls_ins=False) -> None:
+        self.parent: None|SymbolTable = parent
+        self.symbols: dict[str, Symbol] = {} #if parent==None else parent.symbols.copy() #TODO: add scoping (global)
+        # self.cls_name: None|str = cls_name
+        self.is_cls_ins: bool = is_cls_ins
+
+    def get_var(self, var_name):
+        symbol = self.symbols.get(var_name, None)
+    
+        if symbol:
+            return symbol.value
+        if self.parent:
+            return self.parent.get_var(var_name)
+        return None
+    
+    def get_types(self, var_name):
+        symbol = self.symbols.get(var_name, None)
+        
+        if symbol:
+            return symbol.types
+        if self.parent:
+            return self.parent.get_types(var_name)
+        return None
+
+    '''
+    def get_var(self, name):
+        value = self.symbols.get(name, None)
+        if not value and self.parent:
+            return self.parent.get_var(name)
+        return value[0] if value else None
+    '''
+    
+    def chk_var_in_symbols(self, name):
+        # return SymbolName(name) in self.symbols
+        return name in self.symbols
+    
+    def set_var(self, node, ctx, name: str, types: Type, value, is_raable:bool=False, is_delable:bool=False): # no raa = let/const, no del = const
+        if self.chk_var_in_symbols(name):
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                'Variable already exists in current scope',
+                ctx
+            ))
+        elif Type.Any.typename not in (m:=[t.typename for t in types]) and value.type not in m:
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                f"Type of '{value}' ({Type(value.type)}) is not accepted by the type of the variable '{name}' ({"|".join(m)})",
+                ctx
+            ))
+        '''
+        if not self.cls_name:
+            if privated:
+                return RTResult().failure(err.RTError(
+                    node.pos_start, node.pos_end,
+                    'Private variable cannot be assigned out of class',
+                ))
+            if isinstance(value, BaseMethod):
+                return RTResult().failure(err.RTError(
+                    node.pos_start, node.pos_end,
+                    'Method cannot be assigned out of class',
+                    ctx
+                ))
+        '''
+
+        # self.symbols[SymbolName(name)] = [value, is_raable, is_delable]
+        # self.symbols[name] = [types, value, is_raable, is_delable, privated]
+        self.symbols[name] = Symbol(types, is_raable, is_delable, value.set_pos(node.pos_start, node.pos_end).set_context(ctx))
+        return RTResult().success(value)
+    
+    def set_sys_var(self, name, value, is_raable:bool=False, is_delable:bool=False): # no raa = let/const, no del = const
+        # self.symbols[SymbolName(name)] = [value, is_raable, is_delable]
+        # self.symbols[name] = [Type.Structure, value, is_raable, is_delable, False]
+        self.symbols[name] = Symbol([Type.Any], is_raable, is_delable, value.set_pos(Position.system_pos, Position.system_pos).set_context(None)) #TODO: find way to carry ctx to system variables
+
+    def set_struct(self, node, ctx, name, struct):
+        if self.chk_var_in_symbols(name):
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                'Variable already exists',
+                ctx
+            ))
+        # self.symbols[SymbolName(name)] = [struct, False, True]
+        # self.symbols[name] = [Type.Struct, struct, False, True, False]
+        self.symbols[name] = Symbol([Type(struct.type)], False, True, struct.set_pos(node.pos_start, node.pos_end).set_context(ctx))
+        return RTResult().success(Null.null)
+
+    def ra_var(self, node, ctx, name, value):
+        if not self.chk_var_in_symbols(name):
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                'Variable does not exist in current scope',
+                ctx
+            ))
+        elif not self.symbols[name].is_raable:
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                'Variable is either a constant or a \'let\' variable',
+                ctx
+            ))
+        elif Type.Any.typename not in (m:=[t.typename for t in self.get_types(name)]) and value.type not in m:
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                f"Type of '{value}' ({Type(value.type)}) is not accepted by the type of the variable '{name}' ({"|".join(m)})",
+                ctx
+            ))
+        
+        
+        # self.symbols[SymbolName(name)][0] = value
+        # self.symbols[name][0] = value
+        self.symbols[name].value = value
+        return RTResult().success(value)
+
+    def protect_var(self, name, node, ctx):
+        # if not self.symbols[SymbolName(name)][2]:
+        if not self.symbols[name].is_delable:
+            return RTResult().failure(err.RTError(
+                node.pos_start, node.pos_end,
+                'Variable is either a constant or an already protected variable',
+                ctx
+            ))
+        # self.symbols[SymbolName(name)][2] = False
+        self.symbols[name].is_delable = False
+        return RTResult().success(Null.null)
+
+    def rm_var(self, name, node, ctx):
+        # if self.symbols[SymbolName(name)][2]:
+        if self.symbols[name].is_delable:
+            if getattr(self.symbols[name].value, 'free_mem', None):
+                self.symbols[name].value.free_mem()
+            del self.symbols[name]
+            return RTResult().success(Null.null)
+        return RTResult().failure(err.RTError(
+            node.pos_start, node.pos_end,
+            'Variable is either a constant or a protected variable',
+            ctx
+        ))
+    
+    def rm_type(self, name):
+        del self.symbols[name]
+        return RTResult().success(Null.null)
+    
+    def promote(self):
+        SymbolTable._global_instances.add(weakref.ref(self))
+
+    @classmethod
+    def get_global_instances(cls):
+        return [instance() for instance in cls._global_instances if instance()]
+    
+class Context:
+    def __init__(self, display_name, parent=None, parent_entry_pos=None, strict_mode=True):
+        self.display_name = display_name
+        self.parent = parent
+        self.parent_entry_pos = parent_entry_pos
+        self.symbol_table: SymbolTable|None = None
+        self.strict_mode: bool = strict_mode
+
+    def copy(self):
+        return Context(self.display_name, self.parent, self.parent_entry_pos, self.strict_mode)
+    
+# Context-dependent imports
+from AILang import run
+
+from extra_modules.Interpreter import Interpreter

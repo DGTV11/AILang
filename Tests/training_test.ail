@@ -1,0 +1,25 @@
+
+# Training data:
+# 0     -> 0
+# 1     -> 1
+# 2     -> 0
+# 3     -> 1
+# 4     -> 0
+# 5     -> 1
+# 6     -> 0
+# 7     -> 1
+# 8     -> 0
+# 9     -> 1
+# 10    -> 0
+
+load_module("math")
+let e: MultiFloatConst = math.e
+
+func sigmoid(x: MultiFloat) -> MultiFloat: 1.0md / (1.0md + e**-x)
+func d_sigmoid(x: MultiFloat) -> MultiFloat: sigmoid(x) * (1.0md - sigmoid(x))
+
+let x: MultiFloat = input_multi_float("Please input float: ", 3b)
+
+print(x)
+
+print(sigmoid(x))

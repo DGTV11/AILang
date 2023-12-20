@@ -1,0 +1,4 @@
+CREDITS TO:
+- https://github.com/artyom-beilis/float16/tree/master FOR THEIR HALF-PRECISION FLOATING POINT LIBRARY
+- Malcom McLean @ https://stackoverflow.com/questions/41403730/c-exponentiation-with-non-integer-exponent for their exponentiation algorithm
+- CodePulse for the tutorials (this language is based on the end result)

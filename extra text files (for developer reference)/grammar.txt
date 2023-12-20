@@ -1,0 +1,89 @@
+statements              : NEWLINE* statement (NEWLINE* statement)* NEWLINE*
+
+statement               : KEYWORD:return expr?
+                        : KEYWORD:continue
+                        : KEYWORD:break
+                        : expr
+
+expr                    : var-def
+                        : struct-def
+                        : KEYWORD:typify expr #TODO
+                        : KEYWORD:del IDENTIFIER
+                        : KEYWORD:protect IDENTIFIER
+                        : comp-expr ((KEYWORD:and|KEYWORD:or) comp-expr)
+        
+comp-expr               : KEYWORD:not comp-expr
+                        : bitwise-expr ((EE|LT|GT|LTE|GTE) bitwise-expr)*
+
+bitwise-expr            : shift-expr ((BITWISEAND|BITWISEOR|BITWISEXOR) shift-expr)* #TODO
+
+shift-expr              : arith-expr ((LEFTSHIFT|RIGHTSHIFT) arith-expr)* #TODO
+
+arith-expr              : term ((PLUS|MINUS) term)*
+
+term                    : factor ((MUL|MATMUL|DIV) factor)*
+
+factor                  : (PLUS|MINUS|COMPLEMENT) factor #TODO
+                        : power
+
+power                   : reassign-expr (POW factor)*
+
+reassign-expr           : primary (EQ expr)?
+
+primary                 : atom   
+                        : primary (LPAREN (expr (COMMA expr)*)? RPAREN)*?
+                        : primary (LSQUARE (comp-expr (COLON comp-expr (COLON comp-expr)?)?)? RSQUARE)*? 
+                        : primary (DOT IDENTIFIER)*?
+
+atom                    : INT|HALF|FLOAT|DOUBLE|MHALF|MFLOAT|MDOUBLE|STRING
+                        : IDENTIFIER
+                        : LPAREN expr RPAREN
+                        : iterarray-expr
+                        : numarray-expr
+                        : if-expr
+                        : for-expr
+                        : while-expr
+                        : func-def
+
+iterarray-expr          : LSQUARE (expr (COMMA expr)*)? RSQUARE
+
+matrix-subvector-expr   : LBRACE (expr (COMMA expr)*) RBRACE
+
+matrix-expr             : LBRACE 
+                          (numarray-subvector-expr 
+                          (COMMA numarray-subvector-expr)*) 
+                          RBRACE
+
+if-expr                 : KEYWORD:if expr KEYWORD:then
+                          (statement if-expr-b|if-expr-c?)
+                        | (NEWLINE statements KEYWORD:end|if-expr-b|if-expr-c)
+
+if-expr-b               : KEYWORD:elif expr KEYWORD:then
+                          (statement if-expr-b|if-expr-c?)
+                        | (NEWLINE statements KEYWORD:end|if-expr-b|if-expr-c)
+
+if-expr-c               : KEYWORD:else 
+                          statement
+                        | (NEWLINE statements KEYWORD:end)
+
+for-expr                : KEYWORD:for IDENTIFIER EQ expr KEYWORD:to expr
+                          (KEYWORD:step expr)? KEYWORD:then 
+                          expr
+                        | (NEWLINE statements KEYWORD:end)
+
+while-expr              : KEYWORD:while expr KEYWORD:then
+                          expr
+                        | (NEWLINE statements KEYWORD:end)
+
+type-container          : COLON IDENTIFIER (BITWISEOR IDENTIFIER)*?
+
+var-def                 : (KEYWORD:var|KEYWORD:let|KEYWORD:const) IDENTIFIER COLON type-container EQ expr
+
+#TODO: REMOVE PRIVATING (DONE?)
+
+struct-def              : KEYWORD:struct IDENTIFIER LSQUARE IDENTIFIER COLON type-container (COMMA IDENTIFIER COLON type-container)* RSQUARE #TODO
+
+func-def                : KEYWORD:func IDENTIFIER?
+                          LPAREN (IDENTIFIER COLON type-container (COMMA IDENTIFIER COLON type-container)*)? RPAREN
+                          (COLON expr)
+                        | (NEWLINE statements KEYWORD:end)

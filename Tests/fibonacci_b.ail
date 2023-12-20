@@ -1,0 +1,21 @@
+
+print("Loaded!")
+
+func fib(n: Integer) -> Float16
+    var tmp: Float16 = 0.0h
+    var a: Float16 = 0.0h
+    var b: Float16 = 1.0h
+
+    for i = 0bi to n - 1bi then
+        tmp = a + b
+        a = b
+        b = tmp
+    end
+    del tmp
+    return a
+end
+
+print("10000000th fibonacci number:")
+let res: Float16 = fib(10000000bi)
+print(res)
+del res

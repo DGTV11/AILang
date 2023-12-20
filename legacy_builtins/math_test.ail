@@ -1,0 +1,27 @@
+# /usr/local/bin/python3.10 "/Volumes/Data stuffs/Python/AILang/AILang.py" '/Volumes/Data stuffs/Python/AILang/builtins/math_test.ail'
+
+load_module("math")
+print("loaded!")
+
+var x = math_ia2nna(range(1, 1000001))
+var y = math_ia2nna(range(1000001, 2000001))
+print(x+y)
+
+var z = math_ia2nna(range(1, 1000001))
+var w = math_ia2nna(range(1000001, 2000001))
+print(w-z)
+
+var u = math_ia2nna(range(1, 1000001))
+var v = math_ia2nna(range(1000001, 2000001))
+print(u*v)
+
+del x
+del y
+
+var x = math_ia2nna(range(1, 1000001))
+var y = 10
+print(math_mul_n_by_nna(y, x))
+
+print("done")
+
+quit()

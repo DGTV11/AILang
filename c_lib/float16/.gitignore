@@ -1,0 +1,6 @@
+*.def
+*.o
+*.bin
+test_z80
+test_c
+conv_32_16

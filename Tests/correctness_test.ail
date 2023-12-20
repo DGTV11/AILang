@@ -1,0 +1,5 @@
+var a: Integer = 1
+
+print(a + (a = a + 1))
+
+#WRONG: 4, CORRECT: 3

@@ -1,0 +1,6 @@
+1: Add set_pos and set_context for all datatype operations (DONE)
+2: Add Float32 and Float64 datatypes (DONE)
+3: Make Floats accessable (DONE)
+4: Add Integers (DOING)
+5: Reimplement Matrices (DOING)
+6: Fix functions!!! (TODO)
