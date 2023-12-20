@@ -3,7 +3,6 @@ from extra_modules.results import *
 from extra_modules.position import *
 import extra_modules.Errors as err
 import extra_modules.Warnings as wrn
-import extra_modules.mfmath as mfmath
 import extra_modules.numbers as numbers
 import extra_modules.linalg as linalg
 

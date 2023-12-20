@@ -11,7 +11,6 @@ from extra_modules.Nodes import *
 from extra_modules.Tokens import *
 from extra_modules.Interpreter import Interpreter
 import extra_modules.Errors as err
-import extra_modules.mfmath as mfmath
 import extra_modules.Warnings as wrn
 
 import resource
