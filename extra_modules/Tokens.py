@@ -89,7 +89,7 @@ TOKEN_TYPE_TO_STRING = {
 
 KEYWORDS = [
     'var',
-    'let',
+    'mut',
     'const',
     'struct',
     'class',

@@ -4,8 +4,8 @@ print("Hello, world!")
 func oopify(prefix: String) -> String: prefix + "oop"
 
 func join_test(elements: IterArray, separator: String) -> String
-    var result: String = ""
-    var _len: Integer = len(elements)
+    mut var result: String = ""
+    mut var _len: Integer = len(elements)
 
     for i = 0bi to _len then
         result = result + elements[i]
@@ -15,7 +15,7 @@ func join_test(elements: IterArray, separator: String) -> String
 end
 
 func map_test(f: Function, elements: IterArray) -> IterArray
-    var new_elements: IterArray = []
+    mut var new_elements: IterArray = []
     for i = 0bi to len(elements) then
         push(new_elements, f(elements[i]))
     end
@@ -37,7 +37,7 @@ print(range_1_10[0bi:5bi:1bi][1bi])
 struct x [x: Integer, y: x_Struct|Integer]
 print(x)
 
-var y: x_Struct = x()
+mut var y: x_Struct = x()
 
 y.x = 100bi
 print(y)

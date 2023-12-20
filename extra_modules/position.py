@@ -18,4 +18,15 @@ class Position:
     
     def copy(self):
         return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
+    
+    def __str__(self):
+        if '\n' in self.ftxt:
+            ftxt = self.ftxt.split('\n')[self.ln]
+            if self.ln == 0:
+                return f"Position(idx={self.idx}, ln={self.ln}, col={self.col}, fn={self.fn}, ftxt=... {ftxt})"
+            return f"Position(idx={self.idx}, ln={self.ln}, col={self.col}, fn={self.fn}, ftxt=... {ftxt} ...)"
+        return f"Position(idx={self.idx}, ln={self.ln}, col={self.col}, fn={self.fn}, ftxt={self.ftxt})"
+    
+    def __repr__(self):
+        return self.__str__()
 Position.system_pos = Position(-1, 0, -1, '<System>', '<UNREADABLE>')

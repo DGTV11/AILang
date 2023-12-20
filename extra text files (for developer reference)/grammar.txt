@@ -11,7 +11,9 @@ expr                    : var-def
                         : KEYWORD:del IDENTIFIER
                         : KEYWORD:protect IDENTIFIER
                         : comp-expr ((KEYWORD:and|KEYWORD:or) comp-expr)
-        
+
+var-def                 : (KEYWORD:var|KEYWORD:let|KEYWORD:const) IDENTIFIER COLON type-container EQ expr
+
 comp-expr               : KEYWORD:not comp-expr
                         : bitwise-expr ((EE|LT|GT|LTE|GTE) bitwise-expr)*
 
@@ -76,8 +78,6 @@ while-expr              : KEYWORD:while expr KEYWORD:then
                         | (NEWLINE statements KEYWORD:end)
 
 type-container          : COLON IDENTIFIER (BITWISEOR IDENTIFIER)*?
-
-var-def                 : (KEYWORD:var|KEYWORD:let|KEYWORD:const) IDENTIFIER COLON type-container EQ expr
 
 #TODO: REMOVE PRIVATING (DONE?)
 

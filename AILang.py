@@ -332,6 +332,7 @@ class Parser:
     def parse(self):
         res = self.statements()
         if not res.error and self.current_tok.type != TT_EOF:
+            print(self.current_tok.type, self.current_tok.value)
             return res.failure(err.InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
                 "Expected '+', '-', '*' or '/'"
@@ -404,7 +405,7 @@ class Parser:
         expr = res.register(self.expr())
         if res.error: return res.failure(err.InvalidSyntaxError(
             self.current_tok.pos_start, self.current_tok.pos_end,
-            "Expected int, float, identifier, variable keyword, 'return', 'continue', 'break', 'if', 'for', 'while', 'func', '+', '-', '(', '[', '{' or 'not'"
+            "Expected int, float, identifier, var, mut, const, 'return', 'continue', 'break', 'if', 'for', 'while', 'func', '+', '-', '(', '[', '{' or 'not'"
             ))
         
         return res.success(expr)
@@ -718,7 +719,7 @@ class Parser:
                     if res.error:
                         return res.failure(err.InvalidSyntaxError(
                             self.current_tok.pos_start, self.current_tok.pos_end,
-                            "Expected ')', int, float, identifier, variable keyword, 'if', 'for', 'while', 'fun', '+', '-', '(', '[' or 'not'"
+                            "Expected ')', int, float, identifier, var, mut, const, 'if', 'for', 'while', 'fun', '+', '-', '(', '[' or 'not'"
                         ))
                     
                     while self.current_tok.type == TT_COMMA:
@@ -909,7 +910,7 @@ class Parser:
             if res.error:
                 return res.failure(err.InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    "Expected ']', int, float, identifier, variable keyword, 'if', 'for', 'while', 'fun', '+', '-', '(', or 'not'"
+                    "Expected ']', int, float, identifier, var, mut, const, 'if', 'for', 'while', 'fun', '+', '-', '(', or 'not'"
                 ))
             
             while self.current_tok.type == TT_COMMA:
@@ -1008,7 +1009,7 @@ class Parser:
         if res.error:
             return res.failure(err.InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Expected '}', int, float, identifier, variable keyword, 'if', 'for', 'while', 'fun', '+', '-', '(', or 'not'"
+                "Expected '}', int, float, identifier, var, mut, const, 'if', 'for', 'while', 'fun', '+', '-', '(', or 'not'"
             ))
         
         while self.current_tok.type == TT_COMMA:
@@ -1084,7 +1085,7 @@ class Parser:
 
         if (
             self.current_tok.matches(TT_KEYWORD, 'var')
-            or self.current_tok.matches(TT_KEYWORD, 'let')
+            or self.current_tok.matches(TT_KEYWORD, 'mut')
             or self.current_tok.matches(TT_KEYWORD, 'const')
         ):
             var_def = res.register(self.var_def())
@@ -1144,20 +1145,32 @@ class Parser:
 
         if res.error: return res.failure(err.InvalidSyntaxError(
             self.current_tok.pos_start, self.current_tok.pos_end,
-            "Expected int, float, identifier, variable keyword, 'if', 'for', 'while', 'func', '+', '-', '(', '[' or 'not'"
+            "Expected int, float, identifier, var, mut, const, 'if', 'for', 'while', 'func', '+', '-', '(', '[' or 'not'"
             ))
         return res.success(node)
     
     def var_def(self):
         res = ParseResult()
 
-        if self.current_tok.matches(TT_KEYWORD, 'var'): mode = 0
-        elif self.current_tok.matches(TT_KEYWORD, 'let'): mode = 1
-        elif self.current_tok.matches(TT_KEYWORD, 'const'): mode = 2
+        if self.current_tok.matches(TT_KEYWORD, 'var'): mode = 1
+        elif self.current_tok.matches(TT_KEYWORD, 'mut'): 
+            if not self.current_tok.matches(TT_KEYWORD, 'var'):
+                return res.failure(err.InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected var"
+                ))
+            mode = 0
+        elif self.current_tok.matches(TT_KEYWORD, 'const'): 
+            if not self.current_tok.matches(TT_KEYWORD, 'var'):
+                return res.failure(err.InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected var"
+                ))
+            mode = 2
         else:
             return res.failure(err.InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Expected variable keyword"
+                "Expected var, mut, or const"
             ))
         res.register_adv()
         self.advance()
@@ -1289,13 +1302,15 @@ class Parser:
         res.register_adv()
         self.advance()
 
-        res_type_container = res.register(self.type_container([TT_COLON, TT_NEWLINE])) #TODO! FIND UNCAUGHT ERROR!!!
+        res_type_container = res.register(self.type_container([TT_COLON, TT_NEWLINE]))
+        #print(self.current_tok.type, self.current_tok.value)
         if res.error: return res
 
         if self.current_tok.type == TT_COLON:
             res.register_adv()
             self.advance()
             body = res.register(self.expr())
+            print(self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
             if res.error: return res
 
             return res.success(FuncDefNode(
