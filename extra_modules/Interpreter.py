@@ -39,15 +39,6 @@ class Interpreter:
                 return RTResult().success(Float32(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end))
             case 'd':
                 return RTResult().success(Float64(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end))
-            case 'mh':
-                mfloat_repr = mfmath.mfloat(node.tok.value, 1)
-                return RTResult().success(MultiFloat(mfloat_repr).set_context(context).set_pos(node.pos_start, node.pos_end))
-            case 'mf':
-                mfloat_repr = mfmath.mfloat(node.tok.value, 2)
-                return RTResult().success(MultiFloat(mfloat_repr).set_context(context).set_pos(node.pos_start, node.pos_end))
-            case 'md':
-                mfloat_repr = mfmath.mfloat(node.tok.value, 3)
-                return RTResult().success(MultiFloat(mfloat_repr).set_context(context).set_pos(node.pos_start, node.pos_end))
             # ERROR HANDLING
             case _:
                 return RTResult().failure(

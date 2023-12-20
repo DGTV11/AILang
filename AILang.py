@@ -185,22 +185,8 @@ class Lexer:
                 case 'd': # Double
                     self.advance()
                     return Token(TT_DOUBLE, num_str, pos_start, self.pos.copy()), None
-                case 'm':
-                    self.advance()
-                    match self.current_char:
-                        case 'h': # MultiHalf
-                            self.advance()
-                            return Token(TT_MHALF, num_str, pos_start, self.pos.copy()), None
-                        case 'f': # MultiFloat (single)
-                            self.advance()
-                            return Token(TT_MFLOAT, num_str, pos_start, self.pos.copy()), None
-                        case 'd': # MultiDouble
-                            self.advance()
-                            return Token(TT_MDOUBLE, num_str, pos_start, self.pos.copy()), None
-                        case _:
-                            return None, err.InvalidSyntaxError(pos_start, self.pos, "Expected 'f', 'd', 'h', 'mf', 'md' or 'mh' after decimal part of float")
                 case _:
-                    return None, err.InvalidSyntaxError(pos_start, self.pos, "Expected 'f', 'd', 'h', 'mf', 'md', 'mh' after decimal part of float")
+                    return None, err.InvalidSyntaxError(pos_start, self.pos, "Expected 'f', 'd', 'h', after decimal part of float")
 
     def make_string(self):
         string = ''
@@ -839,21 +825,6 @@ class Parser:
             res.register_adv()
             self.advance()
             return res.success(NumberNode(tok, 'd'))
-        
-        elif tok.type == TT_MHALF:
-            res.register_adv()
-            self.advance()
-            return res.success(NumberNode(tok, 'mh'))
-        
-        elif tok.type == TT_MFLOAT:
-            res.register_adv()
-            self.advance()
-            return res.success(NumberNode(tok, 'mf'))
-        
-        elif tok.type == TT_MDOUBLE:
-            res.register_adv()
-            self.advance()
-            return res.success(NumberNode(tok, 'md'))
         
         # OTHERS
         elif tok.type == TT_STRING:
@@ -1573,8 +1544,6 @@ global_symbol_table.set_sys_var('Any', Type.Any)
 global_symbol_table.set_sys_var('Type', Type.Type)
 global_symbol_table.set_sys_var('NullType', Type.Null)
 global_symbol_table.set_sys_var('Integer', Type.Integer)
-global_symbol_table.set_sys_var('MultiFloat', Type.MultiFloat)
-global_symbol_table.set_sys_var('MultiFloatConst', Type.MultiFloatConst)
 global_symbol_table.set_sys_var('Float16', Type.Float16)
 global_symbol_table.set_sys_var('Float32', Type.Float32)
 global_symbol_table.set_sys_var('Float64', Type.Float64)

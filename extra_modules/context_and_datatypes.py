@@ -210,32 +210,21 @@ class Integer(BaseValue): #BigInteger
         self.type = 'Integer'
         self.value = value
 
-    def floatify(self):
-        str_repr = str(self.value)
-        float_repr = mfmath.mfloat(str_repr, 3)
-        return MultiFloat(float_repr).set_context(self.context).set_pos(self.pos_start, self.pos_end)
-
     def add_by(self, other):
         if isinstance(other, Integer):
             return Integer(self.value + other.value).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            return self.floatify().add_by(other)
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def sub_by(self, other):
         if isinstance(other, Integer):
             return Integer(self.value - other.value).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            return self.floatify().sub_by(other)
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def mult_by(self, other):
         if isinstance(other, Integer):
             return Integer(self.value * other.value).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            return self.floatify().mult_by(other)
         else:
             return None, BaseValue.illegal_operation(self, other)
         
@@ -248,82 +237,48 @@ class Integer(BaseValue): #BigInteger
                     self.context
                 )
             return Integer(self.value / other.value).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            return self.floatify().div_by(other)
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def pow_by(self, other):
         if isinstance(other, Integer):
             return Integer(self.value ** other.value).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            return self.floatify().pow_by(other)
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_eq(self, other):
         if isinstance(other, Integer):
             return Integer(int(self.value == other.value)).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            res, error = self.floatify().value.get_comparison_eq(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_ne(self, other):
         if isinstance(other, Integer):
             return Integer(int(self.value != other.value)).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            res, error = self.floatify().value.get_comparison_ne(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lt(self, other):
         if isinstance(other, Integer):
             return Integer(int(self.value < other.value)).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            res, error = self.floatify().value.get_comparison_lt(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gt(self, other):
         if isinstance(other, Integer):
             return Integer(int(self.value > other.value)).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            res, error = self.floatify().value.get_comparison_gt(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lte(self, other):
         if isinstance(other, Integer):
             return Integer(int(self.value <= other.value)).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            res, error = self.floatify().value.get_comparison_lte(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gte(self, other):
         if isinstance(other, Integer):
             return Integer(int(self.value >= other.value)).set_context(self.context), None
-        elif isinstance(other, MultiFloat):
-            res, error = self.floatify().value.get_comparison_gte(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
         else:
             return None, BaseValue.illegal_operation(self, other)
         
@@ -396,301 +351,6 @@ Integer.false   = Integer(0)
 Integer.true    = Integer(1)
 
 ## Float types
-Type.MultiFloat    = Type('MultiFloat')
-class MultiFloat(BaseValue): #!VERY INEFFICIENT! For backwards compatibility :/
-    def __init__(self, value: mfmath.mfloat):
-        super().__init__()
-        self.type = 'MultiFloat'
-        self.value = value
-
-    def add_by(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.add_by(other.value)
-            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-        elif isinstance(other, Integer):
-            return self.add_by(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def sub_by(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.sub_by(other.value)
-            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-        elif isinstance(other, Integer):
-            return self.sub_by(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def mult_by(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.mult_by(other.value)
-            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-        elif isinstance(other, Integer):
-            return self.mult_by(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def div_by(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.div_by(other.value)
-            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-        elif isinstance(other, Integer):
-            return self.div_by(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def pow_by(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.pow_by(other.value)
-            return None if not res else MultiFloat(mfmath.mfloat(res)).set_context(self.context).set_pos(self.pos_start, self.pos_end), mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-        elif isinstance(other, Integer):
-            return self.pow_by(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_eq(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.get_comparison_eq(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
-            return res, err_repr
-        elif isinstance(other, Integer):
-            return self.get_comparison_eq(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_ne(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.get_comparison_ne(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
-            return res, err_repr
-        elif isinstance(other, Integer):
-            return self.get_comparison_ne(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_lt(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.get_comparison_lt(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
-            return res, err_repr
-        elif isinstance(other, Integer):
-            return self.get_comparison_lt(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_gt(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.get_comparison_gt(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context).set_pos(self.pos_start, self.pos_end)
-            return res, err_repr
-        elif isinstance(other, Integer):
-            return self.get_comparison_gt(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_lte(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.get_comparison_lte(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
-        elif isinstance(other, Integer):
-            return self.get_comparison_lte(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_gte(self, other):
-        if isinstance(other, MultiFloat):
-            res, error = self.value.get_comparison_gte(other.value)
-            err_repr = mfmath.AILang_err_repr(error, self.context, self.pos_start, other.pos_end)
-            if res: res = Integer(int(getattr(getattr(res, "value"), "bool_"))).set_context(self.context)
-            return res, err_repr
-        elif isinstance(other, Integer):
-            return self.get_comparison_gte(other.floatify())
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-    
-    def neg(self):
-        return self.mult_by(Integer(-1))
-
-    def copy(self):
-        copy = MultiFloat(self.value)
-        copy.set_pos(self.pos_start, self.pos_end)
-        copy.set_context(self.context)
-        return copy
-
-    def is_true(self):
-        return self.get_comparison_ne(MultiFloatConst.zero)[0].value
-
-    def __str__(self):
-        return str(self.value)
-
-    def __repr__(self):
-        return self.__str__()
-
-Type.MultiFloatConst = Type('MultiFloatConst')
-class MultiFloatConst(MultiFloat): # INEFFICIENT! For backwards compatibility and type conversions
-    const_table = None
-    def __init__(self, row_idx: int):
-        self.set_pos()
-        self.set_context()
-
-        self.type = 'MultiFloatConst'
-        self.row_idx = row_idx
-        self.prec_type = 3
-
-    @property
-    def table(self) -> mfmath.Cmfloat_consts:
-        while MultiFloatConst.const_table is None:
-            MultiFloatConst.const_table, error = mfmath.init_constants()
-            if error != None:
-                wrn.MultiFloatConstTableWarning(self.pos_start, self.pos_end, f'MultiFloat Constant Table could not be created due to error {int(error)}')
-
-        return MultiFloatConst.const_table
-    
-    def del_table(self):
-        MultiFloatConst.const_table = None
-
-    @property
-    def value(self): #for repr/str
-        x, error = mfmath.lookup_const(self.table, ctypes.c_int(self.row_idx), ctypes.c_int(self.prec_type))
-        #print((y:=fpmath.AILang_err_repr(error, self.context, self.pos_start, self.pos_end)).error_name, y.details)
-        return mfmath.mfloat('0.0' if x == None else x, self.prec_type)
-    
-    def add_by(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().add_by(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().add_by(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def sub_by(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().sub_by(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().sub_by(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def mult_by(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().mult_by(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().mult_by(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def div_by(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().div_by(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().div_by(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def pow_by(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().pow_by(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().pow_by(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_eq(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().get_comparison_eq(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().get_comparison_eq(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_ne(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().get_comparison_ne(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().get_comparison_ne(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_lt(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().get_comparison_lt(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().get_comparison_lt(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_gt(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().get_comparison_gt(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().get_comparison_gt(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_lte(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().get_comparison_lte(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().get_comparison_lte(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def get_comparison_gte(self, other):
-        if isinstance(other, MultiFloat):
-            self.prec_type = int(getattr(other.value, "type"))
-            return super().get_comparison_gte(other)
-        elif isinstance(other, Integer):
-            self.prec_type = 3
-            return super().get_comparison_gte(other)
-        else:
-            return None, BaseValue.illegal_operation(self, other)
-        
-    def neg(self):
-        return self.mult_by(-1)
-
-    def __repr__(self):
-        return self.value.__repr__()
-    
-    def __str__(self):
-        return self.value.__str__()
-    
-    def copy(self):
-        copy = MultiFloatConst(self.row_idx)
-        copy.set_pos(self.pos_start, self.pos_end)
-        copy.set_context(self.context)
-        return copy
-    
-    def is_true(self):
-        return self.get_comparison_ne(MultiFloatConst.zero)[0].value
-MultiFloatConst.zero = MultiFloatConst(0)
-
-#FLOAT_TYPES_SET = {'Float16', 'Float32', 'Float64'}
 
 Type.Float16 = Type('Float16')
 class Float16(BaseValue):
@@ -794,7 +454,7 @@ class Float16(BaseValue):
         return Float16(-self.value)
 
     def copy(self):
-        copy = MultiFloat(self.value)
+        copy = Float16(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy
@@ -911,7 +571,7 @@ class Float32(BaseValue):
         return Float32(-self.value)
 
     def copy(self):
-        copy = MultiFloat(self.value)
+        copy = Float32(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy
@@ -1028,7 +688,7 @@ class Float64(BaseValue):
         return Float64(-self.value)
 
     def copy(self):
-        copy = MultiFloat(self.value)
+        copy = Float64(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy
@@ -1103,7 +763,7 @@ class Float16Matrix(BaseValue):
             except MemoryError as e:
                 return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
             except ValueError as e:
-                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+                return None, err.rterror(self.pos_start, other.pos_end, e, self.context)
             except ZeroDivisionError as e:
                 return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
             except Exception as e:
@@ -1116,7 +776,7 @@ class Float16Matrix(BaseValue):
             try:
                 return Float16Matrix(self.matrix @ other.matrix), None
             except MemoryError as e:
-                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+                return None, err.mallocerror(self.pos_start, other.pos_end, e, self.context)
             except ValueError as e:
                 return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
             except Exception as e:
@@ -1254,7 +914,7 @@ class Float64Matrix(BaseValue):
             try:
                 return Float64Matrix(self.matrix + other.matrix), None
             except MemoryError as e:
-                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+                return None, err.mallocError(self.pos_start, other.pos_end, e, self.context)
             except ValueError as e:
                 return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
             except Exception as e:
@@ -1323,7 +983,7 @@ class Float64Matrix(BaseValue):
         try:
             return Float64Matrix(self.matrix.copy())
         except Exception as e:
-            wrn.CopyWarning(self.pos_start, self.pos_end, e)
+            wrn.copywarning(self.pos_start, self.pos_end, e)
             return Null()
 
     def is_true(self):
@@ -1356,7 +1016,7 @@ class String(BaseValue):
         return len(self.value) > 0
     
     def copy(self):
-        copy = String(self.value)
+        copy = string(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy
@@ -1797,17 +1457,6 @@ class BuiltInFunction(BaseFunction):
         return RTResult().success(Integer(number))
     execute_input_int.arg_prototypes = [['message', [Type.Any]]]
 
-    def execute_input_multi_float(self, exec_ctx): 
-        while True:
-            text = input(str(exec_ctx.symbol_table.get_var('message').value))
-            if text.count('.') == 1 and all(map(lambda d: d in string.digits, text.replace('.', ''))):
-                break
-            else:
-                print(f"'{text}' must be a float. Please try again!")
-        mfloat_repr = mfmath.mfloat(text, exec_ctx.symbol_table.get_var('float_prec').value)
-        return RTResult().success(MultiFloat(mfloat_repr))
-    execute_input_multi_float.arg_prototypes = [['message', [Type.Any]], ['float_prec', [Type.Integer]]]
-
     def execute_clear(self, exec_ctx):
         os.system('cls' if os.name == 'nt' else 'clear')
         return RTResult().success(Null.null)
@@ -2047,20 +1696,6 @@ class BuiltInFunction(BaseFunction):
 
         return RTResult().success(range_result)
     execute_range.arg_prototypes = [['start', [Type.Integer]], ['end', [Type.Integer]]]
-
-    def execute_set_multi_float_type(self, exec_ctx):
-        old_number = exec_ctx.symbol_table.get_var('number')
-        target_type = exec_ctx.symbol_table.get_var('type')
-
-        if not isinstance(old_number, MultiFloat): old_float = old_number.floatify()
-        else: old_float = old_number
-
-        raw_new_float, raw_error = old_float.value.set_input_type(target_type.value)
-
-        error = mfmath.AILang_err_repr(raw_error, exec_ctx)
-        if error: return RTResult().failure(error)
-        return RTResult().success(MultiFloat(raw_new_float))
-    execute_set_multi_float_type.arg_prototypes = [['number', [Type.MultiFloat, Type.Integer]], ['type', [Type.Integer]]]
 
     def execute_map(self, exec_ctx):
         global r

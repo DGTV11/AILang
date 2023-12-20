@@ -51,14 +51,6 @@ print(x_Struct)
 del x
 #print(x_Struct)
 
-# Constants test
-load_module("math")
-let pi_test: MultiFloatConst = math.pi
-let e_test: MultiFloatConst  = math.e
-print(pi_test)
-print(e_test)
-print(pi_test + 0.0mh)
-
 # Floats test
 print(0.1f)
 print(0.2f)

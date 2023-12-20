@@ -16,9 +16,6 @@ TT_LONGINT              = 'LONGINT'
 TT_HALF                 = 'HALF'
 TT_FLOAT                = 'FLOAT'
 TT_DOUBLE               = 'DOUBLE'
-TT_MHALF                = 'MHALF'
-TT_MFLOAT               = 'MFLOAT'
-TT_MDOUBLE              = 'MDOUBLE'
 TT_STRING               = 'STRING'
 TT_IDENTIFIER           = 'IDENTIFIER'
 TT_KEYWORD              = 'KEYWORD'
@@ -61,9 +58,6 @@ TOKEN_TYPE_TO_STRING = {
     TT_HALF         : 'half',
     TT_FLOAT        : 'float',
     TT_DOUBLE       : 'double',
-    TT_MHALF        : 'multi-half',
-    TT_MFLOAT       : 'multi-float',
-    TT_MDOUBLE      : 'multi-double',
     TT_STRING       : 'string',
     TT_IDENTIFIER   : 'identifier',
     TT_KEYWORD      : 'keyword',

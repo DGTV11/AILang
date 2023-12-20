@@ -1,15 +1,10 @@
 # Imports
-from extra_modules.context_and_datatypes import MultiFloatConst, Float16, Float32, Float64
+from extra_modules.context_and_datatypes import Float16, Float32, Float64
 
 # Initalise
 local_pusher = []
 
 # Define funcs & variables
-local_pusher.append(('mf_pi',       MultiFloatConst(1)))
-local_pusher.append(('mf_e',        MultiFloatConst(2)))
-local_pusher.append(('mf_ln2',      MultiFloatConst(3)))
-local_pusher.append(('mf_ln10',     MultiFloatConst(4)))
-
 local_pusher.append(('f16_pi',      Float16('3.14159')))
 local_pusher.append(('f16_e',       Float16('2.71828')))
 local_pusher.append(('f16_ln2',     Float16('0.69315')))
