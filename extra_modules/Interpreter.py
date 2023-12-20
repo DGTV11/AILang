@@ -1,6 +1,6 @@
 # Imports
 from extra_modules.position import Position
-from extra_modules.results import *
+from extra_modules.results import RTResult
 from extra_modules.context_and_datatypes import *
 from extra_modules.Tokens import *
 from extra_modules.Nodes import *
