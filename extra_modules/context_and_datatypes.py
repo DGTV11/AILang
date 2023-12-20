@@ -1015,7 +1015,7 @@ class String(BaseValue):
         return len(self.value) > 0
     
     def copy(self):
-        copy = string(self.value)
+        copy = String(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy

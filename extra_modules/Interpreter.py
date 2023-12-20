@@ -318,7 +318,7 @@ class Interpreter:
         types = res.register(self.visit(node.type_container, context))
         if res.should_return(): return res
         
-        return context.symbol_table.set_var(node, context, var_name, types, value, _type==0, _type<2)
+        return context.symbol_table.set_var(node, context, var_name, types, value, _type==2, _type>0)
     
     def visit_VarRmNode(self, node, context: Context):
         res = RTResult()

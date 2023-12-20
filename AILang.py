@@ -1152,8 +1152,7 @@ class Parser:
     def var_def(self):
         res = ParseResult()
 
-        if self.current_tok.matches(TT_KEYWORD, 'var'): mode = 1
-        elif self.current_tok.matches(TT_KEYWORD, 'mut'):
+        if self.current_tok.matches(TT_KEYWORD, 'const'): 
             res.register_adv()
             self.advance()
 
@@ -1164,7 +1163,7 @@ class Parser:
                 ))
             
             mode = 0
-        elif self.current_tok.matches(TT_KEYWORD, 'const'): 
+        elif self.current_tok.matches(TT_KEYWORD, 'mut'):
             res.register_adv()
             self.advance()
 
@@ -1174,7 +1173,8 @@ class Parser:
                     "Expected var"
                 ))
             
-            mode = 2
+            mode = 1
+        elif self.current_tok.matches(TT_KEYWORD, 'var'): mode = 2
         else:
             return res.failure(err.InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
