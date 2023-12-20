@@ -5,7 +5,6 @@ from extra_modules.context_and_datatypes import *
 from extra_modules.Tokens import *
 from extra_modules.Nodes import *
 import extra_modules.Errors as err
-import extra_modules.mfmath as mfmath
 import extra_modules.linalg as linalg
 import extra_modules.Warnings as wrn
 
