@@ -5,7 +5,7 @@ Roadmap:
 
 
 Immediate changes:
-1: Add fill and broadcast function interfaces to linalg.py and 'BuiltInFunction's
+1: Add fill and broadcast function interfaces to 'BuiltInFunction's
 
 
 Note:
