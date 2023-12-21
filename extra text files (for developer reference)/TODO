@@ -1,6 +1,11 @@
+Roadmap:
 1: Add Integers (DOING)
 2: Reimplement Matrices (DOING)
-4: Fix error messages!!! (TODO)
+3: Fix error messages!!! (TODO)
+
+
+Immediate changes:
+1: Add fill and broadcast function interfaces to linalg.py and 'BuiltInFunction's
 
 
 Note:

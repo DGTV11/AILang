@@ -108,6 +108,24 @@ linalg_c.f32m_fill.restype = Cfloat32_matrix_res_t
 linalg_c.f64m_fill.argtypes = [ctypes.c_size_t, ctypes.c_size_t, float64_t]
 linalg_c.f64m_fill.restype = Cfloat64_matrix_res_t
 
+linalg_c.f16m_row_vector_to_matrix.argtypes = [Cfloat16_matrix_t, ctypes.c_size_t]
+linalg_c.f16m_row_vector_to_matrix.restype = Cfloat16_matrix_res_t
+
+linalg_c.f32m_row_vector_to_matrix.argtypes = [Cfloat32_matrix_t, ctypes.c_size_t]
+linalg_c.f32m_row_vector_to_matrix.restype = Cfloat32_matrix_res_t
+
+linalg_c.f64m_row_vector_to_matrix.argtypes = [Cfloat64_matrix_t, ctypes.c_size_t]
+linalg_c.f64m_row_vector_to_matrix.restype = Cfloat64_matrix_res_t
+
+linalg_c.f16m_column_vector_to_matrix.argtypes = [Cfloat16_matrix_t, ctypes.c_size_t]
+linalg_c.f16m_column_vector_to_matrix.restype = Cfloat16_matrix_res_t
+
+linalg_c.f32m_column_vector_to_matrix.argtypes = [Cfloat32_matrix_t, ctypes.c_size_t]
+linalg_c.f32m_column_vector_to_matrix.restype = Cfloat32_matrix_res_t
+
+linalg_c.f64m_column_vector_to_matrix.argtypes = [Cfloat64_matrix_t, ctypes.c_size_t]
+linalg_c.f64m_column_vector_to_matrix.restype = Cfloat64_matrix_res_t
+
 linalg_c.f16m_to_f32m.argtypes = [Cfloat16_matrix_t]
 linalg_c.f16m_to_f32m.restype = Cfloat32_matrix_res_t
 
@@ -772,3 +790,7 @@ def f64m_to_f16m(x: f64_matrix) -> f16_matrix:
 
 def f64m_to_f32m(x: f64_matrix) -> f32_matrix:
     return f32_matrix(linalg_c.f64m_to_f32m(x.m))
+
+# Fill and broadcast functions
+def f64m_fill(x: f64_matrix, value: f64) -> f64_matrix:
+    return f64_matrix(linalg_c.f64m_fill(x.m, value))
