@@ -252,6 +252,7 @@ class Parser:
         start_value = res.register(self.expr())
         if res.error: return res
 
+        print('to check', self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
         if not self.current_tok.matches(TT_KEYWORD, 'to'):
             return res.failure(err.InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
@@ -568,7 +569,7 @@ class Parser:
             return res.success(if_expr)
         
         elif tok.matches(TT_KEYWORD, 'for'):
-            for_expr = res.register(self.for_expr())
+            for_expr = res.register(self.for_expr()) #Invalid Syntax: Expected 'to'
             if res.error: return res
             return res.success(for_expr)
         
@@ -1017,7 +1018,7 @@ class Parser:
             res.register_adv()
             self.advance()
             body = res.register(self.expr())
-            print(self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
+            #print(self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
             if res.error: return res
 
             return res.success(FuncDefNode(
@@ -1040,7 +1041,7 @@ class Parser:
         body = res.register(self.statements())
         if res.error: return res
 
-        print(self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
+        #print(self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
 
         if not self.current_tok.matches(TT_KEYWORD, 'end'):
             return res.failure(err.InvalidSyntaxError(
