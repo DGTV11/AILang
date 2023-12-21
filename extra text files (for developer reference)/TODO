@@ -1,4 +1,7 @@
 1: Add Integers (DOING)
 2: Reimplement Matrices (DOING)
-3: Fix functions!!! (TODO)
 4: Fix error messages!!! (TODO)
+
+
+Note:
+Before trying to dig around in the parser because of a cryptic error message, look at the .ail file's code carefully first!
