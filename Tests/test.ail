@@ -9,43 +9,43 @@ func join_test(elements: IterArray, separator: String) -> String
     mut var result: String = ""
     mut var _len: Integer = len(elements)
 
-    for i = 0bi to _len then
+    for i = 0b to _len then
         result = result + elements[i]
-        if i != _len - 1bi then result = result + separator
+        if i != _len - 1b then result = result + separator
     end
     return result
 end
 
 func map_test(f: Function, elements: IterArray) -> IterArray
     mut var new_elements: IterArray = []
-    for i = 0bi to len(elements) then
+    for i = 0b to len(elements) then
         push(new_elements, f(elements[i]))
     end
 
     return new_elements
 end
 
-for i = 0bi to 5bi then
+for i = 0b to 5b then
     print(join_test(map_test(oopify, ["l", "sp"]), ", "))
 end
 
-#let range_1_10 = range(1bi, 10bi)
+#let range_1_10 = range(1b, 10b)
 print(range_1_10)
 
-print(range_1_10[0bi:5bi:1bi])
-print(range_1_10[5bi:10bi:1bi])
-print(range_1_10[0bi:5bi:1bi][1bi])
+print(range_1_10[0b:5b:1b])
+print(range_1_10[5b:10b:1b])
+print(range_1_10[0b:5b:1b][1b])
 
 struct x [x: Integer, y: x_Struct|Integer]
 print(x)
 
 mut var y: x_Struct = x()
 
-y.x = 100bi
+y.x = 100b
 print(y)
 y.y = x()
 print(y)
-y.y.x = 345689354098534098345098bi
+y.y.x = 345689354098534098345098b
 print(y)
 
 del y
@@ -70,13 +70,13 @@ print(0.1f + 0.2f)
 print(0.1d + 0.2d)
 
 # Bitwise operations test
-print(1bi << 1bi)
-print(1bi >> 1bi)
-print(200bi | 100i)
-print(200bi & 100bi)
-print(200bi ^ 100bi)
-print(255bi)
-print(~255bi+1bi)
-print(~(~255bi+1bi)+1bi)
+print(1b << 1b)
+print(1b >> 1b)
+print(200b | 100i)
+print(200b & 100b)
+print(200b ^ 100b)
+print(255b)
+print(~255b+1b)
+print(~(~255b+1b)+1b)
 
 print("TESTING")
