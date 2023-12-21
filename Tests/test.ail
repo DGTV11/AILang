@@ -1,6 +1,8 @@
 print("Hello, world!")
 
 # Functions, variables, and loops test
+func func_test() -> NullType: print("Hi!")
+
 func oopify(prefix: String) -> String: prefix + "oop"
 
 func join_test(elements: IterArray, separator: String) -> String

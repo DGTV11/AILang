@@ -1033,12 +1033,14 @@ class Parser:
                 self.current_tok.pos_start, self.current_tok.pos_end,
                 "Expected ':' or NEWLINE"
             ))
-        
+
         res.register_adv()
         self.advance()
 
         body = res.register(self.statements())
         if res.error: return res
+
+        print(self.current_tok.type, self.current_tok.value, self.current_tok.pos_start)
 
         if not self.current_tok.matches(TT_KEYWORD, 'end'):
             return res.failure(err.InvalidSyntaxError(
