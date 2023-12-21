@@ -12,7 +12,7 @@ expr                    : var-def
                         : KEYWORD:protect IDENTIFIER
                         : comp-expr ((KEYWORD:and|KEYWORD:or) comp-expr)
 
-var-def                 : (KEYWORD:var|KEYWORD:let|KEYWORD:const) IDENTIFIER COLON type-container EQ expr
+var-def                 : (KEYWORD:mut|KEYWORD:const) KEYWORD:var IDENTIFIER COLON type-container EQ expr
 
 comp-expr               : KEYWORD:not comp-expr
                         : bitwise-expr ((EE|LT|GT|LTE|GTE) bitwise-expr)*
