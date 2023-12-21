@@ -1765,6 +1765,41 @@ class BuiltInFunction(BaseFunction):
         if x.type == Type.Float16Matrix: return RTResult().success(Float64Matrix(linalg.f16m_to_f64m(x.m)))
         elif x.type == Type.Float32Matrix: return RTResult().success(Float64Matrix(linalg.f32m_to_f64m(x.m)))
     execute_matrix_to_f64m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix]]]
+    
+    def execute_f16m_fill(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('x')
+        y = exec_ctx.symbol_table.get_var('y')
+        fill_value = exec_ctx.symbol_table.get_var('fill_value')
+
+        try:
+            matrix_res: linalg.f16_matrix = linalg.f16m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+
+        return RTResult().success(Float16Matrix(matrix_res))
+        
+    execute_f16m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float16]]]
+
+    def execute_f32m_fill(self, exec_ctx):
+        x = exec_ctx.symbol_table.get_var('x')
+        y = exec_ctx.symbol_table.get_var('y')
+        fill_value = exec_ctx.symbol_table.get_var('fill_value')
+
+        try:
+            matrix_res: linalg.f32_matrix = linalg.f32m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+
+        return RTResult().success(Float32Matrix(matrix_res))
+        
+    execute_f32m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float16]]]
+
+
+
 BuiltInFunction.print                           = BuiltInFunction('print')
 BuiltInFunction.stringify                       = BuiltInFunction('stringify')
 BuiltInFunction.print_without_end               = BuiltInFunction('print_without_end')
