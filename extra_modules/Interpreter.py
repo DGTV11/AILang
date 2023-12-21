@@ -309,6 +309,13 @@ class Interpreter:
                 return res.success(value)
             
     def visit_VarAssignNode(self, node: VarAssignNode, context: Context):
+        '''
+        Modes:
+        0 -> const var
+        1 -> mut var
+        2 -> var
+        '''
+
         res = RTResult()
         var_name = node.var_name_tok.value
         _type = node.type
@@ -318,7 +325,7 @@ class Interpreter:
         types = res.register(self.visit(node.type_container, context))
         if res.should_return(): return res
         
-        return context.symbol_table.set_var(node, context, var_name, types, value, _type==2, _type>0)
+        return context.symbol_table.set_var(node, context, var_name, types, value, _type==1, _type>0)
     
     def visit_VarRmNode(self, node, context: Context):
         res = RTResult()

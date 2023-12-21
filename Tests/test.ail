@@ -72,7 +72,7 @@ print(0.1d + 0.2d)
 # Bitwise operations test
 print(1b << 1b)
 print(1b >> 1b)
-print(200b | 100i)
+print(200b | 100b)
 print(200b & 100b)
 print(200b ^ 100b)
 print(255b)
