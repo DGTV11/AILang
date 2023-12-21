@@ -185,6 +185,11 @@ float64_matrix_res_t f64m_fill(size_t x, size_t y, float64_t fill_value) {
 float16_matrix_res_t f16m_row_vector_to_matrix(float16_matrix_t v, size_t no_rows) {
     float16_matrix_res_t res;
 
+    if (v.y != 1) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
     SET_DIMS(res.res, v.x, no_rows);
 
     res.res.m = CALLOC(no_rows, float16_t*);
@@ -210,6 +215,11 @@ float16_matrix_res_t f16m_row_vector_to_matrix(float16_matrix_t v, size_t no_row
 float32_matrix_res_t f32m_row_vector_to_matrix(float32_matrix_t v, size_t no_rows) {
     float32_matrix_res_t res;
 
+    if (v.y != 1) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
     SET_DIMS(res.res, v.x, no_rows);
 
     res.res.m = CALLOC(no_rows, float32_t*);
@@ -234,6 +244,11 @@ float32_matrix_res_t f32m_row_vector_to_matrix(float32_matrix_t v, size_t no_row
 
 float64_matrix_res_t f64m_row_vector_to_matrix(float64_matrix_t v, size_t no_rows) {
     float64_matrix_res_t res;
+
+    if (v.y != 1) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
 
     SET_DIMS(res.res, v.x, no_rows);
 
@@ -261,6 +276,11 @@ float64_matrix_res_t f64m_row_vector_to_matrix(float64_matrix_t v, size_t no_row
 float16_matrix_res_t f16m_column_vector_to_matrix(float16_matrix_t v, size_t no_columns) {
     float16_matrix_res_t res;
 
+    if (v.x != 1) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
     SET_DIMS(res.res, no_columns, v.y);
 
     res.res.m = CALLOC(v.y, float16_t*);
@@ -286,6 +306,11 @@ float16_matrix_res_t f16m_column_vector_to_matrix(float16_matrix_t v, size_t no_
 float32_matrix_res_t f32m_column_vector_to_matrix(float32_matrix_t v, size_t no_columns) {
     float32_matrix_res_t res;
 
+    if (v.x != 1) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
     SET_DIMS(res.res, no_columns, v.y);
 
     res.res.m = CALLOC(v.y, float32_t*);
@@ -310,6 +335,11 @@ float32_matrix_res_t f32m_column_vector_to_matrix(float32_matrix_t v, size_t no_
 
 float64_matrix_res_t f64m_column_vector_to_matrix(float64_matrix_t v, size_t no_columns) {
     float64_matrix_res_t res;
+
+    if (v.x != 1) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
 
     SET_DIMS(res.res, no_columns, v.y);
 
