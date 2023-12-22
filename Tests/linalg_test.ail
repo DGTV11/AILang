@@ -1,0 +1,25 @@
+print("Linalg test")
+
+# Matrix literal definition and printing
+print("Matrix literal definition and printing")
+print({{1.0f, 2.0f, 3.0f}})
+print("")
+print({{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}})
+print("")
+
+# Matrix saving to variable
+print("Matrix saving to variable")
+var mat_sav_test: Float32Matrix = {{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}}
+print(mat_sav_test)
+print("")
+
+# Matrix operations
+print("Matrix operations")
+print({{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}} + {{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}})
+print("")
+print({{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}} - {{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}})
+print("")
+print({{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}} * {{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}})
+print("")
+print({{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}} / {{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}})
+print("")
