@@ -7,9 +7,13 @@ from extra_modules.constant_system_values import *
 numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/c_lib/numbers/c_src/numbers.so')
 
 # Typedefs
-float16_t = ctypes.c_ushort
-float32_t = ctypes.c_float
-float64_t = ctypes.c_double
+overflow_type_t     = ctypes.c_uint
+
+float16_t           = ctypes.c_ushort
+float32_t           = ctypes.c_float
+float64_t           = ctypes.c_double
+int32_t             = ctypes.c_int32
+int64_t             = ctypes.c_int64
 
 # Structs
 class Cf16_res(ctypes.Structure):
@@ -28,6 +32,18 @@ class Cf64_res(ctypes.Structure):
     _fields_ = [
         ("res", float64_t),
         ("error", ctypes.c_bool),
+    ]
+
+class Ci32_res(ctypes.Structure):
+    _fields_ = [
+        ("res", int32_t),
+        ("overflow_type", overflow_type_t),
+    ]
+
+class Ci64_res(ctypes.Structure):
+    _fields_ = [
+        ("res", int64_t),
+        ("overflow_type", overflow_type_t),
     ]
 
 # Functions
@@ -170,6 +186,86 @@ numbers_c.f64_lt.restype = ctypes.c_bool
 numbers_c.f64_neq.argtypes = [float64_t, float64_t]
 numbers_c.f64_neq.restype = ctypes.c_bool
 
+## i32
+numbers_c.str2i32.argtypes = [ctypes.c_char_p]
+numbers_c.str2i32.restype = int32_t
+
+numbers_c.i32_add.argtypes = [int32_t, int32_t]
+numbers_c.i32_add.restype = Ci32_res
+
+numbers_c.i32_sub.argtypes = [int32_t, int32_t]
+numbers_c.i32_sub.restype = Ci32_res
+
+numbers_c.i32_mul.argtypes = [int32_t, int32_t]
+numbers_c.i32_mul.restype = Ci32_res
+
+numbers_c.i32_divide.argtypes = [int32_t, int32_t]
+numbers_c.i32_divide.restype = Cf64_res
+
+numbers_c.i32_pow.argtypes = [int32_t, int32_t]
+numbers_c.i32_pow.restype = float64_t
+
+numbers_c.i32_neg.argtypes = [int32_t]
+numbers_c.i32_neg.restype = Ci32_res
+
+numbers_c.i32_gte.argtypes = [int32_t, int32_t]
+numbers_c.i32_gte.restype = ctypes.c_bool
+
+numbers_c.i32_gt.argtypes = [int32_t, int32_t]
+numbers_c.i32_gt.restype = ctypes.c_bool
+
+numbers_c.i32_eq.argtypes = [int32_t, int32_t]
+numbers_c.i32_eq.restype = ctypes.c_bool
+
+numbers_c.i32_lte.argtypes = [int32_t, int32_t]
+numbers_c.i32_lte.restype = ctypes.c_bool
+
+numbers_c.i32_lt.argtypes = [int32_t, int32_t]
+numbers_c.i32_lt.restype = ctypes.c_bool
+
+numbers_c.i32_neq.argtypes = [int32_t, int32_t]
+numbers_c.i32_neq.restype = ctypes.c_bool
+
+## i64
+numbers_c.str2i64.argtypes = [ctypes.c_char_p]
+numbers_c.str2i64.restype = int64_t
+
+numbers_c.i64_add.argtypes = [int64_t, int64_t]
+numbers_c.i64_add.restype = Ci64_res
+
+numbers_c.i64_sub.argtypes = [int64_t, int64_t]
+numbers_c.i64_sub.restype = Ci64_res
+
+numbers_c.i64_mul.argtypes = [int64_t, int64_t]
+numbers_c.i64_mul.restype = Ci64_res
+
+numbers_c.i64_divide.argtypes = [int64_t, int64_t]
+numbers_c.i64_divide.restype = Cf64_res
+
+numbers_c.i64_pow.argtypes = [int64_t, int64_t]
+numbers_c.i64_pow.restype = float64_t
+
+numbers_c.i64_neg.argtypes = [int64_t]
+numbers_c.i64_neg.restype = Ci64_res
+
+numbers_c.i64_gte.argtypes = [int64_t, int64_t]
+numbers_c.i64_gte.restype = ctypes.c_bool
+
+numbers_c.i64_gt.argtypes = [int64_t, int64_t]
+numbers_c.i64_gt.restype = ctypes.c_bool
+
+numbers_c.i64_eq.argtypes = [int64_t, int64_t]
+numbers_c.i64_eq.restype = ctypes.c_bool
+
+numbers_c.i64_lte.argtypes = [int64_t, int64_t]
+numbers_c.i64_lte.restype = ctypes.c_bool
+
+numbers_c.i64_lt.argtypes = [int64_t, int64_t]
+numbers_c.i64_lt.restype = ctypes.c_bool
+
+numbers_c.i64_neq.argtypes = [int64_t, int64_t]
+numbers_c.i64_neq.restype = ctypes.c_bool
+
 # Conversions
 numbers_c.f16_to_f32.argtypes = [float16_t]
 numbers_c.f16_to_f32.restype = float32_t
@@ -188,6 +284,18 @@ numbers_c.f64_to_f16.restype = float16_t
 
 numbers_c.f64_to_f32.argtypes = [float64_t]
 numbers_c.f64_to_f32.restype = float32_t
+
+numbers_c.f32_to_i32.argtypes = [float32_t]
+numbers_c.f32_to_i32.restype = int32_t
+
+numbers_c.f32_to_i64.argtypes = [float32_t]
+numbers_c.f32_to_i64.restype = int64_t
+
+numbers_c.i32_to_f32.argtypes = [int32_t]
+numbers_c.i32_to_f32.restype = float32_t
+
+numbers_c.i64_to_f32.argtypes = [int64_t]
+numbers_c.i64_to_f32.restype = float32_t
 
 # Datatypes
 class f16:
