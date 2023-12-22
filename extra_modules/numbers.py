@@ -263,37 +263,37 @@ class f16:
     
     def __ge__(self, other):
         if isinstance(other, f16):
-            return bool(numbers_c.f16_gte(self.val, other.val).value)
+            return numbers_c.f16_gte(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for >=: 'f16' and '{type(other)}'")
         
     def __gt__(self, other):
         if isinstance(other, f16):
-            return bool(numbers_c.f16_gt(self.val, other.val).value)
+            return numbers_c.f16_gt(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for >: 'f16' and '{type(other)}'")
         
     def __eq__(self, other):
         if isinstance(other, f16):
-            return bool(numbers_c.f16_eq(self.val, other.val).value)
+            return numbers_c.f16_eq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for ==: 'f16' and '{type(other)}'")
         
     def __le__(self, other):
         if isinstance(other, f16):
-            return bool(numbers_c.f16_lte(self.val, other.val).value)
+            return numbers_c.f16_lte(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for <=: 'f16' and '{type(other)}'")
         
     def __lt__(self, other):
         if isinstance(other, f16):
-            return bool(numbers_c.f16_lt(self.val, other.val).value)
+            return numbers_c.f16_lt(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for <: 'f16' and '{type(other)}'")
         
     def __ne__(self, other):
         if isinstance(other, f16):
-            return bool(numbers_c.f16_neq(self.val, other.val).value)
+            return numbers_c.f16_neq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'f16' and '{type(other)}'")
         
@@ -370,37 +370,37 @@ class f32:
     
     def __ge__(self, other):
         if isinstance(other, f32):
-            return bool(numbers_c.f32_gte(self.val, other.val).value)
+            return numbers_c.f32_gte(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for >=: 'f32' and '{type(other)}'")
         
     def __gt__(self, other):
         if isinstance(other, f32):
-            return bool(numbers_c.f32_gt(self.val, other.val).value)
+            return numbers_c.f32_gt(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for >: 'f32' and '{type(other)}'")
         
     def __eq__(self, other):
         if isinstance(other, f32):
-            return bool(numbers_c.f32_eq(self.val, other.val).value)
+            return numbers_c.f32_eq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for ==: 'f32' and '{type(other)}'")
         
     def __le__(self, other):
         if isinstance(other, f32):
-            return bool(numbers_c.f32_lte(self.val, other.val).value)
+            return numbers_c.f32_lte(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for <=: 'f32' and '{type(other)}'")
         
     def __lt__(self, other):
         if isinstance(other, f32):
-            return bool(numbers_c.f32_lt(self.val, other.val).value)
+            return numbers_c.f32_lt(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for <: 'f32' and '{type(other)}'")
         
     def __ne__(self, other):
         if isinstance(other, f32):
-            return bool(numbers_c.f32_neq(self.val, other.val).value)
+            return numbers_c.f32_neq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'f32' and '{type(other)}'")
         
@@ -477,37 +477,37 @@ class f64:
     
     def __ge__(self, other):
         if isinstance(other, f64):
-            return bool(numbers_c.f64_gte(self.val, other.val).value)
+            return numbers_c.f64_gte(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for >=: 'f64' and '{type(other)}'")
         
     def __gt__(self, other):
         if isinstance(other, f64):
-            return bool(numbers_c.f64_gt(self.val, other.val).value)
+            return numbers_c.f64_gt(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for >: 'f64' and '{type(other)}'")
         
     def __eq__(self, other):
         if isinstance(other, f64):
-            return bool(numbers_c.f64_eq(self.val, other.val).value)
+            return numbers_c.f64_eq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for ==: 'f64' and '{type(other)}'")
         
     def __le__(self, other):
         if isinstance(other, f64):
-            return bool(numbers_c.f64_lte(self.val, other.val).value)
+            return numbers_c.f64_lte(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for <=: 'f64' and '{type(other)}'")
         
     def __lt__(self, other):
         if isinstance(other, f64):
-            return bool(numbers_c.f64_lt(self.val, other.val).value)
+            return numbers_c.f64_lt(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for <: 'f64' and '{type(other)}'")
         
     def __ne__(self, other):
         if isinstance(other, f64):
-            return bool(numbers_c.f64_neq(self.val, other.val).value)
+            return numbers_c.f64_neq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'f64' and '{type(other)}'")
         

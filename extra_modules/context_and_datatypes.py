@@ -1028,6 +1028,18 @@ class String(BaseValue):
     
     def __len__(self):
         return len(self.value)
+    
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            try:
+                start, stop, step = index.start, index.stop, index.step
+                return String(self.value[start:stop:step])
+            except IndexError:
+                return None
+        try:
+            return self.value[index]
+        except IndexError:
+            return None
 
 Type.IterArray = Type('IterArray')
 class IterArray(BaseValue):
