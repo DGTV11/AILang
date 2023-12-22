@@ -258,6 +258,69 @@ bool f64_neq(float64_t a, float64_t b) {
     return a != b;
 }
 
+//i32
+int32_t str2i32(char str[]) {
+    return atoi(str);
+}
+
+i32_res i32_add(int32_t a, int32_t b) {
+    i32_res res;
+    if (a > 0 && b > INT_MAX - a) {
+        res.res = 0;
+        res.overflow_type = INTOVERFLOW;
+    } else if (a < 0 && b < INT_MIN - a) {
+        res.res = 0;
+        res.overflow_type = INTUNDERFLOW;
+    } else {
+        res.res = a + b;
+        res.overflow_type = GOOD;
+    }
+    return res;
+}
+
+i32_res i32_sub(int32_t a, int32_t b) {
+    i32_res res;
+    if (a > 0 && b < INT_MIN - a) {
+        res.res = 0;
+        res.overflow_type = INTOVERFLOW;
+    } else if (a < 0 && b > INT_MAX - a) {
+        res.res = 0;
+        res.overflow_type = INTUNDERFLOW;
+    } else {
+        res.res = a - b;
+        res.overflow_type = GOOD;
+    }
+    return res;
+}
+
+i32_res i32_mul(int32_t a, int32_t b) {
+    i32_res res;
+    if (a == 0 || b == 0) {
+        res.res = 0;
+        res.overflow_type = GOOD;
+    } else if (b > 0) {
+        if (a > INT_MAX / b) {
+            res.res = 0;
+            res.overflow_type = INTOVERFLOW; 
+        }
+    } else if (b < 0 && a < INT_MIN / b) {
+        if (a < INT_MIN / b) {
+            res.res = 0;
+            res.overflow_type = INTOVERFLOW;
+        }
+    }
+    return res;
+}
+
+f64_res i32_divide(int32_t a, int32_t b) {
+    return f64_divide((float64_t)a, (float64_t)b);
+}
+
+i32_res i32_pow(int32_t a, int32_t b) {
+    i32_res res;
+    //TODO: implement!
+}
+
 // Conversions
 //*From f16 to other float types
 float32_t f16_to_f32(float16_t x) {
@@ -283,5 +346,23 @@ float16_t f64_to_f16(float64_t x) {
 }
 
 float32_t f64_to_f32(float64_t x) {
+    return (float32_t)x;
+}
+
+//*From f32 to int types
+int32_t f32_to_i32(float32_t x) {
+    return (int32_t)x;
+}
+
+int64_t f32_to_i64(float32_t x) {
+    return (int64_t)x;
+}
+
+//*From int types to f32
+float32_t i32_to_f32(int32_t x) {
+    return (float32_t)x;
+}
+
+float32_t i64_to_f32(int64_t x) {
     return (float32_t)x;
 }

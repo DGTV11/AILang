@@ -38,7 +38,7 @@ primary                 : atom
                         : primary (LSQUARE (comp-expr (COLON comp-expr (COLON comp-expr)?)?)? RSQUARE)*? 
                         : primary (DOT IDENTIFIER)*?
 
-atom                    : INT|HALF|FLOAT|DOUBLE|STRING
+atom                    : BIGINT|INT|LONGINT|HALF|FLOAT|DOUBLE|STRING
                         : IDENTIFIER
                         : LPAREN expr RPAREN
                         : iterarray-expr
