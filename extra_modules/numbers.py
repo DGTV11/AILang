@@ -619,6 +619,15 @@ class f64:
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'f64' and '{type(other)}'")
         
+class i32:
+    def __init__(self, val: str|int|int32_t):
+        if type(val) is str:
+            pass
+        elif type(val) is int:
+            pass
+        elif type(val) is int32_t:
+            pass
+
 # Conversion functions
 def f16_to_f32(x: f16) -> f32:
     return f32(numbers_c.f16_to_f32(x.val))
