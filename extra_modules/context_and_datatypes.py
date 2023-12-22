@@ -1767,6 +1767,7 @@ class BuiltInFunction(BaseFunction):
     execute_matrix_to_f64m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix]]]
     
     def execute_f16m_fill(self, exec_ctx):
+        res = RTResult()
         x = exec_ctx.symbol_table.get_var('x')
         y = exec_ctx.symbol_table.get_var('y')
         fill_value = exec_ctx.symbol_table.get_var('fill_value')
@@ -1774,15 +1775,19 @@ class BuiltInFunction(BaseFunction):
         try:
             matrix_res: linalg.f16_matrix = linalg.f16m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
         except MemoryError as e:
-            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            return res.failure(
+                err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
         except Exception as e:
-            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            return res.failure(
+                err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            )
 
-        return RTResult().success(Float16Matrix(matrix_res))
-        
+        return res.success(Float16Matrix(matrix_res))
     execute_f16m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float16]]]
 
     def execute_f32m_fill(self, exec_ctx):
+        res = RTResult()
         x = exec_ctx.symbol_table.get_var('x')
         y = exec_ctx.symbol_table.get_var('y')
         fill_value = exec_ctx.symbol_table.get_var('fill_value')
@@ -1790,15 +1795,36 @@ class BuiltInFunction(BaseFunction):
         try:
             matrix_res: linalg.f32_matrix = linalg.f32m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
         except MemoryError as e:
-            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            return res.failure(
+                err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
         except Exception as e:
-            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            return res.failure(
+                err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            )
 
-        return RTResult().success(Float32Matrix(matrix_res))
-        
-    execute_f32m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float16]]]
+        return res.success(Float32Matrix(matrix_res))
+    execute_f32m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float32]]]
 
+    def execute_f64m_fill(self, exec_ctx):
+        res = RTResult()
+        x = exec_ctx.symbol_table.get_var('x')
+        y = exec_ctx.symbol_table.get_var('y')
+        fill_value = exec_ctx.symbol_table.get_var('fill_value')
 
+        try:
+            matrix_res: linalg.f64_matrix = linalg.f64m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
+        except MemoryError as e:
+            return res.failure(
+                err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except Exception as e:
+            return res.failure(
+                err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            )
+
+        return res.success(Float64Matrix(matrix_res))
+    execute_f64m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float64]]]
 
 BuiltInFunction.print                           = BuiltInFunction('print')
 BuiltInFunction.stringify                       = BuiltInFunction('stringify')
@@ -1830,6 +1856,9 @@ BuiltInFunction.float_to_f64                    = BuiltInFunction('float_to_f64'
 BuiltInFunction.float_matrix_to_f16m            = BuiltInFunction('float_to_f16')
 BuiltInFunction.float_matrix_to_f32m            = BuiltInFunction('float_to_f32')
 BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_to_f64')
+BuiltInFunction.f16m_fill                       = BuiltInFunction('f16m_fill')
+BuiltInFunction.f32m_fill                       = BuiltInFunction('f32m_fill')
+BuiltInFunction.f64m_fill                       = BuiltInFunction('f64m_fill')
 
 # Context
 

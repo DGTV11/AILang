@@ -12,9 +12,6 @@ quit ()
 push (iterarray: IterArray, value: Any)
 pop (iterarray: IterArray, index: Integer)
 len (iterable: Any)
-write_to_python
-read_frm_python
-wait_for_write_frm_python
 exec_prog (fn: String)
 load_module (mod_name: String)
 range (start: Integer, end: Integer)
@@ -25,3 +22,6 @@ float_to_f64 (x: Float16|Float32)
 float_matrix_to_f16m (m: Float32Matrix|Float64Matrix)
 float_matrix_to_f32m (m: Float16Matrix|Float64Matrix)
 float_matrix_to_f64m (m: Float16Matrix|Float32Matrix)
+f16m_fill (x: Integer, y: Integer, fill_value: Float16)
+f32m_fill (x: Integer, y: Integer, fill_value: Float32)
+f64m_fill (x: Integer, y: Integer, fill_value: Float64)
