@@ -2,9 +2,17 @@ print("Linalg test")
 
 # Matrix literal definition and printing
 print("Matrix literal definition and printing")
+print({{1.0h, 2.0h, 3.0h}})
+print("")
+print({{1.0h, 2.0h, 3.0h}, {4.0h, 5.0h, 6.0h}})
+print("")
 print({{1.0f, 2.0f, 3.0f}})
 print("")
 print({{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}})
+print("")
+print({{1.0d, 2.0d, 3.0d}})
+print("")
+print({{1.0d, 2.0d, 3.0d}, {4.0d, 5.0d, 6.0d}})
 print("")
 
 # Matrix saving to variable
