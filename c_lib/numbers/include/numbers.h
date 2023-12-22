@@ -120,14 +120,14 @@ bool        i64_lt(int64_t a, int64_t b);
 bool        i64_neq(int64_t a, int64_t b);
 
 // Conversions
-float32_t f16_to_f32(float16_t x);
-float64_t f16_to_f64(float16_t x);
+float32_t   f16_to_f32(float16_t x);
+float64_t   f16_to_f64(float16_t x);
 
-float16_t f32_to_f16(float32_t x);
-float64_t f32_to_f64(float32_t x);
+float16_t   f32_to_f16(float32_t x);
+float64_t   f32_to_f64(float32_t x);
 
-float16_t f64_to_f16(float64_t x);
-float32_t f64_to_f32(float64_t x);
+float16_t   f64_to_f16(float64_t x);
+float32_t   f64_to_f32(float64_t x);
 
 int32_t     f32_to_i32(float32_t x);
 int64_t     f32_to_i64(float32_t x);
