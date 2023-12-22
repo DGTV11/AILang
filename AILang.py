@@ -104,6 +104,8 @@ global_symbol_table.set_sys_var('float_matrix_to_f64m',     BuiltInFunction.floa
 global_symbol_table.set_sys_var('f16m_fill',                BuiltInFunction.f16m_fill)
 global_symbol_table.set_sys_var('f32m_fill',                BuiltInFunction.f32m_fill)
 global_symbol_table.set_sys_var('f64m_fill',                BuiltInFunction.f64m_fill)
+global_symbol_table.set_sys_var('row_vector_to_matrix',     BuiltInFunction.row_vector_to_matrix)
+global_symbol_table.set_sys_var('column_vector_to_matrix',  BuiltInFunction.column_vector_to_matrix)
 
 def run(fn, text, progpath = None, st:SymbolTable = global_symbol_table, is_strict:bool = True): #TODO: implement pytypes
     # Promote st

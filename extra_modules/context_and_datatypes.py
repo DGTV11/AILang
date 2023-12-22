@@ -1732,38 +1732,38 @@ class BuiltInFunction(BaseFunction):
 
     def execute_float_to_f16(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('x')
-        if x.type == Type.Float32: return RTResult().success(Float16(numbers.f32_to_f16(x.value)))
-        elif x.type == Type.Float64: return RTResult().success(Float16(numbers.f64_to_f16(x.value)))
+        if x.type == 'Float32': return RTResult().success(Float16(numbers.f32_to_f16(x.value)))
+        elif x.type == 'Float64': return RTResult().success(Float16(numbers.f64_to_f16(x.value)))
     execute_float_to_f16.arg_prototypes = [['x', [Type.Float32, Type.Float64]]]
 
     def execute_float_to_f32(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('x')
-        if x.type == Type.Float16: return RTResult().success(Float32(numbers.f16_to_f32(x.value)))
-        elif x.type == Type.Float64: return RTResult().success(Float32(numbers.f64_to_f32(x.value)))
+        if x.type == 'Float16': return RTResult().success(Float32(numbers.f16_to_f32(x.value)))
+        elif x.type == 'Float64': return RTResult().success(Float32(numbers.f64_to_f32(x.value)))
     execute_float_to_f32.arg_prototypes = [['x', [Type.Float16, Type.Float64]]]
 
     def execute_float_to_f64(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('x')
-        if x.type == Type.Float16: return RTResult().success(Float64(numbers.f16_to_f64(x.value)))
-        elif x.type == Type.Float32: return RTResult().success(Float64(numbers.f32_to_f64(x.value)))
+        if x.type == 'Float16': return RTResult().success(Float64(numbers.f16_to_f64(x.value)))
+        elif x.type == 'Float32': return RTResult().success(Float64(numbers.f32_to_f64(x.value)))
     execute_float_to_f64.arg_prototypes = [['x', [Type.Float16, Type.Float32]]]
 
     def execute_matrix_to_f16m(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('m')
-        if x.type == Type.Float32Matrix: return RTResult().success(Float16Matrix(linalg.f32m_to_f16m(x.m)))
-        elif x.type == Type.Float64Matrix: return RTResult().success(Float16Matrix(linalg.f64m_to_f16m(x.m)))
+        if x.type == 'Float32Matrix': return RTResult().success(Float16Matrix(linalg.f32m_to_f16m(x.m)))
+        elif x.type == 'Float64Matrix': return RTResult().success(Float16Matrix(linalg.f64m_to_f16m(x.m)))
     execute_matrix_to_f16m.arg_prototypes = [['m', [Type.Float32Matrix, Type.Float64Matrix]]]
 
     def execute_matrix_to_f32m(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('m')
-        if x.type == Type.Float16Matrix: return RTResult().success(Float32Matrix(linalg.f16m_to_f32m(x.m)))
-        elif x.type == Type.Float64Matrix: return RTResult().success(Float32Matrix(linalg.f64m_to_f32m(x.m)))
+        if x.type == 'Float16Matrix': return RTResult().success(Float32Matrix(linalg.f16m_to_f32m(x.m)))
+        elif x.type == 'Float64Matrix': return RTResult().success(Float32Matrix(linalg.f64m_to_f32m(x.m)))
     execute_matrix_to_f32m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float64Matrix]]]
 
     def execute_matrix_to_f64m(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('m')
-        if x.type == Type.Float16Matrix: return RTResult().success(Float64Matrix(linalg.f16m_to_f64m(x.m)))
-        elif x.type == Type.Float32Matrix: return RTResult().success(Float64Matrix(linalg.f32m_to_f64m(x.m)))
+        if x.type == 'Float16Matrix': return RTResult().success(Float64Matrix(linalg.f16m_to_f64m(x.m)))
+        elif x.type == 'Float32Matrix': return RTResult().success(Float64Matrix(linalg.f32m_to_f64m(x.m)))
     execute_matrix_to_f64m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix]]]
     
     def execute_f16m_fill(self, exec_ctx):
@@ -1777,6 +1777,10 @@ class BuiltInFunction(BaseFunction):
         except MemoryError as e:
             return res.failure(
                 err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except ValueError as e:
+            return res.failure(
+                err.RTError(self.pos_start, self.pos_end, e, self.context)
             )
         except Exception as e:
             return res.failure(
@@ -1798,6 +1802,10 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.MallocError(self.pos_start, self.pos_end, e, self.context)
             )
+        except ValueError as e:
+            return res.failure(
+                err.RTError(self.pos_start, self.pos_end, e, self.context)
+            )
         except Exception as e:
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
@@ -1818,6 +1826,10 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.MallocError(self.pos_start, self.pos_end, e, self.context)
             )
+        except ValueError as e:
+            return res.failure(
+                err.RTError(self.pos_start, self.pos_end, e, self.context)
+            )
         except Exception as e:
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
@@ -1825,6 +1837,80 @@ class BuiltInFunction(BaseFunction):
 
         return res.success(Float64Matrix(matrix_res))
     execute_f64m_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float64]]]
+
+    def execute_row_vector_to_matrix(self, exec_ctx):
+        res = RTResult()
+        v = exec_ctx.symbol_table.get_var('v')
+        no_rows = exec_ctx.symbol_table.get_var('no_rows')
+
+        try:
+            match v.type:
+                case 'Float16Matrix':
+                    return res.success(Float16Matrix(
+                        linalg.f16m_row_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'Float32Matrix':
+                    return res.success(Float32Matrix(
+                        linalg.f32m_row_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'Float64Matrix':
+                    return res.success(Float64Matrix(
+                        linalg.f64m_row_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                    ))
+                case _:
+                    return res.failure(
+                        err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
+                    )
+        except MemoryError as e:
+            return res.failure(
+                err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except ValueError as e:
+            return res.failure(
+                err.RTError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except Exception as e:
+            return res.failure(
+                err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            )
+    execute_row_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float32Matrix]], ['no_rows', [Type.Integer]]]
+
+    def execute_column_vector_to_matrix(self, exec_ctx):
+        res = RTResult()
+        v = exec_ctx.symbol_table.get_var('v')
+        no_rows = exec_ctx.symbol_table.get_var('no_rows')
+
+        try:
+            match v.type:
+                case 'Float16Matrix':
+                    return res.success(Float16Matrix(
+                        linalg.f16m_column_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'Float32Matrix':
+                    return res.success(Float32Matrix(
+                        linalg.f32m_column_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'Float64Matrix':
+                    return res.success(Float64Matrix(
+                        linalg.f64m_column_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                    ))
+                case _:
+                    return res.failure(
+                        err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
+                    )
+        except MemoryError as e:
+            return res.failure(
+                err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except ValueError as e:
+            return res.failure(
+                err.RTError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except Exception as e:
+            return res.failure(
+                err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            )
+    execute_column_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float32Matrix]], ['no_rows', [Type.Integer]]]
 
 BuiltInFunction.print                           = BuiltInFunction('print')
 BuiltInFunction.stringify                       = BuiltInFunction('stringify')
@@ -1859,6 +1945,8 @@ BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_to_f64'
 BuiltInFunction.f16m_fill                       = BuiltInFunction('f16m_fill')
 BuiltInFunction.f32m_fill                       = BuiltInFunction('f32m_fill')
 BuiltInFunction.f64m_fill                       = BuiltInFunction('f64m_fill')
+BuiltInFunction.row_vector_to_matrix            = BuiltInFunction('row_vector_to_matrix')
+BuiltInFunction.column_vector_to_matrix         = BuiltinFunction('column_vector_to_matrix')
 
 # Context
 
