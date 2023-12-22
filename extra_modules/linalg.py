@@ -24,12 +24,6 @@ f16_matrix_container    = ctypes.POINTER(f16_subvector_container)
 f32_matrix_container    = ctypes.POINTER(f32_subvector_container)
 f64_matrix_container    = ctypes.POINTER(f64_subvector_container)
 
-# C errors
-GOOD = 0
-MALLOCERROR = 1
-SHAPEERROR = 2
-ZERODIVERROR = 3
-
 # Structs
 class Cfloat16_matrix_t(ctypes.Structure):
     _fields_ = [
