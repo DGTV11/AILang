@@ -266,14 +266,11 @@ int32_t str2i32(char str[]) {
 i32_res i32_add(int32_t a, int32_t b) {
     i32_res res;
     if (a > 0 && b > INT_MAX - a) {
-        res.res = 0;
-        res.overflow_type = INTOVERFLOW;
+        OVERFLOW_RES(res, INTOVERFLOW);
     } else if (a < 0 && b < INT_MIN - a) {
-        res.res = 0;
-        res.overflow_type = INTUNDERFLOW;
+        OVERFLOW_RES(res, INTUNDERFLOW)
     } else {
-        res.res = a + b;
-        res.overflow_type = GOOD;
+        GOOD_INT_RES(res, a+b);
     }
     return res;
 }
@@ -281,14 +278,11 @@ i32_res i32_add(int32_t a, int32_t b) {
 i32_res i32_sub(int32_t a, int32_t b) {
     i32_res res;
     if (a > 0 && b < INT_MIN - a) {
-        res.res = 0;
-        res.overflow_type = INTOVERFLOW;
+        OVERFLOW_RES(res, INTOVERFLOW);
     } else if (a < 0 && b > INT_MAX - a) {
-        res.res = 0;
-        res.overflow_type = INTUNDERFLOW;
+        OVERFLOW_RES(res, INTUNDERFLOW);
     } else {
-        res.res = a - b;
-        res.overflow_type = GOOD;
+        GOOD_INT_RES(res, a-b);
     }
     return res;
 }
@@ -296,17 +290,18 @@ i32_res i32_sub(int32_t a, int32_t b) {
 i32_res i32_mul(int32_t a, int32_t b) {
     i32_res res;
     if (a == 0 || b == 0) {
-        res.res = 0;
-        res.overflow_type = GOOD;
+        GOOD_INT_RES(res, 0);
     } else if (b > 0) {
         if (a > INT_MAX / b) {
-            res.res = 0;
-            res.overflow_type = INTOVERFLOW; 
+            OVERFLOW_RES(res, INTOVERFLOW);
+        } else if (a < INT_MIN / b) {
+            OVERFLOW_RES(res, INTUNDERFLOW);
         }
     } else if (b < 0 && a < INT_MIN / b) {
         if (a < INT_MIN / b) {
-            res.res = 0;
-            res.overflow_type = INTOVERFLOW;
+            OVERFLOW_RES(res, INTOVERFLOW);
+        } else if (a > INT_MAX / b) {
+            OVERFLOW_RES(res, INTUNDERFLOW);
         }
     }
     return res;
@@ -316,9 +311,133 @@ f64_res i32_divide(int32_t a, int32_t b) {
     return f64_divide((float64_t)a, (float64_t)b);
 }
 
-i32_res i32_pow(int32_t a, int32_t b) {
+float64_t i32_pow(int32_t a, int32_t b) {
+    return f64_pow((float64_t)a, (float64_t)b);
+}
+
+i32_res i32_neg(int32_t a) {
     i32_res res;
-    //TODO: implement!
+    if (a == INT_MIN) {
+        OVERFLOW_RES(res, INTOVERFLOW);
+    } else {
+        GOOD_INT_RES(res, -a);
+    }
+    return res;
+}
+
+bool i32_gte(int32_t a, int32_t b) {
+    return a >= b;
+}
+
+bool i32_gt(int32_t a, int32_t b) {
+    return a > b;
+}
+
+bool i32_eq(int32_t a, int32_t b) {
+    return a == b;
+}
+
+bool i32_lte(int32_t a, int32_t b) {
+    return a <= b;
+}
+
+bool i32_lt(int32_t a, int32_t b) {
+    return a < b;
+}
+
+bool i32_neq(int32_t a, int32_t b) {
+    return a != b;
+}
+
+//i64
+int64_t str2i64(char str[]) {
+    return atoll(str);
+}
+
+i64_res i64_add(int64_t a, int64_t b) {
+    i64_res res;
+    if (a > 0 && b > LLONG_MAX - a) {
+        OVERFLOW_RES(res, INTOVERFLOW);
+    } else if (a < 0 && b < LLONG_MIN - a) {
+        OVERFLOW_RES(res, INTUNDERFLOW)
+    } else {
+        GOOD_INT_RES(res, a+b);
+    }
+    return res; 
+}
+
+i64_res i64_sub(int64_t a, int64_t b) {
+    i64_res res;
+    if (a > 0 && b < LLONG_MIN - a) {
+        OVERFLOW_RES(res, INTOVERFLOW);
+    } else if (a < 0 && b > LLONG_MAX - a) {
+        OVERFLOW_RES(res, INTUNDERFLOW);
+    } else {
+        GOOD_INT_RES(res, a-b);
+    }
+    return res;
+}
+
+i64_res i64_mul(int64_t a, int64_t b) {
+    i64_res res;
+    if (a == 0 || b == 0) {
+        GOOD_INT_RES(res, 0);
+    } else if (b > 0) {
+        if (a > LLONG_MAX / b) {
+            OVERFLOW_RES(res, INTOVERFLOW);
+        } else if (a < LLONG_MIN / b) {
+            OVERFLOW_RES(res, INTUNDERFLOW);
+        }
+    } else if (b < 0 && a < INT_MIN / b) {
+        if (a < LLONG_MIN / b) {
+            OVERFLOW_RES(res, INTOVERFLOW);
+        } else if (a > LLONG_MAX / b) {
+            OVERFLOW_RES(res, INTUNDERFLOW);
+        }
+    }
+    return res;
+}
+
+f64_res i64_divide(int64_t a, int64_t b) {
+    return f64_divide((float64_t)a, (float64_t)b);
+}
+
+float64_t i64_pow(int64_t a, int64_t b) {
+    return f64_pow((float64_t)a, (float64_t)b);
+}
+
+i64_res i64_neg(int64_t a) {
+    i64_res res;
+    if (a == LLONG_MIN) {
+        OVERFLOW_RES(res, INTOVERFLOW);
+    } else {
+        GOOD_INT_RES(res, -a);
+    }
+    return res;
+}
+
+bool i64_gte(int64_t a, int64_t b) {
+    return a >= b;
+}
+
+bool i64_gt(int64_t a, int64_t b) {
+    return a > b;
+}
+
+bool i64_eq(int64_t a, int64_t b) {
+    return a == b;
+}
+
+bool i64_lte(int64_t a, int64_t b) {
+    return a <= b;
+}
+
+bool i64_lt(int64_t a, int64_t b) {
+    return a < b;
+}
+
+bool i64_neq(int64_t a, int64_t b) {
+    return a != b;
 }
 
 // Conversions

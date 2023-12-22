@@ -7,13 +7,17 @@
 #include <math.h>
 #include <limits.h>
 
+// Macros
+#define OVERFLOW_RES(result, type_of_overflow) {res.res = 0; res.overflow_type = type_of_overflow;}
+#define GOOD_INT_RES(result, value) {res.res = value; res.overflow_type = NOOVERFLOW;}
+
 // Typedefs
 typedef float   float32_t;
 typedef double  float64_t;
 
 //Enums
 typedef enum {
-    GOOD = 0,
+    NOOVERFLOW = 0,
     INTOVERFLOW,
     INTUNDERFLOW,
 } overflow_type_t;
@@ -91,7 +95,7 @@ i32_res     i32_add(int32_t a, int32_t b);
 i32_res     i32_sub(int32_t a, int32_t b);
 i32_res     i32_mul(int32_t a, int32_t b);
 f64_res     i32_divide(int32_t a, int32_t b);
-i32_res     i32_pow(int32_t a, int32_t b);
+float64_t   i32_pow(int32_t a, int32_t b);
 i32_res     i32_neg(int32_t a);
 bool        i32_gte(int32_t a, int32_t b);
 bool        i32_gt(int32_t a, int32_t b);
@@ -106,8 +110,8 @@ i64_res     i64_add(int64_t a, int64_t b);
 i64_res     i64_sub(int64_t a, int64_t b);
 i64_res     i64_mul(int64_t a, int64_t b);
 f64_res     i64_divide(int64_t a, int64_t b);
-i64_res     i64_pow(int64_t a, int64_t b);
-i32_res     i64_neg(int64_t a);
+float64_t   i64_pow(int64_t a, int64_t b);
+i64_res     i64_neg(int64_t a);
 bool        i64_gte(int64_t a, int64_t b);
 bool        i64_gt(int64_t a, int64_t b);
 bool        i64_eq(int64_t a, int64_t b);
