@@ -7,7 +7,7 @@ statement               : KEYWORD:return expr?
 
 expr                    : var-def
                         : struct-def
-                        : KEYWORD:typify expr #TODO
+                        : KEYWORD:typify expr 
                         : KEYWORD:del IDENTIFIER
                         : KEYWORD:protect IDENTIFIER
                         : comp-expr ((KEYWORD:and|KEYWORD:or) comp-expr)
