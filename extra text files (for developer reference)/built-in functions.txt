@@ -27,3 +27,4 @@ f32m_fill                           (x: Integer, y: Integer, fill_value: Float32
 f64m_fill                           (x: Integer, y: Integer, fill_value: Float64)
 row_vector_to_matrix                (v: Float16Matrix|Float32Matrix|Float64Matrix, no_rows: Integer)
 column_vector_to_matrix             (v: Float16Matrix|Float32Matrix|Float64Matrix, no_columns: Integer)
+transpose_matrix                    (m: Float16Matrix|Float32Matrix|Float64Matrix)

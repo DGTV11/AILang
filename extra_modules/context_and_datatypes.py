@@ -1912,6 +1912,33 @@ class BuiltInFunction(BaseFunction):
             )
     execute_column_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float32Matrix]], ['no_rows', [Type.Integer]]]
 
+    def execute_transpose_matrix(self, exec_ctx):
+        res = RTResult()
+        m = exec_ctx.symbol_table.get_var('m')
+        
+        try:
+            matrix_res: linalg.f16_matrix|linalg.f32_matrix|linalg.f64_matrix = m.transpose()
+        except MemoryError as e:
+            return res.failure(
+                err.MallocError(self.pos_start, self.pos_end, e, self.context)
+            )
+        except Exception as e:
+            return res.failure(
+                err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+            )
+
+        match m.type:
+            case 'Float16Matrix':
+                return res.success(Float16Matrix(matrix_res))
+            case 'Float32Matrix':
+                return res.success(Float32Matrix(matrix_res))
+            case 'Float64Matrix':
+                return res.success(Float64Matrix(matrix_res))
+            case _:
+                return res.failure(
+                    err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
+                )
+    execute_transpose_matrix.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix]]]
 BuiltInFunction.print                           = BuiltInFunction('print')
 BuiltInFunction.stringify                       = BuiltInFunction('stringify')
 BuiltInFunction.print_without_end               = BuiltInFunction('print_without_end')
@@ -1944,6 +1971,7 @@ BuiltInFunction.f32m_fill                       = BuiltInFunction('f32m_fill')
 BuiltInFunction.f64m_fill                       = BuiltInFunction('f64m_fill')
 BuiltInFunction.row_vector_to_matrix            = BuiltInFunction('row_vector_to_matrix')
 BuiltInFunction.column_vector_to_matrix         = BuiltInFunction('column_vector_to_matrix')
+BuiltInFunction.transpose_matrix                = BuiltInFunction('transpose_matrix')
 
 # Context
 
