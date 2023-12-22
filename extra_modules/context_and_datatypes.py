@@ -1946,7 +1946,7 @@ BuiltInFunction.f16m_fill                       = BuiltInFunction('f16m_fill')
 BuiltInFunction.f32m_fill                       = BuiltInFunction('f32m_fill')
 BuiltInFunction.f64m_fill                       = BuiltInFunction('f64m_fill')
 BuiltInFunction.row_vector_to_matrix            = BuiltInFunction('row_vector_to_matrix')
-BuiltInFunction.column_vector_to_matrix         = BuiltinFunction('column_vector_to_matrix')
+BuiltInFunction.column_vector_to_matrix         = BuiltInFunction('column_vector_to_matrix')
 
 # Context
 
