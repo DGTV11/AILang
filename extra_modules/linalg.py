@@ -333,7 +333,7 @@ class f16_matrix:
         else:
             raise ValueError("Matrix types must be same")
         
-    def __div__(self, other):
+    def __truediv__(self, other):
         if isinstance(other, f16_matrix):
             c_res: Cfloat16_matrix_res_t = linalg_c.f16m_div(self.m, other.m)
             err: int = getattr(c_res, 'err')
@@ -518,7 +518,7 @@ class f32_matrix:
         else:
             raise ValueError("Matrix types must be same")
         
-    def __div__(self, other):
+    def __truediv__(self, other):
         if isinstance(other, f32_matrix):
             c_res: Cfloat32_matrix_res_t = linalg_c.f32m_div(self.m, other.m)
             err: int = getattr(c_res, 'err')
@@ -703,7 +703,7 @@ class f64_matrix:
         else:
             raise ValueError("Matrix types must be same")
         
-    def __div__(self, other):
+    def __truediv__(self, other):
         if isinstance(other, f64_matrix):
             c_res: Cfloat64_matrix_res_t = linalg_c.f64m_div(self.m, other.m)
             err: int = getattr(c_res, 'err')
