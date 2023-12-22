@@ -692,12 +692,22 @@ class Interpreter:
 
         return res.success_return(value)
     
-    def visit_TypifyNode(self, node, context): #BUG: INPUT OF Float32 VARIABLE GIVES MultiFloat
+    def visit_TypifyNode(self, node, context): 
         res = RTResult()
         value = res.register(self.visit(node.node_to_typify, context))
         if res.should_return(): return res
 
         return res.success(Type(value.type))
+
+    def visit_CopyNode(self, node, context):
+        res = RTResult()
+        value = res.register(self.visit(node.node_to_copy, context))
+        if res.should_return(): return res
+
+        copied_value = value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
+        if res.should_return(): return res
+
+        return res.success(copied_value)
     
     def visit_ContinueNode(self, node, context):
         return RTResult().success_continue()

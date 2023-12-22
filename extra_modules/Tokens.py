@@ -113,6 +113,7 @@ KEYWORDS = [
     'break',
     'protect',
     'typeof',
+    'copy',
 ]
 
 class Token:

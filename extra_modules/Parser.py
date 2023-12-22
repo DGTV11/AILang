@@ -801,6 +801,16 @@ class Parser:
             if res.error: return res 
 
             return res.success(TypifyNode(expr, pos_start, self.current_tok.pos_start.copy()))
+
+        elif self.current_tok.matches(TT_KEYWORD, 'copy'):
+            res.register_adv()
+            self.advance()
+
+            pos_start = self.current_tok.pos_start.copy()
+            expr = res.register(self.expr())
+            if res.error: return res 
+
+            return res.success(CopyNode(expr, pos_start, self.current_tok.pos_start.copy()))
         
         elif self.current_tok.matches(TT_KEYWORD, 'struct'):
             struct_def = res.register(self.struct_def())
