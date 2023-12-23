@@ -216,11 +216,11 @@ class f16_matrix:
         #Type of m: list[list[Float16]]|list[list[f16]]|Cfloat16_matrix_t|f16_matrix
 
         #*Check if m is a f16_matrix or Cfloat16_matrix_t instance
-        if type(m) is f16_matrix:
+        if isinstance(m, f16_matrix):
             self.x = m.x
             self.y = m.y
             self.m = m.m
-        elif type(m) is Cfloat16_matrix_t:
+        elif isinstance(m, Cfloat16_matrix_t):
             self.x = int(getattr(m, 'x'))
             self.y = int(getattr(m, 'y'))
             self.m = m
@@ -401,11 +401,11 @@ class f32_matrix:
         #Type of m: list[list[Float32]]|list[list[f32]]|Cfloat32_matrix_t|f32_matrix
 
         #*Check if m is a f32_matrix or Cfloat32_matrix_t instance
-        if type(m) is f32_matrix:
+        if isinstance(m, f32_matrix):
             self.x = m.x
             self.y = m.y
             self.m = m.m
-        elif type(m) is Cfloat32_matrix_t:
+        elif isinstance(m, Cfloat32_matrix_t):
             self.x = int(getattr(m, 'x'))
             self.y = int(getattr(m, 'y'))
             self.m = m
@@ -586,11 +586,11 @@ class f64_matrix:
         #Type of m: list[list[Float64]]|list[list[f64]]|Cfloat64_matrix_t|f64_matrix
 
         #*Check if m is a f64_matrix or Cfloat64_matrix_t instance
-        if type(m) is f64_matrix:
+        if isinstance(m, f64_matrix):
             self.x = m.x
             self.y = m.y
             self.m = m.m
-        elif type(m) is Cfloat64_matrix_t:
+        elif isinstance(m, Cfloat64_matrix_t):
             self.x = int(getattr(m, 'x'))
             self.y = int(getattr(m, 'y'))
             self.m = m
