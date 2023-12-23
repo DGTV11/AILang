@@ -263,6 +263,10 @@ int32_t str2i32(char str[]) {
     return atoi(str);
 }
 
+void conv_i32_to_str(int32_t n, char* buffer) {
+    sprintf(buffer, "%d", n);
+}
+
 i32_res i32_add(int32_t a, int32_t b) {
     i32_res res;
     if (a > 0 && b > INT_MAX - a) {
@@ -352,6 +356,10 @@ bool i32_neq(int32_t a, int32_t b) {
 //i64
 int64_t str2i64(char str[]) {
     return atoll(str);
+}
+
+void conv_i64_to_str(int64_t n, char* buffer) {
+    sprintf(buffer, "%lld", n);
 }
 
 i64_res i64_add(int64_t a, int64_t b) {

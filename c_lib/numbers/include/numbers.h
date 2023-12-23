@@ -91,6 +91,7 @@ bool        f64_neq(float64_t a, float64_t b);
 
 // i32
 int32_t     str2i32(char str[]);
+void        conv_i32_to_str(int32_t n, char* buffer);
 i32_res     i32_add(int32_t a, int32_t b);
 i32_res     i32_sub(int32_t a, int32_t b);
 i32_res     i32_mul(int32_t a, int32_t b);
@@ -106,6 +107,7 @@ bool        i32_neq(int32_t a, int32_t b);
 
 // i64
 int64_t     str2i64(char str[]);
+void        conv_i64_to_str(int64_t n, char* buffer);
 i64_res     i64_add(int64_t a, int64_t b);
 i64_res     i64_sub(int64_t a, int64_t b);
 i64_res     i64_mul(int64_t a, int64_t b);
