@@ -64,6 +64,11 @@ class FunctionalityNotImplementedError(RTError):
         super().__init__(pos_start, pos_end, details, context)
         self.error_name = 'Functionality Not Implemented Error'
 
+class IntegerOverflowError(RTError):
+    def __init__(self, pos_start, pos_end, details, context):
+        super().__init__(pos_start, pos_end, details, context)
+        self.error_name = 'Integer Overflow Error'
+
 class MallocError(RTError):
     def __init__(self, pos_start, pos_end, details, context):
         super().__init__(pos_start, pos_end, details, context)
