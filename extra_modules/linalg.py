@@ -289,13 +289,12 @@ class f16_matrix:
         if isinstance(other, f16_matrix):
             c_res: Cfloat16_matrix_res_t = linalg_c.f16m_add(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat16_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f16_matrix(res)
+            return f16_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -303,13 +302,12 @@ class f16_matrix:
         if isinstance(other, f16_matrix):
             c_res: Cfloat16_matrix_res_t = linalg_c.f16m_sub(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat16_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f16_matrix(res)
+            return f16_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -317,13 +315,12 @@ class f16_matrix:
         if isinstance(other, f16_matrix):
             c_res: Cfloat16_matrix_res_t = linalg_c.f16m_mul(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat16_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f16_matrix(res)
+            return f16_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -331,14 +328,13 @@ class f16_matrix:
         if isinstance(other, f16_matrix):
             c_res: Cfloat16_matrix_res_t = linalg_c.f16m_div(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat16_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case 3: raise ZeroDivisionError("Zero found in second operand matrix")
                     case _: raise Exception("Unknown error")
-            return f16_matrix(res)
+            return f16_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -346,55 +342,50 @@ class f16_matrix:
         if isinstance(other, f16_matrix):
             c_res: Cfloat16_matrix_res_t = linalg_c.f16m_matmul(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat16_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"A {self.x}x{self.y} matrix is not compatible with a {other.x}x{other.y} matrix for matrix multiplication")
                     case _: raise Exception("Unknown error")
-            return f16_matrix(res)
+            return f16_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
     def __neg__(self):
         c_res: Cfloat16_matrix_res_t = linalg_c.f16m_neg(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat16_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f16_matrix(res)
+        return f16_matrix(getattr(c_res, 'res'))
     
     def exp(self):
         c_res: Cfloat16_matrix_res_t = linalg_c.f16m_exp(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat16_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f16_matrix(res)
+        return f16_matrix(getattr(c_res, 'res'))
     
     def transpose(self):
         c_res: Cfloat16_matrix_res_t = linalg_c.f16m_transpose(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat16_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f16_matrix(res)
+        return f16_matrix(getattr(c_res, 'res'))
 
     def copy(self):
         c_res: Cfloat16_matrix_res_t = linalg_c.copy_f16m(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat16_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate matrix copy")
                 case _: raise Exception("Unknown error")
-        return f16_matrix(res)
+        return f16_matrix(getattr(c_res, 'res'))
     
 class f32_matrix:
     def __init__(self, m):
@@ -474,13 +465,12 @@ class f32_matrix:
         if isinstance(other, f32_matrix):
             c_res: Cfloat32_matrix_res_t = linalg_c.f32m_add(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat32_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f32_matrix(res)
+            return f32_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -488,13 +478,12 @@ class f32_matrix:
         if isinstance(other, f32_matrix):
             c_res: Cfloat32_matrix_res_t = linalg_c.f32m_sub(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat32_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f32_matrix(res)
+            return f32_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -502,13 +491,12 @@ class f32_matrix:
         if isinstance(other, f32_matrix):
             c_res: Cfloat32_matrix_res_t = linalg_c.f32m_mul(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat32_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f32_matrix(res)
+            return f32_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -516,14 +504,13 @@ class f32_matrix:
         if isinstance(other, f32_matrix):
             c_res: Cfloat32_matrix_res_t = linalg_c.f32m_div(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat32_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case 3: raise ZeroDivisionError("Zero found in second operand matrix")
                     case _: raise Exception("Unknown error")
-            return f32_matrix(res)
+            return f32_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -531,55 +518,50 @@ class f32_matrix:
         if isinstance(other, f32_matrix):
             c_res: Cfloat32_matrix_res_t = linalg_c.f32m_matmul(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat32_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"A {self.x}x{self.y} matrix is not compatible with a {other.x}x{other.y} matrix for matrix multiplication")
                     case _: raise Exception("Unknown error")
-            return f32_matrix(res)
+            return f32_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
     def __neg__(self):
         c_res: Cfloat32_matrix_res_t = linalg_c.f32m_neg(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat32_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f32_matrix(res)
+        return f32_matrix(getattr(c_res, 'res'))
     
     def exp(self):
         c_res: Cfloat32_matrix_res_t = linalg_c.f32m_exp(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat32_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f32_matrix(res)
+        return f32_matrix(getattr(c_res, 'res'))
     
     def transpose(self):
         c_res: Cfloat32_matrix_res_t = linalg_c.f32m_transpose(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat32_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f32_matrix(res)
+        return f32_matrix(getattr(c_res, 'res'))
     
     def copy(self):
         c_res: Cfloat32_matrix_res_t = linalg_c.copy_f32m(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat32_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate matrix copy")
                 case _: raise Exception("Unknown error")
-        return f32_matrix(res)
+        return f32_matrix(getattr(c_res, 'res'))
     
 class f64_matrix:
     def __init__(self, m):
@@ -659,13 +641,12 @@ class f64_matrix:
         if isinstance(other, f64_matrix):
             c_res: Cfloat64_matrix_res_t = linalg_c.f64m_add(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat64_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f64_matrix(res)
+            return f64_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -673,13 +654,12 @@ class f64_matrix:
         if isinstance(other, f64_matrix):
             c_res: Cfloat64_matrix_res_t = linalg_c.f64m_sub(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat64_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f64_matrix(res)
+            return f64_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -687,13 +667,12 @@ class f64_matrix:
         if isinstance(other, f64_matrix):
             c_res: Cfloat64_matrix_res_t = linalg_c.f64m_mul(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat64_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case _: raise Exception("Unknown error")
-            return f64_matrix(res)
+            return f64_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -701,14 +680,13 @@ class f64_matrix:
         if isinstance(other, f64_matrix):
             c_res: Cfloat64_matrix_res_t = linalg_c.f64m_div(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat64_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
                     case 3: raise ZeroDivisionError("Zero found in second operand matrix")
                     case _: raise Exception("Unknown error")
-            return f64_matrix(res)
+            return f64_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
@@ -716,55 +694,50 @@ class f64_matrix:
         if isinstance(other, f64_matrix):
             c_res: Cfloat64_matrix_res_t = linalg_c.f64m_matmul(self.m, other.m)
             err: int = getattr(c_res, 'err')
-            res: Cfloat64_matrix_t = getattr(c_res, 'res')
             if err != 0:
                 match err:
                     case 1: raise MemoryError("Failed to allocate resulting matrix")
                     case 2: raise ValueError(f"A {self.x}x{self.y} matrix is not compatible with a {other.x}x{other.y} matrix for matrix multiplication")
                     case _: raise Exception("Unknown error")
-            return f64_matrix(res)
+            return f64_matrix(getattr(c_res, 'res'))
         else:
             raise ValueError("Matrix types must be same")
         
     def __neg__(self):
         c_res: Cfloat64_matrix_res_t = linalg_c.f64m_neg(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat64_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f64_matrix(res)
+        return f64_matrix(getattr(c_res, 'res'))
     
     def exp(self):
         c_res: Cfloat64_matrix_res_t = linalg_c.f64m_exp(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat64_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f64_matrix(res)
+        return f64_matrix(getattr(c_res, 'res'))
     
     def transpose(self):
         c_res: Cfloat64_matrix_res_t = linalg_c.f64m_transpose(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat64_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate resulting matrix")
                 case _: raise Exception("Unknown error")
-        return f64_matrix(res)
+        return f64_matrix(getattr(c_res, 'res'))
     
     def copy(self):
         c_res: Cfloat64_matrix_res_t = linalg_c.copy_f64m(self.m)
         err: int = getattr(c_res, 'err')
-        res: Cfloat64_matrix_t = getattr(c_res, 'res')
         if err != 0:
             match err:
                 case 1: raise MemoryError("Failed to allocate matrix copy")
                 case _: raise Exception("Unknown error")
-        return f64_matrix(res)
+        return f64_matrix(getattr(c_res, 'res'))
     
 # Conversion functions
 def f16m_to_f32m(x: f16_matrix) -> f32_matrix:
@@ -793,12 +766,11 @@ def f16m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f16) -> f16_ma
 
     c_res: Cfloat16_matrix_res_t = linalg_c.f16m_fill(x, y, fill_value.val)
     err: int = getattr(c_res, 'err')
-    res: Cfloat16_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case _: raise Exception("Unknown error")
-    return f16_matrix(res)
+    return f16_matrix(getattr(c_res, 'res'))
 
 def f32m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f32) -> f32_matrix:
     if int(x) < 1 or int(y) < 1:
@@ -806,12 +778,11 @@ def f32m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f32) -> f32_ma
 
     c_res: Cfloat32_matrix_res_t = linalg_c.f32m_fill(x, y, fill_value.val)
     err: int = getattr(c_res, 'err')
-    res: Cfloat32_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case _: raise Exception("Unknown error")
-    return f32_matrix(res)
+    return f32_matrix(getattr(c_res, 'res'))
 
 def f64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f64) -> f64_matrix:
     if int(x) < 1 or int(y) < 1:
@@ -819,12 +790,11 @@ def f64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f64) -> f64_ma
 
     c_res: Cfloat64_matrix_res_t = linalg_c.f64m_fill(x, y, fill_value.val)
     err: int = getattr(c_res, 'err')
-    res: Cfloat64_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case _: raise Exception("Unknown error")
-    return f64_matrix(res)
+    return f64_matrix(getattr(c_res, 'res'))
 
 #*(Row vector->matrix) broadcast functions
 def f16m_row_vector_to_matrix(v: f16_matrix, no_rows: ctypes.c_size_t) -> f16_matrix:
@@ -833,13 +803,12 @@ def f16m_row_vector_to_matrix(v: f16_matrix, no_rows: ctypes.c_size_t) -> f16_ma
 
     c_res: Cfloat16_matrix_res_t = linalg_c.f16m_row_vector_to_matrix(v.m, no_rows)
     err: int = getattr(c_res, 'err')
-    res: Cfloat16_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case 2: raise ValueError(f"Input matrix has {v.y} rows (expected 1 row)")
             case _: raise Exception("Unknown error")
-    return f16_matrix(res)
+    return f16_matrix(getattr(c_res, 'res'))
 
 def f32m_row_vector_to_matrix(v: f32_matrix, no_rows: ctypes.c_size_t) -> f32_matrix:
     if int(no_rows) < 1:
@@ -847,13 +816,12 @@ def f32m_row_vector_to_matrix(v: f32_matrix, no_rows: ctypes.c_size_t) -> f32_ma
 
     c_res: Cfloat32_matrix_res_t = linalg_c.f32m_row_vector_to_matrix(v.m, no_rows)
     err: int = getattr(c_res, 'err')
-    res: Cfloat32_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case 2: raise ValueError(f"Input matrix has {v.y} rows (expected 1 row)")
             case _: raise Exception("Unknown error")
-    return f32_matrix(res)
+    return f32_matrix(getattr(c_res, 'res'))
 
 def f64m_row_vector_to_matrix(v: f64_matrix, no_rows: ctypes.c_size_t) -> f64_matrix:
     if int(no_rows) < 1:
@@ -861,13 +829,12 @@ def f64m_row_vector_to_matrix(v: f64_matrix, no_rows: ctypes.c_size_t) -> f64_ma
 
     c_res: Cfloat64_matrix_res_t = linalg_c.f64m_row_vector_to_matrix(v.m, no_rows)
     err: int = getattr(c_res, 'err')
-    res: Cfloat64_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case 2: raise ValueError(f"Input matrix has {v.y} rows (expected 1 row)")
             case _: raise Exception("Unknown error")
-    return f64_matrix(res)
+    return f64_matrix(getattr(c_res, 'res'))
 
 #*(Column vector->matrix) broadcast functions
 def f16m_column_vector_to_matrix(v: f16_matrix, no_columns: ctypes.c_size_t) -> f16_matrix:
@@ -876,13 +843,12 @@ def f16m_column_vector_to_matrix(v: f16_matrix, no_columns: ctypes.c_size_t) -> 
 
     c_res: Cfloat16_matrix_res_t = linalg_c.f16m_column_vector_to_matrix(v.m, no_columns)
     err: int = getattr(c_res, 'err')
-    res: Cfloat16_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case 2: raise ValueError(f"Input matrix has {v.x} columns (expected 1 column)")
             case _: raise Exception("Unknown error")
-    return f16_matrix(res)
+    return f16_matrix(getattr(c_res, 'res'))
 
 def f32m_column_vector_to_matrix(v: f32_matrix, no_columns: ctypes.c_size_t) -> f32_matrix:
     if int(no_columns) < 1:
@@ -890,13 +856,12 @@ def f32m_column_vector_to_matrix(v: f32_matrix, no_columns: ctypes.c_size_t) -> 
 
     c_res: Cfloat32_matrix_res_t = linalg_c.f32m_column_vector_to_matrix(v.m, no_columns)
     err: int = getattr(c_res, 'err')
-    res: Cfloat32_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case 2: raise ValueError(f"Input matrix has {v.x} columns (expected 1 column)")
             case _: raise Exception("Unknown error")
-    return f32_matrix(res)
+    return f32_matrix(getattr(c_res, 'res'))
 
 def f64m_column_vector_to_matrix(v: f64_matrix, no_columns: ctypes.c_size_t) -> f64_matrix:
     if int(no_columns) < 1:
@@ -904,10 +869,9 @@ def f64m_column_vector_to_matrix(v: f64_matrix, no_columns: ctypes.c_size_t) -> 
 
     c_res: Cfloat64_matrix_res_t = linalg_c.f64m_column_vector_to_matrix(v.m, no_columns)
     err: int = getattr(c_res, 'err')
-    res: Cfloat64_matrix_t = getattr(c_res, 'res')
     if err != 0:
         match err:
             case 1: raise MemoryError("Failed to allocate matrix copy")
             case 2: raise ValueError(f"Input matrix has {v.x} columns (expected 1 column)")
             case _: raise Exception("Unknown error")
-    return f64_matrix(res)
+    return f64_matrix(getattr(c_res, 'res'))
