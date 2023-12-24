@@ -12,6 +12,9 @@ from extra_modules.Interpreter import Interpreter
 # import resource
 import os
 import sys
+import hashlib
+import pickle
+import hmac
 # import time
 # import inspect #debug
     
@@ -115,19 +118,9 @@ global_symbol_table.set_sys_var('row_vector_to_matrix',     BuiltInFunction.row_
 global_symbol_table.set_sys_var('column_vector_to_matrix',  BuiltInFunction.column_vector_to_matrix)
 global_symbol_table.set_sys_var('transpose_matrix',         BuiltInFunction.transpose_matrix)
 
-def run(fn, text, progpath = None, st:SymbolTable = global_symbol_table, is_strict:bool = True): #TODO: implement pytypes
+def interpret(ast, progpath = None, st:SymbolTable = global_symbol_table, is_strict:bool = True):
     # Promote st
     st.promote()
-
-    # Generate tokens
-    lexer = Lexer(fn, text)
-    tokens, error = lexer.make_tokens()
-    if error: return None, error
-
-    # Generate AST
-    parser = Parser(tokens)
-    ast = parser.parse()
-    if ast.error: return None, ast.error
 
     # Run prog
     _path = load_path(progpath)
@@ -139,6 +132,19 @@ def run(fn, text, progpath = None, st:SymbolTable = global_symbol_table, is_stri
 
     return result.value, result.error
 
+def run(fn, text, progpath = None, st:SymbolTable = global_symbol_table, is_strict:bool = True):         
+    # Generate tokens
+    lexer = Lexer(fn, text)
+    tokens, error = lexer.make_tokens()
+    if error: return None, error
+
+    # Generate AST
+    parser = Parser(tokens)
+    ast = parser.parse()
+    if ast.error: return None, ast.error
+
+    # Interpret
+    return interpret(ast, progpath, st, is_strict)
 
 '''
 if __name__ == "__main__":
