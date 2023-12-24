@@ -476,6 +476,15 @@ float32_t f64_to_f32(float64_t x) {
     return (float32_t)x;
 }
 
+//*From i32/i64 types to i64/i32
+int64_t i32_to_i64(int32_t x) {
+    return (int64_t)x;
+}
+
+int32_t i64_to_i32(int64_t x) {
+    return (int32_t)x;
+}
+
 //*From f32 to int types
 int32_t f32_to_i32(float32_t x) {
     return (int32_t)x;

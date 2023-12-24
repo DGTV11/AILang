@@ -131,6 +131,9 @@ float64_t   f32_to_f64(float32_t x);
 float16_t   f64_to_f16(float64_t x);
 float32_t   f64_to_f32(float64_t x);
 
+int64_t     i32_to_i64(int32_t x);
+int32_t     i64_to_i32(int64_t x);
+
 int32_t     f32_to_i32(float32_t x);
 int64_t     f32_to_i64(float32_t x);
 

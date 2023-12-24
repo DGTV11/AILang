@@ -291,6 +291,12 @@ numbers_c.f64_to_f16.restype = float16_t
 numbers_c.f64_to_f32.argtypes = [float64_t]
 numbers_c.f64_to_f32.restype = float32_t
 
+numbers_c.i32_to_i64.argtypes = [int32_t]
+numbers_c.i32_to_i64.restype = int64_t
+
+numbers_c.i64_to_i32.argtypes = [int64_t]
+numbers_c.i64_to_i32.restype = int32_t
+
 numbers_c.f32_to_i32.argtypes = [float32_t]
 numbers_c.f32_to_i32.restype = int32_t
 
@@ -359,7 +365,7 @@ class f16:
     def __truediv__(self, other):
         if isinstance(other, f16):
             res: Cf16_res = numbers_c.f16_divide(self.val, other.val)
-            if bool(getattr(res, 'error').value):
+            if bool(getattr(res, 'error')):
                 raise ZeroDivisionError('Division by zero')
             return f16(getattr(res, 'res'))
         else:
@@ -464,8 +470,8 @@ class f32:
         
     def __truediv__(self, other):
         if isinstance(other, f32):
-            res: Cf32_res = f32(numbers_c.f32_divide(self.val, other.val))
-            if bool(getattr(res, 'error').value):
+            res: Cf32_res = numbers_c.f32_divide(self.val, other.val)
+            if bool(getattr(res, 'error')):
                 raise ZeroDivisionError('Division by zero')
             return f32(getattr(res, 'res'))
         else:
@@ -570,8 +576,8 @@ class f64:
         
     def __truediv__(self, other):
         if isinstance(other, f64):
-            res: Cf64_res = f64(numbers_c.f64_divide(self.val, other.val))
-            if bool(getattr(res, 'error').value):
+            res: Cf64_res = numbers_c.f64_divide(self.val, other.val)
+            if bool(getattr(res, 'error')):
                 raise ZeroDivisionError('Division by zero')
             return f64(getattr(res, 'res'))
         else:
@@ -696,7 +702,7 @@ class i32:
     def __truediv__(self, other):
         if isinstance(other, i32):
             res: Cf64_res = numbers_c.i32_divide(self.val, other.val)
-            if bool(getattr(res, 'error').value):
+            if bool(getattr(res, 'error')):
                 raise ZeroDivisionError('Division by zero')
             return f64(getattr(res, 'res')) 
         else:
@@ -829,7 +835,7 @@ class i64:
     def __truediv__(self, other):
         if isinstance(other, i64):
             res: Cf64_res = numbers_c.i64_divide(self.val, other.val)
-            if bool(getattr(res, 'error').value):
+            if bool(getattr(res, 'error')):
                 raise ZeroDivisionError('Division by zero')
             return f64(getattr(res, 'res')) 
         else:
@@ -906,6 +912,12 @@ def f64_to_f16(x: f64) -> f16:
 
 def f64_to_f32(x: f64) -> f32:
     return f32(numbers_c.f64_to_f32(x.val))
+
+def i32_to_i64(x: i32) -> i64:
+    return i64(numbers_c.i32_to_i64(x.val))
+
+def i64_to_i32(x: i64) -> i32:
+    return i32(numbers_c.i64_to_i32(x.val))
 
 def f32_to_i32(x: f32) -> i32:
     return i32(numbers_c.f32_to_i32(x.val))
