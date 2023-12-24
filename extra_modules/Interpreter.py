@@ -26,9 +26,43 @@ class Interpreter:
         match number_type:
             # INTS
             case 'i':
-                raise NotImplementedError
+                int_value = int(node.tok.value)
+                if int_value > 2147483647:
+                    return RTResult().failure(
+                        err.UnknownRTError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}i is above the upper 32-bit integer limit of 2147483647",
+                            context
+                        )
+                    )
+                elif int_value < -2147483648:
+                    return RTResult().failure(
+                        err.UnknownRTError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}i is below the lower 32-bit integer limit of -2147483648",
+                            context
+                        )
+                    )
+                return RTResult().success(Int32(int_value).set_context(context).set_pos(node.pos_start, node.pos_end))
             case 'l':
-                raise NotImplementedError
+                int_value = int(node.tok.value)
+                if int_value > 9223372036854775807:
+                    return RTResult().failure(
+                        err.UnknownRTError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}l is above the upper 64-bit integer limit of 9223372036854775807",
+                            context
+                        )
+                    )
+                elif int_value < -9223372036854775808:
+                    return RTResult().failure(
+                        err.UnknownRTError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}l is below the lower 64-bit integer limit of -9223372036854775808",
+                            context
+                        )
+                    ) 
+                return RTResult().success(Int64(int_value).set_context(context).set_pos(node.pos_start, node.pos_end))
             case 'b':
                 return RTResult().success(Integer(int(node.tok.value)).set_context(context).set_pos(node.pos_start, node.pos_end))
             # FLOATS

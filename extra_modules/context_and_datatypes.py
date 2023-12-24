@@ -235,7 +235,7 @@ class Integer(BaseValue): #BigInteger
                     'Division by zero',
                     self.context
                 )
-            return Integer(self.value / other.value).set_context(self.context), None
+            return Float64(numbers.f64(numbers.float64_t(self.value / other.value))).set_context(self.context), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
@@ -349,6 +349,254 @@ class Integer(BaseValue): #BigInteger
 Integer.false   = Integer(0)
 Integer.true    = Integer(1)
 
+Type.Int32 = Type('Int32')
+class Int32(BaseValue):
+    def __init__(self, value: str|int|numbers.i32):
+        super().__init__()
+        self.type = 'Int32'
+
+        if isinstance(value, str) or isinstance(value, int):
+            self.value: numbers.i32 = numbers.i32(value)
+        else:
+            self.value: numbers.i32 = value
+    
+    def add_by(self, other):
+        if isinstance(other, Int32):
+            try:
+                return Int32(self.value + other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Int32):
+            try:
+                return Int32(self.value - other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def mult_by(self, other):
+        if isinstance(other, Int32):
+            try:
+                return Int32(self.value * other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def div_by(self, other):
+        if isinstance(other, Int32):
+            try:
+                return Float64(self.value / other.value), None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def pow_by(self, other):
+        if isinstance(other, Int32):
+            return Float64(self.value ** other.value), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value == other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def get_comparison_ne(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def get_comparison_ne(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value < other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value > other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value <= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, Int32):
+            return Integer(int(self.value >= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def neg(self):
+        return Int32(-self.value)
+
+    def copy(self):
+        copy = Int32(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(Int32.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+Int32.zero = Int32(0)
+
+Type.Int64 = Type('Int64')
+class Int64(BaseValue):
+    def __init__(self, value: str|int|numbers.i64):
+        super().__init__()
+        self.type = 'Int64'
+
+        if isinstance(value, str) or isinstance(value, int):
+            self.value: numbers.i64 = numbers.i64(value)
+        else:
+            self.value: numbers.i64 = value
+    
+    def add_by(self, other):
+        if isinstance(other, Int64):
+            try:
+                return Int64(self.value + other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Int64):
+            try:
+                return Int64(self.value - other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def mult_by(self, other):
+        if isinstance(other, Int64):
+            try:
+                return Int64(self.value * other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def div_by(self, other):
+        if isinstance(other, Int64):
+            try:
+                return Float64(self.value / other.value), None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def pow_by(self, other):
+        if isinstance(other, Int64):
+            return Float64(self.value ** other.value), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value == other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def get_comparison_ne(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def get_comparison_ne(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value < other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value > other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value <= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, Int64):
+            return Integer(int(self.value >= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def neg(self):
+        return Int64(-self.value)
+
+    def copy(self):
+        copy = Int64(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(Int64.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+Int64.zero = Int64(0)
+
 ## Float types
 
 Type.Float16 = Type('Float16')
@@ -357,40 +605,35 @@ class Float16(BaseValue):
         super().__init__()
         self.type = 'Float16'
 
-        if type(value) is str:
+        if isinstance(value, str):
             self.value: numbers.f16 = numbers.f16(value)
         else:
             self.value: numbers.f16 = value
 
     def add_by(self, other):
         if isinstance(other, Float16):
-            res = Float16(self.value + other.value)
-            return res, None
+            return Float16(self.value + other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def sub_by(self, other):
         if isinstance(other, Float16):
-            res = Float16(self.value - other.value)
-            return res, None
+            return Float16(self.value - other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def mult_by(self, other):
         if isinstance(other, Float16):
-            res = Float16(self.value * other.value)
-            return res, None
+            return Float16(self.value * other.value), None
         elif isinstance(other, Integer) and other.value == -1:
-            res = Float16(-self.value)
-            return res, None
+            return Float16(-self.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def div_by(self, other):
         if isinstance(other, Float16):
             try:
-                res = Float16(self.value / other.value)
-                return res, None
+                return Float16(self.value / other.value), None
             except ZeroDivisionError:
                 return None, err.RTError(
                     other.pos_start, other.pos_end,
@@ -402,50 +645,43 @@ class Float16(BaseValue):
         
     def pow_by(self, other):
         if isinstance(other, Float16):
-            res = Float16(self.value ^ other.value)
-            return res, None
+            return Float16(self.value ^ other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_eq(self, other):
         if isinstance(other, Float16):
-            res = Integer(int(self.value == other.value))
-            return res, None
+            return Integer(int(self.value == other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_ne(self, other):
         if isinstance(other, Float16):
-            res = Integer(int(self.value != other.value))
-            return res, None
+            return Integer(int(self.value != other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lt(self, other):
         if isinstance(other, Float16):
-            res = Integer(int(self.value < other.value))
-            return res, None
+            return Integer(int(self.value < other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gt(self, other):
         if isinstance(other, Float16):
-            res = Integer(int(self.value > other.value))
-            return res, None
+            return Integer(int(self.value > other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lte(self, other):
         if isinstance(other, Float16):
-            res = Integer(int(self.value <= other.value))
-            return res, None
+            return Integer(int(self.value <= other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gte(self, other):
         if isinstance(other, Float16):
-            res = Integer(int(self.value >= other.value))
-            return res, None
+            return Integer(int(self.value >= other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
     
@@ -474,40 +710,35 @@ class Float32(BaseValue):
         super().__init__()
         self.type = 'Float32'
 
-        if type(value) is str:
+        if isinstance(value, str):
             self.value: numbers.f32 = numbers.f32(value)
         else:
             self.value: numbers.f32 = value
 
     def add_by(self, other):
         if isinstance(other, Float32):
-            res = Float32(self.value + other.value)
-            return res, None
+            return Float32(self.value + other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def sub_by(self, other):
         if isinstance(other, Float32):
-            res = Float32(self.value - other.value)
-            return res, None
+            return Float32(self.value - other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def mult_by(self, other):
         if isinstance(other, Float32):
-            res = Float32(self.value * other.value)
-            return res, None
+            return Float32(self.value * other.value), None
         elif isinstance(other, Integer) and other.value == -1:
-            res = Float32(-self.value)
-            return res, None
+            return Float32(-self.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def div_by(self, other):
         if isinstance(other, Float32):
             try:
-                res = Float32(self.value / other.value)
-                return res, None
+                return Float32(self.value / other.value), None
             except ZeroDivisionError:
                 return None, err.RTError(
                     other.pos_start, other.pos_end,
@@ -519,50 +750,43 @@ class Float32(BaseValue):
         
     def pow_by(self, other):
         if isinstance(other, Float32):
-            res = Float32(self.value ^ other.value)
-            return res, None
+            return Float32(self.value ^ other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_eq(self, other):
         if isinstance(other, Float32):
-            res = Integer(int(self.value == other.value))
-            return res, None
+            return Integer(int(self.value == other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_ne(self, other):
         if isinstance(other, Float32):
-            res = Integer(int(self.value != other.value))
-            return res, None
+            return Integer(int(self.value != other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lt(self, other):
         if isinstance(other, Float32):
-            res = Integer(int(self.value < other.value))
-            return res, None
+            return Integer(int(self.value < other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gt(self, other):
         if isinstance(other, Float32):
-            res = Integer(int(self.value > other.value))
-            return res, None
+            return Integer(int(self.value > other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lte(self, other):
         if isinstance(other, Float32):
-            res = Integer(int(self.value <= other.value))
-            return res, None
+            return Integer(int(self.value <= other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gte(self, other):
         if isinstance(other, Float32):
-            res = Integer(int(self.value >= other.value))
-            return res, None
+            return Integer(int(self.value >= other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
     
@@ -591,40 +815,35 @@ class Float64(BaseValue):
         super().__init__()
         self.type = 'Float64'
 
-        if type(value) is str:
+        if isinstance(value, str):
             self.value: numbers.f64 = numbers.f64(value)
         else:
             self.value: numbers.f64 = value
 
     def add_by(self, other):
         if isinstance(other, Float64):
-            res = Float64(self.value + other.value)
-            return res, None
+            return Float64(self.value + other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def sub_by(self, other):
         if isinstance(other, Float64):
-            res = Float64(self.value - other.value)
-            return res, None
+            return Float64(self.value - other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def mult_by(self, other):
         if isinstance(other, Float64):
-            res = Float64(self.value * other.value)
-            return res, None
+            return Float64(self.value * other.value), None
         elif isinstance(other, Integer) and other.value == -1:
-            res = Float64(-self.value)
-            return res, None
+            return Float64(-self.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def div_by(self, other):
         if isinstance(other, Float64):
             try:
-                res = Float64(self.value / other.value)
-                return res, None
+                return Float64(self.value / other.value), None
             except ZeroDivisionError:
                 return None, err.RTError(
                     other.pos_start, other.pos_end,
@@ -636,50 +855,43 @@ class Float64(BaseValue):
         
     def pow_by(self, other):
         if isinstance(other, Float64):
-            res = Float64(self.value ^ other.value)
-            return res, None
+            return Float64(self.value ^ other.value), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_eq(self, other):
         if isinstance(other, Float64):
-            res = Integer(int(self.value == other.value))
-            return res, None
+            return Integer(int(self.value == other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_ne(self, other):
         if isinstance(other, Float64):
-            res = Integer(int(self.value != other.value))
-            return res, None
+            return Integer(int(self.value != other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lt(self, other):
         if isinstance(other, Float64):
-            res = Integer(int(self.value < other.value))
-            return res, None
+            return Integer(int(self.value < other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gt(self, other):
         if isinstance(other, Float64):
-            res = Integer(int(self.value > other.value))
-            return res, None
+            return Integer(int(self.value > other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_lte(self, other):
         if isinstance(other, Float64):
-            res = Integer(int(self.value <= other.value))
-            return res, None
+            return Integer(int(self.value <= other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
         
     def get_comparison_gte(self, other):
         if isinstance(other, Float64):
-            res = Integer(int(self.value >= other.value))
-            return res, None
+            return Integer(int(self.value >= other.value)), None
         else:
             return None, BaseValue.illegal_operation(self, other)
     

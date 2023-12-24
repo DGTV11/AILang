@@ -191,7 +191,7 @@ numbers_c.str2i32.argtypes = [ctypes.c_char_p]
 numbers_c.str2i32.restype = int32_t
 
 numbers_c.conv_i32_to_str.argtypes = [int32_t, ctypes.c_char_p]
-numbers_c.conv_i32_to_str.argtypes = ctypes.c_void_p
+numbers_c.conv_i32_to_str.restype = ctypes.c_void_p
 
 numbers_c.i32_add.argtypes = [int32_t, int32_t]
 numbers_c.i32_add.restype = Ci32_res
@@ -234,7 +234,7 @@ numbers_c.str2i64.argtypes = [ctypes.c_char_p]
 numbers_c.str2i64.restype = int64_t
 
 numbers_c.conv_i64_to_str.argtypes = [int64_t, ctypes.c_char_p]
-numbers_c.conv_i64_to_str.argtypes = ctypes.c_void_p
+numbers_c.conv_i64_to_str.restype = ctypes.c_void_p
 
 numbers_c.i64_add.argtypes = [int64_t, int64_t]
 numbers_c.i64_add.restype = Ci64_res
