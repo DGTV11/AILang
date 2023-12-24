@@ -13,6 +13,7 @@ Roadmap:
 
 Immediate changes:
 1: Add integer interface to context_and_datatypes.py
+2: Fix f16m_fill(100b, 100b, 1.0h) !
 
 
 Note:

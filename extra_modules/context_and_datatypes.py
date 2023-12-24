@@ -1620,7 +1620,7 @@ class BuiltInFunction(BaseFunction):
         method = getattr(self, method_name, self.no_visit_method) 
 
         #res.register(self.check_and_populate_args(node, [[arg_name, [Type.Any]] for arg_name in method.arg_names], args))
-        res.register(self.check_and_populate_args(node, [arg_prototype for arg_prototype in method.arg_prototypes], args))
+        res.register(self.check_and_populate_args(node, method.arg_prototypes, args))
         if res.should_return(): return res
 
         self.node = node
