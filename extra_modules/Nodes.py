@@ -11,6 +11,9 @@ class NumberNode:
     def __repr__(self):
         return f'{self.tok}'
     
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.tok.value, self.type))
+    
 class StringNode:
     def __init__(self, tok):
         self.tok = tok
@@ -20,6 +23,9 @@ class StringNode:
     
     def __repr__(self):
         return f'{self.tok}'
+    
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.tok.value))
     
 class IterArrayNode:
     def __init__(self, element_nodes, pos_start, pos_end):
@@ -31,6 +37,9 @@ class IterArrayNode:
     def __repr__(self):
         return f'{self.tok}'
     
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, (element_node for element_node in self.element_nodes)))
+    
 class MatrixNode:
     def __init__(self, subvector_nodes, pos_start, pos_end):
         self.subvector_nodes = subvector_nodes
@@ -38,12 +47,18 @@ class MatrixNode:
         self.pos_start = pos_start
         self.pos_end = pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.subvector_nodes))
+
 class MatrixSubvectorContainer:
     def __init__(self, element_nodes, pos_start, pos_end):
         self.element_nodes = element_nodes
 
         self.pos_start = pos_start
         self.pos_end = pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, (element_node for element_node in self.element_nodes)))
 
 class VarAccessNode:
     def __init__(self, var_name_tok, value_node=None, value=None):
@@ -53,6 +68,9 @@ class VarAccessNode:
 
         self.pos_start = self.var_name_tok.pos_start
         self.pos_end = self.var_name_tok.pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok, self.value_node, self.value))
 
 class MemberAccessNode:
     def __init__(self, parent, member_name_tok, value_node=None, value=None):
@@ -64,12 +82,18 @@ class MemberAccessNode:
         self.pos_start = self.parent.pos_start
         self.pos_end = self.member_name_tok.pos_end
 
+    def __hash__(self):
+        print(self.pos_start, self.pos_end, self.parent, self.member_name_tok, self.value_node, self.value)
+
 class TypeContainerNode:
     def __init__(self, type_toks):
         self.type_toks = type_toks
 
         self.pos_start = self.type_toks[0].pos_start
         self.pos_end = self.type_toks[-1].pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.type_toks))
 
 '''
 class MemberAccessNode:
@@ -85,11 +109,14 @@ class VarAssignNode:
     def __init__(self, var_name_tok, value_node, _type, type_container):
         self.var_name_tok = var_name_tok
         self.value_node = value_node
-        self.type = _type # 0 -> var, 1 -> let, 2 -> const
+        self.type = _type
         self.type_container = type_container
 
         self.pos_start = self.var_name_tok.pos_start
         self.pos_end = self.value_node.pos_end
+    
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok, self.value_node, self.type, self.type_container))
 
 class VarRmNode:
     def __init__(self, var_name_tok):
@@ -98,12 +125,18 @@ class VarRmNode:
         self.pos_start = self.var_name_tok.pos_start
         self.pos_end = self.var_name_tok.pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok))
+
 class VarProtectNode:
     def __init__(self, var_name_tok):
         self.var_name_tok = var_name_tok
 
         self.pos_start = self.var_name_tok.pos_start
         self.pos_end = self.var_name_tok.pos_end
+    
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok))
 
 class StructAssignNode:
     def __init__(self, var_name_tok, field_toks, pos_start, pos_end):
@@ -112,6 +145,9 @@ class StructAssignNode:
 
         self.pos_start = pos_start
         self.pos_end = pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok, self.field_toks))
 
 class BinOpNode:
     def __init__(self, left_node, op_tok, right_node):
@@ -125,6 +161,9 @@ class BinOpNode:
     def __repr__(self):
         return f'({self.left_node}, {self.op_tok}, {self.right_node})'
     
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.left_node, self.op_tok, self.right_node))
+    
 class UnaryOpNode:
     def __init__(self, op_tok, node):
         self.op_tok = op_tok
@@ -136,6 +175,9 @@ class UnaryOpNode:
     def __repr__(self):
         return f'({self.op_tok}, {self.node})'
     
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.op_tok, self.node))
+    
 class IfNode:
     def __init__(self, cases, else_case):
         self.cases = cases
@@ -143,6 +185,9 @@ class IfNode:
 
         self.pos_start = self.cases[0][0].pos_start
         self.pos_end = (self.else_case or self.cases[-1])[0].pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.cases, self.else_case))
         
 class ForNode:
     def __init__(self, var_name_tok, start_value_node, end_value_node, step_value_node, body_node, should_return_null):
@@ -156,6 +201,9 @@ class ForNode:
         self.pos_start = self.var_name_tok.pos_start
         self.pos_end = self.body_node.pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok, self.start_value_node, self.end_value_node, self.step_value_node, self.body_node, self.should_return_null))
+
 class WhileNode:
     def __init__(self, condition_node, body_node, should_return_null):
         self.condition_node = condition_node
@@ -164,6 +212,9 @@ class WhileNode:
 
         self.pos_start = self.condition_node.pos_start
         self.pos_end = self.body_node.pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.condition_node, self.body_node, self.should_return_null))
 
 class FuncDefNode:
     def __init__(self, var_name_tok, arg_prototypes, res_type_container, body_node, should_auto_return):
@@ -182,6 +233,9 @@ class FuncDefNode:
 
         self.pos_end = self.body_node.pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.var_name_tok, self.arg_prototypes, self.res_type_container, self.body_node, self.should_auto_return))
+
 class CallNode:
     def __init__(self, node_to_call, arg_nodes):
         self.node_to_call = node_to_call
@@ -194,6 +248,9 @@ class CallNode:
         else:
             self.pos_end = self.node_to_call.pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.node_to_call, self.arg_nodes))
+
 class ArrayViewNode:
     def __init__(self, node_to_view, index_node, pos_end, value_node=None):
         self.node_to_view = node_to_view
@@ -203,6 +260,9 @@ class ArrayViewNode:
         self.pos_start = self.node_to_view.pos_start
         self.pos_end = pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.node_to_view, self.index_node, self.value_node))
+
 class ArraySpliceNode:
     def __init__(self, node_to_splice, index_nodes, pos_end):
         self.node_to_splice = node_to_splice
@@ -211,6 +271,9 @@ class ArraySpliceNode:
         self.pos_start = self.node_to_splice.pos_start
         self.pos_end = pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.node_to_splice, self.index_nodes))
+
 class ReturnNode:
     def __init__(self, node_to_return, pos_start, pos_end):
         self.node_to_return = node_to_return
@@ -218,10 +281,16 @@ class ReturnNode:
         self.pos_start = pos_start
         self.pos_end = pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.node_to_return))
+
 class ContinueNode:
     def __init__(self, pos_start, pos_end):
         self.pos_start = pos_start
         self.pos_end = pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end))
 
 class TypifyNode:
     def __init__(self, node_to_typify, pos_start, pos_end):
@@ -230,6 +299,9 @@ class TypifyNode:
         self.pos_start = pos_start
         self.pos_end = pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.node_to_typify))
+
 class CopyNode:
     def __init__(self, node_to_copy, pos_start, pos_end):
         self.node_to_copy = node_to_copy
@@ -237,7 +309,13 @@ class CopyNode:
         self.pos_start = pos_start
         self.pos_end = pos_end
 
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end, self.node_to_copy))
+
 class BreakNode:
     def __init__(self, pos_start, pos_end):
         self.pos_start = pos_start
         self.pos_end = pos_end
+
+    def __hash__(self):
+        return hash((self.pos_start, self.pos_end))
