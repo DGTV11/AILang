@@ -190,6 +190,9 @@ numbers_c.f64_neq.restype = ctypes.c_bool
 numbers_c.str2i32.argtypes = [ctypes.c_char_p]
 numbers_c.str2i32.restype = int32_t
 
+numbers_c.conv_i32_to_str.argtypes = [int32_t, ctypes.c_char_p]
+numbers_c.conv_i32_to_str.argtypes = ctypes.c_void_p
+
 numbers_c.i32_add.argtypes = [int32_t, int32_t]
 numbers_c.i32_add.restype = Ci32_res
 
@@ -229,6 +232,9 @@ numbers_c.i32_neq.restype = ctypes.c_bool
 ## i64
 numbers_c.str2i64.argtypes = [ctypes.c_char_p]
 numbers_c.str2i64.restype = int64_t
+
+numbers_c.conv_i64_to_str.argtypes = [int64_t, ctypes.c_char_p]
+numbers_c.conv_i64_to_str.argtypes = ctypes.c_void_p
 
 numbers_c.i64_add.argtypes = [int64_t, int64_t]
 numbers_c.i64_add.restype = Ci64_res
@@ -300,10 +306,10 @@ numbers_c.i64_to_f32.restype = float32_t
 # Datatypes
 class f16:
     def __init__(self, val: str|float16_t):
-        if type(val) is str:
+        if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: float16_t = numbers_c.str2f16(c_stringified_value)
-        elif type(val) is int:
+        elif isinstance(val, int):
             self.val: float16_t = float16_t(val)
         elif isinstance(val, float16_t):
             self.val: float16_t = val
@@ -355,8 +361,7 @@ class f16:
             res: Cf16_res = numbers_c.f16_divide(self.val, other.val)
             if bool(getattr(res, 'error').value):
                 raise ZeroDivisionError('Division by zero')
-            else:
-                return f16(getattr(res, 'res'))
+            return f16(getattr(res, 'res'))
         else:
             raise TypeError(f"Unsupported operand type(s) for /: 'f16' and '{type(other)}'")
         
@@ -407,12 +412,12 @@ class f16:
         
 class f32:
     def __init__(self, val: str|float32_t):
-        if type(val) is str:
+        if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: float32_t = numbers_c.str2f32(c_stringified_value)
         elif isinstance(val, float32_t):
             self.val: float32_t = val
-        elif type(val) is float:
+        elif isinstance(val, float):
             self.val: float32_t = float32_t(val)
         else:
             raise TypeError("Value must be a string or float32_t")
@@ -462,8 +467,7 @@ class f32:
             res: Cf32_res = f32(numbers_c.f32_divide(self.val, other.val))
             if bool(getattr(res, 'error').value):
                 raise ZeroDivisionError('Division by zero')
-            else:
-                return f32(getattr(res, 'res'))
+            return f32(getattr(res, 'res'))
         else:
             raise TypeError(f"Unsupported operand type(s) for /: 'f32' and '{type(other)}'")
         
@@ -514,12 +518,12 @@ class f32:
         
 class f64:
     def __init__(self, val: str|float64_t):
-        if type(val) is str:
+        if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: float64_t = numbers_c.str2f64(c_stringified_value)
         elif isinstance(val, float64_t):
             self.val: float64_t = val
-        elif type(val) is float:
+        elif isinstance(val, float):
             self.val: float64_t = float64_t(val)
         else:
             raise TypeError("Value must be a string or float64_t")
@@ -569,8 +573,7 @@ class f64:
             res: Cf64_res = f64(numbers_c.f64_divide(self.val, other.val))
             if bool(getattr(res, 'error').value):
                 raise ZeroDivisionError('Division by zero')
-            else:
-                return f64(getattr(res, 'res'))
+            return f64(getattr(res, 'res'))
         else:
             raise TypeError(f"Unsupported operand type(s) for /: 'f64' and '{type(other)}'")
         
@@ -621,12 +624,269 @@ class f64:
         
 class i32:
     def __init__(self, val: str|int|int32_t):
-        if type(val) is str:
-            pass
-        elif type(val) is int:
-            pass
-        elif type(val) is int32_t:
-            pass
+        if isinstance(val, str):
+            c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
+            self.val: int32_t = numbers_c.str2i32(c_stringified_value)
+        elif isinstance(val, int):
+            self.val: int32_t = int32_t(val)
+        elif isinstance(val, int32_t):
+            self.val: int32_t = val
+
+        self.stringified_value = None
+
+    def __repr__(self) -> str:
+        if not self.stringified_value:
+            c_stringified_value = ctypes.create_string_buffer(INT_STR_BUF_SIZE)
+            numbers_c.conv_i32_to_str(self.val, c_stringified_value)
+            self.stringified_value = c_stringified_value.value.decode('utf-8')+'i'
+            del c_stringified_value
+        return self.stringified_value
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+    def __add__(self, other):
+        if isinstance(other, i32):
+            res: Ci32_res = numbers_c.i32_add(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i32(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for +: 'i32' and '{type(other)}'")
+    
+    def __sub__(self, other):
+        if isinstance(other, i32):
+            res: Ci32_res = numbers_c.i32_sub(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i32(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for -: 'i32' and '{type(other)}'")
+        
+    def __mul__(self, other):
+        if isinstance(other, i32):
+            res: Ci32_res = numbers_c.i32_mul(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i32(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for *: 'i32' and '{type(other)}'")
+        
+    def __truediv__(self, other):
+        if isinstance(other, i32):
+            res: Cf64_res = numbers_c.i32_divide(self.val, other.val)
+            if bool(getattr(res, 'error').value):
+                raise ZeroDivisionError('Division by zero')
+            return f64(getattr(res, 'res')) 
+        else:
+            raise TypeError(f"Unsupported operand type(s) for /: 'i32' and '{type(other)}'")
+        
+    def __pow__(self, other):
+        if isinstance(other, i32):
+            return f64(numbers_c.i32_pow(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for **: 'i32' and '{type(other)}'")
+        
+    def __neg__(self):
+        res: Ci32_res = numbers_c.i32_neg(self.val)
+        overflow_type: int = getattr(res, 'overflow_type')
+        if overflow_type != 0:
+            match overflow_type:
+                case 1: #INTOVERFLOW
+                    raise OverflowError('Integer overflow')
+                case _:
+                    raise Exception('Unknown error')
+        return i32(getattr(res, 'res'))
+    
+    def __ge__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_gte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >=: 'i32' and '{type(other)}'")
+
+    def __gt__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_gt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >: 'i32' and '{type(other)}'")
+        
+    def __eq__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_eq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ==: 'i32' and '{type(other)}'")
+        
+    def __le__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_lte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <=: 'i32' and '{type(other)}'")
+        
+    def __lt__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_lt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <: 'i32' and '{type(other)}'")
+        
+    def __ne__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_neq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for !=: 'i32' and '{type(other)}'")
+
+class i64:
+    def __init__(self, val: str|int|int64_t):
+        if isinstance(val, str):
+            c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
+            self.val: int64_t = numbers_c.str2i64(c_stringified_value)
+        elif isinstance(val, int):
+            self.val: int64_t = int64_t(val)
+        elif isinstance(val, int64_t):
+            self.val: int64_t = val
+
+        self.stringified_value = None
+
+    def __repr__(self) -> str:
+        if not self.stringified_value:
+            c_stringified_value = ctypes.create_string_buffer(INT_STR_BUF_SIZE)
+            numbers_c.conv_i64_to_str(self.val, c_stringified_value)
+            self.stringified_value = c_stringified_value.value.decode('utf-8')+'i'
+            del c_stringified_value
+        return self.stringified_value
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+    def __add__(self, other):
+        if isinstance(other, i64):
+            res: Ci64_res = numbers_c.i64_add(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i64(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for +: 'i64' and '{type(other)}'")
+    
+    def __sub__(self, other):
+        if isinstance(other, i64):
+            res: Ci64_res = numbers_c.i64_sub(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i64(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for -: 'i64' and '{type(other)}'")
+        
+    def __mul__(self, other):
+        if isinstance(other, i64):
+            res: Ci64_res = numbers_c.i64_mul(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i64(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for *: 'i64' and '{type(other)}'")
+        
+    def __truediv__(self, other):
+        if isinstance(other, i64):
+            res: Cf64_res = numbers_c.i64_divide(self.val, other.val)
+            if bool(getattr(res, 'error').value):
+                raise ZeroDivisionError('Division by zero')
+            return f64(getattr(res, 'res')) 
+        else:
+            raise TypeError(f"Unsupported operand type(s) for /: 'i64' and '{type(other)}'")
+        
+    def __pow__(self, other):
+        if isinstance(other, i64):
+            return f64(numbers_c.i64_pow(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for **: 'i64' and '{type(other)}'")
+        
+    def __neg__(self):
+        res: Ci64_res = numbers_c.i64_neg(self.val)
+        overflow_type: int = getattr(res, 'overflow_type')
+        if overflow_type != 0:
+            match overflow_type:
+                case 1: #INTOVERFLOW
+                    raise OverflowError('Integer overflow')
+                case _:
+                    raise Exception('Unknown error')
+        return i64(getattr(res, 'res'))
+    
+    def __ge__(self, other):
+        if isinstance(other, i64):
+            return numbers_c.i64_gte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >=: 'i64' and '{type(other)}'")
+
+    def __gt__(self, other):
+        if isinstance(other, i64):
+            return numbers_c.i64_gt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >: 'i64' and '{type(other)}'")
+        
+    def __eq__(self, other):
+        if isinstance(other, i64):
+            return numbers_c.i64_eq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ==: 'i64' and '{type(other)}'")
+        
+    def __le__(self, other):
+        if isinstance(other, i64):
+            return numbers_c.i64_lte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <=: 'i64' and '{type(other)}'")
+        
+    def __lt__(self, other):
+        if isinstance(other, i64):
+            return numbers_c.i64_lt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <: 'i64' and '{type(other)}'")
+        
+    def __ne__(self, other):
+        if isinstance(other, i64):
+            return numbers_c.i64_neq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for !=: 'i64' and '{type(other)}'")
 
 # Conversion functions
 def f16_to_f32(x: f16) -> f32:
@@ -646,3 +906,15 @@ def f64_to_f16(x: f64) -> f16:
 
 def f64_to_f32(x: f64) -> f32:
     return f32(numbers_c.f64_to_f32(x.val))
+
+def f32_to_i32(x: f32) -> i32:
+    return i32(numbers_c.f32_to_i32(x.val))
+
+def f32_to_i64(x: f32) -> i64:
+    return i64(numbers_c.f32_to_i64(x.val))
+
+def i32_to_f32(x: i32) -> f32:
+    return f32(numbers_c.i32_to_f32(x.val))
+
+def i64_to_f32(x: i64) -> f32:
+    return f32(numbers_c.i64_to_f32(x.val))
