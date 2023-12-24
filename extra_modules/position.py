@@ -29,4 +29,7 @@ class Position:
     
     def __repr__(self):
         return self.__str__()
+    
+    def __hash__(self):
+        return hash((self.idx, self.ln, self.col, self.fn))
 Position.system_pos = Position(-1, 0, -1, '<System>', '<UNREADABLE>')

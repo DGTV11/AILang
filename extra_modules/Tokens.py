@@ -133,3 +133,6 @@ class Token:
     def __repr__(self):
         if self.value: return f'{self.type}:{self.value}'
         return f'{self.type}'
+
+    def __hash__(self):
+        return hash((self.type, self.value, self.pos_start, self.pos_end))
