@@ -1538,7 +1538,7 @@ class BaseFunction(BaseValue):
             if Type.Any.typename not in typenamified_types and arg.type not in typenamified_types:
                 return res.failure(err.RTError(
                     self.pos_start, self.pos_end,
-                    f"Argument type ({Type(arg.type)}) is not accepted by the type of argument '{arg_name}' of the function '{self.name}' ({"|".join(typenamified_types)})",
+                    f"Argument type ({Type(arg.type)}) is not accepted by the type of argument '{arg_name}' of function '{self.name}' ({"|".join(typenamified_types)})",
                     self.exec_ctx
                 ))
         
