@@ -2,6 +2,13 @@ Roadmap:
 1: Add Integers (DOING)
 2: Reimplement Matrices (DOING)
 3: Fix error messages!!! (TODO)
+4: Update IterArray definition syntax (TODO)
+5: Implement serialisation functions (TODO)
+6: Implement mathematical functions (TODO)
+7: Implement Automatic Differentiation (TODO)
+8: Implement AI functions (TODO)
+9: Allow structs to have functions attached (find better name) (TODO)
+10: Make reg-based VM using rs (TODO)
 
 
 Immediate changes:
