@@ -761,7 +761,7 @@ def f64m_to_f32m(x: f64_matrix) -> f32_matrix:
 # Fill and broadcast functions
 #*Fill functions
 def f16m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f16) -> f16_matrix:
-    if int(x) < 1 or int(y) < 1:
+    if x.value < 1 or y.value < 1:
         raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
 
     c_res: Cfloat16_matrix_res_t = linalg_c.f16m_fill(x, y, fill_value.val)
@@ -773,7 +773,7 @@ def f16m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f16) -> f16_ma
     return f16_matrix(getattr(c_res, 'res'))
 
 def f32m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f32) -> f32_matrix:
-    if int(x) < 1 or int(y) < 1:
+    if x.value < 1 or y.value < 1:
         raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
 
     c_res: Cfloat32_matrix_res_t = linalg_c.f32m_fill(x, y, fill_value.val)
@@ -785,7 +785,7 @@ def f32m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f32) -> f32_ma
     return f32_matrix(getattr(c_res, 'res'))
 
 def f64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f64) -> f64_matrix:
-    if int(x) < 1 or int(y) < 1:
+    if x.value < 1 or y.value < 1:
         raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
 
     c_res: Cfloat64_matrix_res_t = linalg_c.f64m_fill(x, y, fill_value.val)
@@ -798,7 +798,7 @@ def f64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f64) -> f64_ma
 
 #*(Row vector->matrix) broadcast functions
 def f16m_row_vector_to_matrix(v: f16_matrix, no_rows: ctypes.c_size_t) -> f16_matrix:
-    if int(no_rows) < 1:
+    if no_rows.value < 1:
         raise ValueError("Number of rows must be above or equal to 1")
 
     c_res: Cfloat16_matrix_res_t = linalg_c.f16m_row_vector_to_matrix(v.m, no_rows)
@@ -811,7 +811,7 @@ def f16m_row_vector_to_matrix(v: f16_matrix, no_rows: ctypes.c_size_t) -> f16_ma
     return f16_matrix(getattr(c_res, 'res'))
 
 def f32m_row_vector_to_matrix(v: f32_matrix, no_rows: ctypes.c_size_t) -> f32_matrix:
-    if int(no_rows) < 1:
+    if no_rows.value < 1:
         raise ValueError("Number of rows must be above or equal to 1")
 
     c_res: Cfloat32_matrix_res_t = linalg_c.f32m_row_vector_to_matrix(v.m, no_rows)
@@ -824,7 +824,7 @@ def f32m_row_vector_to_matrix(v: f32_matrix, no_rows: ctypes.c_size_t) -> f32_ma
     return f32_matrix(getattr(c_res, 'res'))
 
 def f64m_row_vector_to_matrix(v: f64_matrix, no_rows: ctypes.c_size_t) -> f64_matrix:
-    if int(no_rows) < 1:
+    if no_rows.value < 1:
         raise ValueError("Number of rows must be above or equal to 1")
 
     c_res: Cfloat64_matrix_res_t = linalg_c.f64m_row_vector_to_matrix(v.m, no_rows)
@@ -838,7 +838,7 @@ def f64m_row_vector_to_matrix(v: f64_matrix, no_rows: ctypes.c_size_t) -> f64_ma
 
 #*(Column vector->matrix) broadcast functions
 def f16m_column_vector_to_matrix(v: f16_matrix, no_columns: ctypes.c_size_t) -> f16_matrix:
-    if int(no_columns) < 1:
+    if no_columns.value < 1:
         raise ValueError("Number of columns must be above or equal to 1")
 
     c_res: Cfloat16_matrix_res_t = linalg_c.f16m_column_vector_to_matrix(v.m, no_columns)
@@ -851,7 +851,7 @@ def f16m_column_vector_to_matrix(v: f16_matrix, no_columns: ctypes.c_size_t) -> 
     return f16_matrix(getattr(c_res, 'res'))
 
 def f32m_column_vector_to_matrix(v: f32_matrix, no_columns: ctypes.c_size_t) -> f32_matrix:
-    if int(no_columns) < 1:
+    if no_columns.value < 1:
         raise ValueError("Number of columns must be above or equal to 1")
 
     c_res: Cfloat32_matrix_res_t = linalg_c.f32m_column_vector_to_matrix(v.m, no_columns)
@@ -864,7 +864,7 @@ def f32m_column_vector_to_matrix(v: f32_matrix, no_columns: ctypes.c_size_t) -> 
     return f32_matrix(getattr(c_res, 'res'))
 
 def f64m_column_vector_to_matrix(v: f64_matrix, no_columns: ctypes.c_size_t) -> f64_matrix:
-    if int(no_columns) < 1:
+    if no_columns.value < 1:
         raise ValueError("Number of columns must be above or equal to 1")
 
     c_res: Cfloat64_matrix_res_t = linalg_c.f64m_column_vector_to_matrix(v.m, no_columns)

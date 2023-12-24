@@ -9,11 +9,11 @@ from extra_modules.Lexer import Lexer
 from extra_modules.Parser import Parser
 from extra_modules.Interpreter import Interpreter
 
-import resource
+# import resource
 import os
 import sys
-import time
-import inspect #debug
+# import time
+# import inspect #debug
     
 # Load path
 

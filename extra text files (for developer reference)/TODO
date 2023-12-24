@@ -1,5 +1,5 @@
 Roadmap:
-1: Add Integers (DOING)
+1: Add Integers (DONE)
 2: Reimplement Matrices (DOING)
 3: Fix error messages!!! (TODO)
 4: Update IterArray definition syntax (TODO)
@@ -12,7 +12,7 @@ Roadmap:
 
 
 Immediate changes:
-1: Fix f16m_fill(100b, 100b, 1.0h) !
+1: Nil
 
 
 Note:

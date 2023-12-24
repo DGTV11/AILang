@@ -2021,7 +2021,6 @@ class BuiltInFunction(BaseFunction):
         x = exec_ctx.symbol_table.get_var('x')
         y = exec_ctx.symbol_table.get_var('y')
         fill_value = exec_ctx.symbol_table.get_var('fill_value')
-
         try:
             matrix_res: linalg.f16_matrix = linalg.f16m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
         except MemoryError as e:
