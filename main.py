@@ -146,6 +146,20 @@ def run(fn, text, progpath = None, st:SymbolTable = global_symbol_table, is_stri
     # Interpret
     return interpret(ast, progpath, st, is_strict)
 
+def shell(strict_mode=True):
+    print(f'Official AILang Shell (Python Implementation) ({"" if not strict_mode else "strict mode"})')
+    while True:
+        text = input('SHELL > ')
+        if text.strip() == '': continue
+        result, error = run('<stdin>', text, is_strict=strict_mode)
+
+        if error: print(error.as_str())
+        elif result:
+            if len(result.elements) == 1:
+                print(repr(result.elements[0]))
+            else:
+                print(repr(result))
+
 '''
 if __name__ == "__main__":
     fn = "/Volumes/Data stuffs/Python/AILang/Tests/test.ail"
@@ -164,8 +178,7 @@ if __name__ == "__main__":
 if __name__ == "__main__": #TODO: find way to add CLI decorators
     sys.set_int_max_str_digits(0)
     if len(sys.argv) == 1:
-        import shell
-        shell.shell()
+        shell()
     elif len(sys.argv) == 2:
         fn = sys.argv[1]
         try:
@@ -181,7 +194,3 @@ if __name__ == "__main__": #TODO: find way to add CLI decorators
         
     else:
         raise IndexError(f'Too many arguments (0 or 1 argument(s) expected, {len(sys.argv) - 1} given)')
-
-''''''
-
-''''''

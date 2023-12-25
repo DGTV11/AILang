@@ -2399,6 +2399,6 @@ class Context:
         return Context(self.display_name, self.parent, self.parent_entry_pos, self.strict_mode)
     
 # Context-dependent imports
-from AILang import run
+from main import run
 
 from extra_modules.Interpreter import Interpreter
