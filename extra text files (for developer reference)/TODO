@@ -9,14 +9,13 @@ Roadmap:
 8: Implement Automatic Differentiation (TODO)
 9: Implement AI functions (TODO)
 10: Allow structs to have functions attached (find better name) (TODO)
-11: Make reg-based VM using rs (TODO)
+11: Make reg-based VM using rust (TODO)
 
 
 Immediate changes:
-1: Port c_lib to Rust
-2: Add numerical typecasting functions
-3: Check parser
-4: Check interpreter
+1: Add numerical typecasting functions
+2: Check parser
+3: Check interpreter
 
 
 Note:
