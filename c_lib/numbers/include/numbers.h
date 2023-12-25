@@ -48,6 +48,29 @@ typedef struct {
     overflow_type_t overflow_type; 
 } i64_res;
 
+// Numerical cast structures
+typedef enum {
+    F16 = 0,
+    F32,
+    F64,
+    I32,
+    I64,
+    INVALID,
+} num_type_t;
+
+typedef union {
+    float16_t f16;
+    float32_t f32;
+    float64_t f64;
+    int32_t i32;
+    int64_t i64;
+} num_container_t;
+
+typedef struct {
+    num_container_t num;
+    num_type_t type;
+} num_t;
+
 // f16
 float16_t   str2f16(char str[]);
 void        conv_f16_to_str(float16_t h, char* buffer);
@@ -121,21 +144,5 @@ bool        i64_lte(int64_t a, int64_t b);
 bool        i64_lt(int64_t a, int64_t b);
 bool        i64_neq(int64_t a, int64_t b);
 
-// Conversions
-float32_t   f16_to_f32(float16_t x);
-float64_t   f16_to_f64(float16_t x);
-
-float16_t   f32_to_f16(float32_t x);
-float64_t   f32_to_f64(float32_t x);
-
-float16_t   f64_to_f16(float64_t x);
-float32_t   f64_to_f32(float64_t x);
-
-int64_t     i32_to_i64(int32_t x);
-int32_t     i64_to_i32(int64_t x);
-
-int32_t     f32_to_i32(float32_t x);
-int64_t     f32_to_i64(float32_t x);
-
-float32_t   i32_to_f32(int32_t x);
-float32_t   i64_to_f32(int64_t x);
+// Numerical casting
+num_t numerical_cast(num_t x, num_type_t tgt_type);

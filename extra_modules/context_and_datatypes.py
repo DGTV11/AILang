@@ -1954,49 +1954,20 @@ class BuiltInFunction(BaseFunction):
     
     execute_map.arg_prototypes = [['func', [Type.Function, Type.BuiltInFunction]], ['iterarray', [Type.IterArray]]]
 
-    def execute_float_to_f16(self, exec_ctx):
+    def execute_numerical_cast(self, exec_ctx): #TODO
         x = exec_ctx.symbol_table.get_var('x')
-        if x.type == 'Float32': return RTResult().success(Float16(numbers.f32_to_f16(x.value)))
-        elif x.type == 'Float64': return RTResult().success(Float16(numbers.f64_to_f16(x.value)))
-    execute_float_to_f16.arg_prototypes = [['x', [Type.Float32, Type.Float64]]]
+        tgt_type = exec_ctx.symbol_table.get_var('tgt_type')
 
-    def execute_float_to_f32(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('x')
-        if x.type == 'Float16': return RTResult().success(Float32(numbers.f16_to_f32(x.value)))
-        elif x.type == 'Float64': return RTResult().success(Float32(numbers.f64_to_f32(x.value)))
-    execute_float_to_f32.arg_prototypes = [['x', [Type.Float16, Type.Float64]]]
-
-    def execute_float_to_f64(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('x')
-        if x.type == 'Float16': return RTResult().success(Float64(numbers.f16_to_f64(x.value)))
-        elif x.type == 'Float32': return RTResult().success(Float64(numbers.f32_to_f64(x.value)))
-    execute_float_to_f64.arg_prototypes = [['x', [Type.Float16, Type.Float32]]]
-
-    def execute_i32_to_i64(self, exec_ctx):
-        n = exec_ctx.symbol_table.get_var('n')
-        return RTResult().success(Int64(numbers.i32_to_i64(n.value)))
-    execute_i32_to_i64.arg_prototypes = [['n', [Type.Int32]]]
-
-    def execute_i64_to_i32(self, exec_ctx):
-        n = exec_ctx.symbol_table.get_var('n')
-        return RTResult().success(Int32(numbers.i64_to_i32(n.value)))
-    execute_i64_to_i32.arg_prototypes = [['n', [Type.Int64]]]
-
-    def execute_f32_to_i32(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('x')
-        return RTResult().success(Int32(numbers.f32_to_i32(x.value)))
-    execute_f32_to_i32.arg_prototypes = [['x', [Type.Float32]]]
-
-    def execute_f32_to_i64(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('x')
-        return RTResult().success(Int64(numbers.f32_to_i64(x.value)))
-    execute_f32_to_i64.arg_prototypes = [['x', [Type.Float32]]]
-
-    def execute_limited_int_to_f32(self, exec_ctx):
-        n = exec_ctx.symbol_table.get_var('n')
-        if n.type == 'Int32': return RTResult().success(Float32(numbers.i32_to_f32(n)))
-        if n.type == 'Int64': return RTResult().success(Float32(numbers.i64_to_f32(n)))
-    execute_limited_int_to_f32.arg_prototypes = ['n', [Type.Int32, Type.Int64]]
+        numbers.numerical_cast(x.value, BuiltInFunction.numcast_conv_tgt_types_to_tgt_valuetypes[tgt_type])
+    numcast_conv_tgt_types_to_tgt_valuetypes = {
+        'Integer':  int,
+        'Float16':  numbers.f16,
+        'Float32':  numbers.f32,
+        'Float64':  numbers.f64,
+        'Int32':    numbers.i32,
+        'Int64':    numbers.i64
+    }
+    execute_numerical_cast.arg_prototypes = [['x', [Type.Integer, Type.Int32, Type.Int64, Type.Float16, Type.Float32, Type.Float64]], ['tgt_type', [Type.Type]]]
 
     def execute_matrix_to_f16m(self, exec_ctx):
         x = exec_ctx.symbol_table.get_var('m')
@@ -2209,17 +2180,9 @@ BuiltInFunction.load_module                     = BuiltInFunction('load_module')
 BuiltInFunction.range                           = BuiltInFunction('range')
 BuiltInFunction.set_multi_float_type            = BuiltInFunction('set_multi_float_type')
 BuiltInFunction.map                             = BuiltInFunction('map')
-BuiltInFunction.float_to_f16                    = BuiltInFunction('float_to_f16')
-BuiltInFunction.float_to_f32                    = BuiltInFunction('float_to_f32')
-BuiltInFunction.float_to_f64                    = BuiltInFunction('float_to_f64')
-BuiltInFunction.i32_to_i64                      = BuiltInFunction('i32_to_i64')
-BuiltInFunction.i64_to_i32                      = BuiltInFunction('i64_to_i32')
-BuiltInFunction.f32_to_i32                      = BuiltInFunction('f32_to_i32')
-BuiltInFunction.f32_to_i64                      = BuiltInFunction('f32_to_i64')
-BuiltInFunction.limited_int_to_f32              = BuiltInFunction('limited_int_to_f32')
-BuiltInFunction.float_matrix_to_f16m            = BuiltInFunction('float_to_f16')
-BuiltInFunction.float_matrix_to_f32m            = BuiltInFunction('float_to_f32')
-BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_to_f64')
+BuiltInFunction.float_matrix_to_f16m            = BuiltInFunction('float_matrix_to_f16')
+BuiltInFunction.float_matrix_to_f32m            = BuiltInFunction('float_matrix_to_f32')
+BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_matrix_to_f64')
 BuiltInFunction.f16m_fill                       = BuiltInFunction('f16m_fill')
 BuiltInFunction.f32m_fill                       = BuiltInFunction('f32m_fill')
 BuiltInFunction.f64m_fill                       = BuiltInFunction('f64m_fill')

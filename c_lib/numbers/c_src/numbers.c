@@ -448,57 +448,112 @@ bool i64_neq(int64_t a, int64_t b) {
     return a != b;
 }
 
-// Conversions
-//*From f16 to other float types
-float32_t f16_to_f32(float16_t x) {
-    return float16_to_float32(x);
-}
-
-float64_t f16_to_f64(float16_t x) {
-    return (float64_t)float16_to_float32(x);
-}
-
-//*From f32 to other float types
-float16_t f32_to_f16(float32_t x) {
-    return float32_to_float16(x);
-}
-
-float64_t f32_to_f64(float32_t x) {
-    return (float64_t)x;
-}
-
-//*From f64 to other float types
-float16_t f64_to_f16(float64_t x) {
-    return float32_to_float16((float32_t)x);
-}
-
-float32_t f64_to_f32(float64_t x) {
-    return (float32_t)x;
-}
-
-//*From i32/i64 types to i64/i32
-int64_t i32_to_i64(int32_t x) {
-    return (int64_t)x;
-}
-
-int32_t i64_to_i32(int64_t x) {
-    return (int32_t)x;
-}
-
-//*From f32 to int types
-int32_t f32_to_i32(float32_t x) {
-    return (int32_t)x;
-}
-
-int64_t f32_to_i64(float32_t x) {
-    return (int64_t)x;
-}
-
-//*From int types to f32
-float32_t i32_to_f32(int32_t x) {
-    return (float32_t)x;
-}
-
-float32_t i64_to_f32(int64_t x) {
-    return (float32_t)x;
+// Numerical casting
+num_t numerical_cast(num_t x, num_type_t tgt_type) {
+    if (x.type == tgt_type) {
+        return x;
+    }
+    num_t res;
+    res.type = tgt_type;
+    switch (x.type) {
+        case F16:
+            switch (tgt_type) {
+                case F32:
+                    res.num.f32 = float16_to_float32(x.num.f16);
+                    break;
+                case F64:
+                    res.num.f64 = (float64_t)float16_to_float32(x.num.f16);
+                    break;
+                case I32:
+                    res.num.i32 = (int32_t)float16_to_float32(x.num.f16);
+                    break;
+                case I64:
+                    res.num.i64 = (int64_t)float16_to_float32(x.num.f16);
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        case F32:
+            switch (tgt_type) {
+                case F16:
+                    res.num.f16 = float32_to_float16(x.num.f32);
+                    break;
+                case F64:
+                    res.num.f64 = (float64_t)x.num.f32;
+                    break;
+                case I32:
+                    res.num.i32 = (int32_t)x.num.f32;
+                    break;
+                case I64:
+                    res.num.i64 = (int64_t)x.num.f32;
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        case F64:
+            switch (tgt_type) {
+                case F16:
+                    res.num.f16 = float32_to_float16((float64_t)x.num.f64);
+                    break;
+                case F32:
+                    res.num.f32 = (float32_t)x.num.f64;
+                    break;
+                case I32:
+                    res.num.i32 = (int32_t)x.num.f64;
+                    break;
+                case I64:
+                    res.num.i64 = (int64_t)x.num.f64;
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        case I32:
+            switch (tgt_type) {
+                case F16:
+                    res.num.f16 = float32_to_float16((float32_t)x.num.i32);
+                    break;
+                case F32:
+                    res.num.f32 = (float32_t)x.num.i32;
+                    break;
+                case F64:
+                    res.num.f64 = (float64_t)x.num.i32;
+                    break;
+                case I64:
+                    res.num.i64 = (int64_t)x.num.i32;
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        case I64:
+            switch (tgt_type) {
+                case F16:
+                    res.num.f16 = float32_to_float16((float32_t)x.num.i64);
+                    break;
+                case F32:
+                    res.num.f32 = (float32_t)x.num.i64;
+                    break;
+                case F64:
+                    res.num.f64 = (float64_t)x.num.i64;
+                    break;
+                case I32:
+                    res.num.i32 = (int32_t)x.num.i64;
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        default:
+            res.type = INVALID;
+            break;
+    }
+    return res;
 }

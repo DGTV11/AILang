@@ -8,6 +8,7 @@ numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 
 # Typedefs
 overflow_type_t     = ctypes.c_uint
+num_type_t          = ctypes.c_uint
 
 float16_t           = ctypes.c_ushort
 float32_t           = ctypes.c_float
@@ -45,6 +46,24 @@ class Ci64_res(ctypes.Structure):
         ("res", int64_t),
         ("overflow_type", overflow_type_t),
     ]
+
+# Numerical cast structures
+class Cnum_container_t(ctypes.Union):
+    _fields_ = [
+        ("f16", float16_t),
+        ("f32", float32_t),
+        ("f64", float64_t),
+        ("i32", int32_t),
+        ("i64", int64_t),
+    ]
+
+class Cnum_t(ctypes.Structure):
+    _fields_ = [
+        ("num", Cnum_container_t),
+        ("type", num_type_t),
+    ]
+
+type num_t = int|f16|f32|f64|i32|i64
 
 # Functions
 
@@ -273,45 +292,12 @@ numbers_c.i64_neq.argtypes = [int64_t, int64_t]
 numbers_c.i64_neq.restype = ctypes.c_bool
 
 # Conversions
-numbers_c.f16_to_f32.argtypes = [float16_t]
-numbers_c.f16_to_f32.restype = float32_t
-
-numbers_c.f16_to_f64.argtypes = [float16_t]
-numbers_c.f16_to_f64.restype = float64_t
-
-numbers_c.f32_to_f16.argtypes = [float32_t]
-numbers_c.f32_to_f16.restype = float16_t
-
-numbers_c.f32_to_f64.argtypes = [float32_t]
-numbers_c.f32_to_f64.restype = float64_t
-
-numbers_c.f64_to_f16.argtypes = [float64_t]
-numbers_c.f64_to_f16.restype = float16_t
-
-numbers_c.f64_to_f32.argtypes = [float64_t]
-numbers_c.f64_to_f32.restype = float32_t
-
-numbers_c.i32_to_i64.argtypes = [int32_t]
-numbers_c.i32_to_i64.restype = int64_t
-
-numbers_c.i64_to_i32.argtypes = [int64_t]
-numbers_c.i64_to_i32.restype = int32_t
-
-numbers_c.f32_to_i32.argtypes = [float32_t]
-numbers_c.f32_to_i32.restype = int32_t
-
-numbers_c.f32_to_i64.argtypes = [float32_t]
-numbers_c.f32_to_i64.restype = int64_t
-
-numbers_c.i32_to_f32.argtypes = [int32_t]
-numbers_c.i32_to_f32.restype = float32_t
-
-numbers_c.i64_to_f32.argtypes = [int64_t]
-numbers_c.i64_to_f32.restype = float32_t
+numbers_c.numerical_cast.argtypes = [Cnum_t, num_type_t]
+numbers_c.numerical_cast.restype = Cnum_t
 
 # Datatypes
 class f16:
-    def __init__(self, val: str|float16_t):
+    def __init__(self, val: str|int|float16_t):
         if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: float16_t = numbers_c.str2f16(c_stringified_value)
@@ -417,7 +403,7 @@ class f16:
             raise TypeError(f"Unsupported operand type(s) for !=: 'f16' and '{type(other)}'")
         
 class f32:
-    def __init__(self, val: str|float32_t):
+    def __init__(self, val: str|float|float32_t):
         if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: float32_t = numbers_c.str2f32(c_stringified_value)
@@ -523,7 +509,7 @@ class f32:
             raise TypeError(f"Unsupported operand type(s) for !=: 'f32' and '{type(other)}'")
         
 class f64:
-    def __init__(self, val: str|float64_t):
+    def __init__(self, val: str|float|float64_t):
         if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: float64_t = numbers_c.str2f64(c_stringified_value)
@@ -894,39 +880,74 @@ class i64:
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'i64' and '{type(other)}'")
 
-# Conversion functions
-def f16_to_f32(x: f16) -> f32:
-    return f32(numbers_c.f16_to_f32(x.val))
+# Numerical casting
+py_num_type_to_num_type_t = {
+    type(f16): (num_type_t(0), 'f16'),
+    type(f32): (num_type_t(1), 'f32'),
+    type(f64): (num_type_t(2), 'f64'),
+    type(i32): (num_type_t(3), 'i32'),
+    type(i64): (num_type_t(4), 'i64'),
+}
 
-def f16_to_f64(x: f16) -> f64:
-    return f64(numbers_c.f16_to_f64(x.val))
+int_to_py_num = {
+    0: (f16, 'f16'),
+    1: (f32, 'f32'),
+    2: (f64, 'f64'),
+    3: (i32, 'i32'),
+    4: (i64, 'i64'),
+}
 
-def f32_to_f16(x: f32) -> f16:
-    return f16(numbers_c.f32_to_f16(x.val))
+def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
+    if isinstance(x, int):
+        if tgt_type is f16:
+            x = f64(float64_t(float(x)))
+        elif tgt_type is f32:
+            x = f64(float64_t(float(x)))
+        elif tgt_type is f64:
+            x = f64(float64_t(float(x)))
+        elif tgt_type is i32:
+            x = i64(int64_t(x))
+        elif tgt_type is i64:
+            x = i64(int64_t(x))
+        elif tgt_type is int:
+            return x
+    
+    if tgt_type is int:
+        y = True
+        tgt_type = type(i64)
+    else:
+        y = False
 
-def f32_to_f64(x: f32) -> f64:
-    return f64(numbers_c.f32_to_f64(x.val))
+    c_current_type  = py_num_type_to_num_type_t[type(x)]
+    c_tgt_type      = py_num_type_to_num_type_t[tgt_type]
 
-def f64_to_f16(x: f64) -> f16:
-    return f16(numbers_c.f64_to_f16(x.val))
+    container = Cnum_container_t()
 
-def f64_to_f32(x: f64) -> f32:
-    return f32(numbers_c.f64_to_f32(x.val))
+    '''
+    match (c_current_type[1]):
+        case 'f16':
+            container.f16 = x.val
+        case 'f32':
+            container.f32 = x.val
+        case 'f64':
+            container.f64 = x.val
+        case 'i32':
+            container.i32 = x.val
+        case 'i64':
+            container.i64 = x.val
+    '''
 
-def i32_to_i64(x: i32) -> i64:
-    return i64(numbers_c.i32_to_i64(x.val))
+    setattr(container, c_current_type[1], x.val)
 
-def i64_to_i32(x: i64) -> i32:
-    return i32(numbers_c.i64_to_i32(x.val))
+    out_container = numerical_cast(Cnum_t(container, c_current_type[0]), c_tgt_type[0])
 
-def f32_to_i32(x: f32) -> i32:
-    return i32(numbers_c.f32_to_i32(x.val))
+    if getattr(out_container, 'type') == 5:
+        raise Exception('Unknown error')
 
-def f32_to_i64(x: f32) -> i64:
-    return i64(numbers_c.f32_to_i64(x.val))
+    out_type = getattr(out_container, 'type') 
 
-def i32_to_f32(x: i32) -> f32:
-    return f32(numbers_c.i32_to_f32(x.val))
+    out = int_to_py_num[out_type][0](getattr(getattr(out_container, 'num'), int_to_py_num[out_type][1]))
 
-def i64_to_f32(x: i64) -> f32:
-    return f32(numbers_c.i64_to_f32(x.val))
+    if y:
+        return int(out.val)
+    return out
