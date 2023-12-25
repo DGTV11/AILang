@@ -1,6 +1,6 @@
-// gcc -shared -o '/Volumes/Data stuffs/Python/AILang/c_lib/numbers/c_src/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c '/Volumes/Data stuffs/Python/AILang/c_lib/numbers/c_src/numbers.c' '/Volumes/Data stuffs/Python/AILang/c_lib/float16/c_src/float16.c'
-// DEBUG: gcc -shared -o '/Volumes/Data stuffs/Python/AILang/c_lib/numbers/c_src/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c '/Volumes/Data stuffs/Python/AILang/c_lib/numbers/c_src/numbers.c' '/Volumes/Data stuffs/Python/AILang/c_lib/float16/c_src/float16.c'
-// TEST: gcc -o '/Volumes/Data stuffs/Python/AILang/c_lib/numbers/c_src/numbers' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c '/Volumes/Data stuffs/Python/AILang/c_lib/numbers/c_src/numbers.c' '/Volumes/Data stuffs/Python/AILang/c_lib/float16/c_src/float16.c'
+// clang -shared -o 'c_lib/numbers/c_src/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/float16/c_src/float16.c'
+// DEBUG: clang -shared -o 'c_lib/numbers/c_src/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/float16/c_src/float16.c'
+// TEST: clang -o 'c_lib/numbers/c_src/numbers' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/float16/c_src/float16.c'
 
 #include "../include/numbers.h"
 
