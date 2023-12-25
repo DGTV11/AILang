@@ -13,8 +13,10 @@ Roadmap:
 
 
 Immediate changes:
-1: Check parser
-2: Check interpreter
+1: Port c_lib to Rust
+2: Add numerical typecasting functions
+3: Check parser
+4: Check interpreter
 
 
 Note:
