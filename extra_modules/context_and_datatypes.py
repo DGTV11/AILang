@@ -1954,7 +1954,7 @@ class BuiltInFunction(BaseFunction):
     
     execute_map.arg_prototypes = [['func', [Type.Function, Type.BuiltInFunction]], ['iterarray', [Type.IterArray]]]
 
-    def execute_numerical_cast(self, exec_ctx): #TODO
+    def execute_numerical_cast(self, exec_ctx):
         res = RTResult()
         x = exec_ctx.symbol_table.get_var('x')
         tgt_type = exec_ctx.symbol_table.get_var('tgt_type')
