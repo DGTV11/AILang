@@ -299,7 +299,7 @@ i32_res i32_mul(int32_t a, int32_t b) {
         if (a > INT_MAX / b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a < INT_MIN / b) {
-            OVERFLOW_RES(res, INTUNDERFLOW);
+            OVERFLOW_RES(res, INTUNDERFLOW);        
         }
     } else if (b < 0 && a < INT_MIN / b) {
         if (a < INT_MIN / b) {
@@ -363,11 +363,11 @@ void conv_i64_to_str(int64_t n, char* buffer) {
 }
 
 i64_res i64_add(int64_t a, int64_t b) {
-    i64_res res;
+    i64_res res; 
     if (a > 0 && b > LLONG_MAX - a) {
         OVERFLOW_RES(res, INTOVERFLOW);
     } else if (a < 0 && b < LLONG_MIN - a) {
-        OVERFLOW_RES(res, INTUNDERFLOW)
+        OVERFLOW_RES(res, INTUNDERFLOW);
     } else {
         GOOD_INT_RES(res, a+b);
     }
