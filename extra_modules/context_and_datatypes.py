@@ -1955,17 +1955,39 @@ class BuiltInFunction(BaseFunction):
     execute_map.arg_prototypes = [['func', [Type.Function, Type.BuiltInFunction]], ['iterarray', [Type.IterArray]]]
 
     def execute_numerical_cast(self, exec_ctx): #TODO
+        res = RTResult()
         x = exec_ctx.symbol_table.get_var('x')
         tgt_type = exec_ctx.symbol_table.get_var('tgt_type')
 
-        numbers.numerical_cast(x.value, BuiltInFunction.numcast_conv_tgt_types_to_tgt_valuetypes[tgt_type])
+        tgt_valuetype = BuiltInFunction.numcast_conv_tgt_types_to_tgt_valuetypes.get(tgt_type.typename, None)
+        if not tgt_valuetype:
+            return res.failure(
+                err.RTError(
+                    self.pos_start, self.pos_end,
+                    "Invalid target datatype for numerical cast",
+                    self.context
+                )
+            )
+
+        num_res = numbers.numerical_cast(x.value, tgt_valuetype)
+        return res.success(
+            BuiltInFunction.numcast_conv_num_type_to_num_wrapper[type(num_res)](num_res)
+        )
     numcast_conv_tgt_types_to_tgt_valuetypes = {
-        'Integer':  int,
-        'Float16':  numbers.f16,
-        'Float32':  numbers.f32,
-        'Float64':  numbers.f64,
-        'Int32':    numbers.i32,
-        'Int64':    numbers.i64
+        'Integer':      int,
+        'Float16':      numbers.f16,
+        'Float32':      numbers.f32,
+        'Float64':      numbers.f64,
+        'Int32':        numbers.i32,
+        'Int64':        numbers.i64,
+    }
+    numcast_conv_num_type_to_num_wrapper = {
+        int:            Integer,
+        numbers.f16:    Float16,
+        numbers.f32:    Float32,
+        numbers.f64:    Float64,
+        numbers.i32:    Int32,
+        numbers.i64:    Int64,
     }
     execute_numerical_cast.arg_prototypes = [['x', [Type.Integer, Type.Int32, Type.Int64, Type.Float16, Type.Float32, Type.Float64]], ['tgt_type', [Type.Type]]]
 
@@ -2180,6 +2202,7 @@ BuiltInFunction.load_module                     = BuiltInFunction('load_module')
 BuiltInFunction.range                           = BuiltInFunction('range')
 BuiltInFunction.set_multi_float_type            = BuiltInFunction('set_multi_float_type')
 BuiltInFunction.map                             = BuiltInFunction('map')
+BuiltInFunction.numerical_cast                  = BuiltInFunction('numerical_cast')
 BuiltInFunction.float_matrix_to_f16m            = BuiltInFunction('float_matrix_to_f16')
 BuiltInFunction.float_matrix_to_f32m            = BuiltInFunction('float_matrix_to_f32')
 BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_matrix_to_f64')

@@ -100,6 +100,7 @@ global_symbol_table.set_sys_var('load_module',              BuiltInFunction.load
 global_symbol_table.set_sys_var('range',                    BuiltInFunction.range)
 global_symbol_table.set_sys_var('set_multi_float_type',     BuiltInFunction.set_multi_float_type)
 global_symbol_table.set_sys_var('map',                      BuiltInFunction.map)
+global_symbol_table.set_sys_var('numerical_cast',           BuiltInFunction.numerical_cast)
 global_symbol_table.set_sys_var('float_matrix_to_f16m',     BuiltInFunction.float_matrix_to_f16m)
 global_symbol_table.set_sys_var('float_matrix_to_f32m',     BuiltInFunction.float_matrix_to_f32m)
 global_symbol_table.set_sys_var('float_matrix_to_f64m',     BuiltInFunction.float_matrix_to_f64m)

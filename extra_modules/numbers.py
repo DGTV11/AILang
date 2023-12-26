@@ -882,11 +882,11 @@ class i64:
 
 # Numerical casting
 py_num_type_to_num_type_t = {
-    type(f16): (num_type_t(0), 'f16'),
-    type(f32): (num_type_t(1), 'f32'),
-    type(f64): (num_type_t(2), 'f64'),
-    type(i32): (num_type_t(3), 'i32'),
-    type(i64): (num_type_t(4), 'i64'),
+    f16: (num_type_t(0), 'f16'),
+    f32: (num_type_t(1), 'f32'),
+    f64: (num_type_t(2), 'f64'),
+    i32: (num_type_t(3), 'i32'),
+    i64: (num_type_t(4), 'i64'),
 }
 
 int_to_py_num = {
@@ -914,7 +914,7 @@ def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
     
     if tgt_type is int:
         y = True
-        tgt_type = type(i64)
+        tgt_type = i64
     else:
         y = False
 
@@ -937,9 +937,11 @@ def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
             container.i64 = x.val
     '''
 
+    #print(c_current_type[1], type(x))
+
     setattr(container, c_current_type[1], x.val)
 
-    out_container = numerical_cast(Cnum_t(container, c_current_type[0]), c_tgt_type[0])
+    out_container = numbers_c.numerical_cast(Cnum_t(container, c_current_type[0]), c_tgt_type[0])
 
     if getattr(out_container, 'type') == 5:
         raise Exception('Unknown error')
@@ -949,5 +951,5 @@ def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
     out = int_to_py_num[out_type][0](getattr(getattr(out_container, 'num'), int_to_py_num[out_type][1]))
 
     if y:
-        return int(out.val)
+        return out.val.value
     return out

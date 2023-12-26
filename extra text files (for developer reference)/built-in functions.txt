@@ -16,7 +16,7 @@ exec_prog                           (fn: String)
 load_module                         (mod_name: String)
 range                               (start: Integer, end: Integer)
 map                                 (func: Function|BuiltInFunction, iterarray: IterArray)
-numerical_cast                      (x: Integer|Int32|Int64|Float16|Float32|Float64, tgt_type: Type) #TODO
+numerical_cast                      (x: Integer|Int32|Int64|Float16|Float32|Float64, tgt_type: Type)
 float_matrix_to_f16m                (m: Float32Matrix|Float64Matrix)
 float_matrix_to_f32m                (m: Float16Matrix|Float64Matrix)
 float_matrix_to_f64m                (m: Float16Matrix|Float32Matrix)
