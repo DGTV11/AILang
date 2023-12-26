@@ -2089,15 +2089,15 @@ class BuiltInFunction(BaseFunction):
             match v.type:
                 case 'Float16Matrix':
                     return res.success(Float16Matrix(
-                        linalg.f16m_row_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                        linalg.f16m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
                 case 'Float32Matrix':
                     return res.success(Float32Matrix(
-                        linalg.f32m_row_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                        linalg.f32m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
                 case 'Float64Matrix':
                     return res.success(Float64Matrix(
-                        linalg.f64m_row_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                        linalg.f64m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
                 case _:
                     return res.failure(
@@ -2126,15 +2126,15 @@ class BuiltInFunction(BaseFunction):
             match v.type:
                 case 'Float16Matrix':
                     return res.success(Float16Matrix(
-                        linalg.f16m_column_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                        linalg.f16m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
                 case 'Float32Matrix':
                     return res.success(Float32Matrix(
-                        linalg.f32m_column_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                        linalg.f32m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
                 case 'Float64Matrix':
                     return res.success(Float64Matrix(
-                        linalg.f64m_column_vector_to_matrix(v.m, ctypes.c_size_t(no_rows.value))
+                        linalg.f64m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
                 case _:
                     return res.failure(
