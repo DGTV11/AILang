@@ -1,20 +1,19 @@
 Roadmap:
 1: Add Integers (DONE)
 2: Reimplement Matrices (DOING)
-3: Fix error messages!!! (TODO)
-4: Add random module (TODO)
-5: Update IterArray definition syntax (TODO)
-6: Implement serialisation functions (TODO)
-7: Implement mathematical functions (TODO)
-8: Implement Automatic Differentiation (TODO)
-9: Implement AI functions (TODO)
-10: Allow structs to have functions attached (find better name) (TODO)
-11: Make reg-based VM using rust (TODO)
+3: Add random module (TODO)
+4: Update IterArray definition syntax (TODO)
+5: Implement serialisation functions (TODO)
+6: Implement mathematical functions (TODO)
+7: Implement Automatic Differentiation (TODO)
+8: Implement AI functions (TODO)
+9: Allow structs to have functions attached (find better name) (TODO)
+10: Make reg-based VM using rust (TODO)
 
 
 Immediate changes:
-1: Check parser
-2: Check interpreter
+1: Add integer matrices
+2: Add matrix casting
 
 
 Note:
