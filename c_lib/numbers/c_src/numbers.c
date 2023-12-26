@@ -363,7 +363,7 @@ void conv_i64_to_str(int64_t n, char* buffer) {
 }
 
 i64_res i64_add(int64_t a, int64_t b) {
-    i64_res res; 
+    i64_res res;
     if (a > 0 && b > LLONG_MAX - a) {
         OVERFLOW_RES(res, INTOVERFLOW);
     } else if (a < 0 && b < LLONG_MIN - a) {
