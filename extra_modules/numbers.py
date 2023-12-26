@@ -897,7 +897,7 @@ int_to_py_num = {
     4: (i64, 'i64'),
 }
 
-def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
+def numerical_cast(x: num_t, tgt_type: type) -> num_t:
     if isinstance(x, int):
         if tgt_type is f16:
             x = f32(float32_t(float(x)))
