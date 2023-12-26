@@ -900,23 +900,23 @@ int_to_py_num = {
 def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
     if isinstance(x, int):
         if tgt_type is f16:
-            x = f64(float64_t(float(x)))
+            x = f32(float32_t(float(x)))
         elif tgt_type is f32:
-            x = f64(float64_t(float(x)))
+            return f32(float32_t(float(x)))
         elif tgt_type is f64:
-            x = f64(float64_t(float(x)))
+            return f64(float64_t(float(x)))
         elif tgt_type is i32:
-            x = i64(int64_t(x))
+            return i32(int32_t(x))
         elif tgt_type is i64:
-            x = i64(int64_t(x))
+            return i64(int64_t(x))
         elif tgt_type is int:
             return x
     
     if tgt_type is int:
-        y = True
+        isBigInt = True
         tgt_type = i64
     else:
-        y = False
+        isBigInt = False
 
     c_current_type  = py_num_type_to_num_type_t[type(x)]
     c_tgt_type      = py_num_type_to_num_type_t[tgt_type]
@@ -950,6 +950,6 @@ def numerical_cast(x: num_t, tgt_type: type) -> num_t: #TODO!!!
 
     out = int_to_py_num[out_type][0](getattr(getattr(out_container, 'num'), int_to_py_num[out_type][1]))
 
-    if y:
+    if isBigInt:
         return out.val.value
     return out
