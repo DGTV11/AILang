@@ -6,6 +6,7 @@
 #include <limits.h>
 
 // Macros
+//*Malloc and Calloc
 #ifdef __cplusplus
 #define MALLOC(count, item_type) (item_type*)malloc(count * sizeof(item_type))
 #define CALLOC(count, item_type) (item_type*)calloc(count, sizeof(item_type))
@@ -14,8 +15,14 @@
 #define CALLOC(count, item_type) calloc(count, sizeof(item_type))
 #endif
 
+//*Normal result macros
 #define SET_DIMS(matrix, x_coord, y_coord) {matrix.x = x_coord; matrix.y = y_coord;}
 #define ERROR_RES(result, error) {result.err = error; SET_DIMS(result.res, 0, 0); result.res.m = NULL;}
+
+//*Matrix cast result macros
+#define MC_SET_RES_TYPE(result, type) {result.res_matrix.matrix_type = type;}
+#define MC_SET_RES_ERROR(result, error) {result.err = error;}
+#define MC_GOOD_RES(result) {MC_SET_RES_ERROR(result, GOOD);}
 
 // Errors
 typedef enum {
@@ -25,6 +32,7 @@ typedef enum {
     ZERODIVERROR,
     INTOVERFLOW,
     INTUNDERFLOW,
+    CASTTYPEERROR,
 } error_t;
 
 // Typedefs
@@ -88,6 +96,33 @@ typedef struct {
     error_t err;
 } int64_matrix_res_t;
 
+// Matrix cast structures
+typedef enum {
+    F16MT = 0,
+    F32MT,
+    F64MT,
+    I32MT,
+    I64MT,
+} matrix_type_t;
+
+typedef union {
+    float16_matrix_t f16m;
+    float32_matrix_t f32m;
+    float64_matrix_t f64m;
+    int32_matrix_t i32m;
+    int64_matrix_t i64m;
+} matrix_container_t;
+
+typedef struct {
+    matrix_container_t m;
+    matrix_type_t matrix_type;
+} matrix_t;
+
+typedef struct {
+    matrix_t res_matrix;
+    error_t err;
+} matrix_cast_res_t;
+
 // Function prototypes
 void free_f16m(float16_matrix_t m);
 void free_f32m(float32_matrix_t m);
@@ -120,10 +155,18 @@ int64_matrix_res_t   i64m_column_vector_to_matrix(int64_matrix_t v, size_t no_co
 
 float32_matrix_res_t f16m_to_f32m(float16_matrix_t m);
 float64_matrix_res_t f16m_to_f64m(float16_matrix_t m);
+int32_matrix_res_t   f16m_to_i32m(float16_matrix_t m);
+int64_matrix_res_t   f16m_to_i64m(float16_matrix_t m);
+
 float16_matrix_res_t f32m_to_f16m(float32_matrix_t m);
-float64_matrix_res_t f32m_to_f64m(float32_matrix_t m);
+float64_matrix_res_t f32m_to_f64m(float32_matrix_t m); 
+int32_matrix_res_t   f32m_to_i32m(float32_matrix_t m);
+int64_matrix_res_t   f32m_to_i64m(float32_matrix_t m);
+
 float16_matrix_res_t f64m_to_f16m(float64_matrix_t m);
 float32_matrix_res_t f64m_to_f32m(float64_matrix_t m);
+int32_matrix_res_t   f64m_to_i32m(float64_matrix_t m);
+int64_matrix_res_t   f64m_to_i64m(float64_matrix_t m);
 
 float16_matrix_res_t f16m_add(float16_matrix_t m1, float16_matrix_t m2);
 float32_matrix_res_t f32m_add(float32_matrix_t m1, float32_matrix_t m2);
