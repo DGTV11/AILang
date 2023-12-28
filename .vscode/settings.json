@@ -2,6 +2,7 @@
     "files.associations": {
         "numbers.h": "c",
         "ratio": "c",
-        "limits.h": "c"
+        "limits.h": "c",
+        "complex": "c"
     }
 }
