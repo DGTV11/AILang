@@ -301,7 +301,7 @@ i32_res i32_mul(int32_t a, int32_t b) {
         } else if (a < INT_MIN / b) {
             OVERFLOW_RES(res, INTUNDERFLOW);        
         }
-    } else if (b < 0 && a < INT_MIN / b) {
+    } else if (b < 0) {
         if (a < INT_MIN / b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a > INT_MAX / b) {
@@ -396,7 +396,7 @@ i64_res i64_mul(int64_t a, int64_t b) {
         } else if (a < LLONG_MIN / b) {
             OVERFLOW_RES(res, INTUNDERFLOW);
         }
-    } else if (b < 0 && a < INT_MIN / b) {
+    } else if (b < 0) {
         if (a < LLONG_MIN / b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a > LLONG_MAX / b) {
