@@ -7,8 +7,10 @@ Roadmap:
 6: Implement mathematical functions (TODO)
 7: Implement Automatic Differentiation (TODO)
 8: Implement AI functions (TODO)
-9: Allow structs to have functions attached (find better name) (TODO)
-10: Make reg-based VM using rust (TODO)
+9: Allow structs to have bound methods (TODO)
+10: Add function overloading (TODO)
+11: Add explicit unions (TODO)
+10: Make register-based VM using rust (TODO)
 
 
 Immediate changes:
