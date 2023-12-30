@@ -23,28 +23,28 @@ float16_t str2f16(char str[]) {
 void conv_f16_to_str(float16_t h, char* buffer) {
     if (IS_INF(h)) {
         if (f16_gt(h, 0x0000)) {
-            sprintf(buffer, "+inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "+inf");
         } else {
-            sprintf(buffer, "-inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "-inf");
         }
     } else if (IS_NAN(h)) {
-        sprintf(buffer, "NaN");
+        snprintf(buffer, NAN_STR_BUF_SIZE, "NaN");
     } else {
-        sprintf(buffer, "%.3f", float16_to_float32(h));
+        snprintf(buffer, HALF_STR_BUF_SIZE, "%.3f", float16_to_float32(h));
     }
 }
 
 void conv_f16_to_sci_str(float16_t h, char* buffer) {
     if (IS_INF(h)) {
         if (f16_gt(h, 0x0000)) {
-            sprintf(buffer, "+inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "+inf");
         } else {
-            sprintf(buffer, "-inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "-inf");
         }
     } else if (IS_NAN(h)) {
-        sprintf(buffer, "NaN");
+        snprintf(buffer, NAN_STR_BUF_SIZE, "NaN");
     } else {
-        sprintf(buffer, "%e", float16_to_float32(h));
+        snprintf(buffer, SCIENTIFIC_STR_BUF_SIZE, "%e", float16_to_float32(h));
     }
 }
 
@@ -87,28 +87,28 @@ float32_t str2f32(char str[]) {
 void conv_f32_to_str(float32_t f, char* buffer) {
     if (isinf(f)) {
         if (f > 0.0f) {
-            sprintf(buffer, "+inf");
+            snprintf(buffer, INT_STR_BUF_SIZE, "+inf");
         } else {
-            sprintf(buffer, "-inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "-inf");
         }
     } else if (isnan(f)) {
-        sprintf(buffer, "NaN");
+        snprintf(buffer, NAN_STR_BUF_SIZE, "NaN");
     } else {
-        sprintf(buffer, "%f", f);
+        snprintf(buffer, FLOAT_STR_BUF_SIZE, "%f", f);
     }
 }
 
 void conv_f32_to_sci_str(float32_t f, char* buffer) {
     if (isinf(f)) {
         if (f > 0.0f) {
-            sprintf(buffer, "+inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "+inf");
         } else {
-            sprintf(buffer, "-inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "-inf");
         }
     } else if (isnan(f)) {
-        sprintf(buffer, "NaN");
+        snprintf(buffer, NAN_STR_BUF_SIZE, "NaN");
     } else {
-        sprintf(buffer, "%e", f);
+        snprintf(buffer, SCIENTIFIC_STR_BUF_SIZE, "%e", f);
     }
 }
 
@@ -177,28 +177,28 @@ float64_t str2f64(char str[]) {
 void conv_f64_to_str(float64_t d, char* buffer) {
     if (isinf(d)) {
         if (d > 0.0) {
-            sprintf(buffer, "+inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "+inf");
         } else {
-            sprintf(buffer, "-inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "-inf");
         }
     } else if (isnan(d)) {
-        sprintf(buffer, "NaN");
+        snprintf(buffer, NAN_STR_BUF_SIZE, "NaN");
     } else {
-        sprintf(buffer, "%lf", d);
+        snprintf(buffer, DOUBLE_STR_BUF_SIZE, "%lf", d);
     }
 }
 
 void conv_f64_to_sci_str(float64_t d, char* buffer) {
     if (isinf(d)) {
         if (d > 0.0) {
-            sprintf(buffer, "+inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "+inf");
         } else {
-            sprintf(buffer, "-inf");
+            snprintf(buffer, INF_STR_BUF_SIZE, "-inf");
         }
     } else if (isnan(d)) {
-        sprintf(buffer, "NaN");
+        snprintf(buffer, NAN_STR_BUF_SIZE, "NaN");
     } else {
-        sprintf(buffer, "%e", d);
+        snprintf(buffer, SCIENTIFIC_STR_BUF_SIZE, "%e", d);
     }
 }
 
@@ -264,7 +264,7 @@ int32_t str2i32(char str[]) {
 }
 
 void conv_i32_to_str(int32_t n, char* buffer) {
-    sprintf(buffer, "%d", n);
+    snprintf(buffer, INT_STR_BUF_SIZE, "%d", n);
 }
 
 i32_res i32_add(int32_t a, int32_t b) {
@@ -359,7 +359,7 @@ int64_t str2i64(char str[]) {
 }
 
 void conv_i64_to_str(int64_t n, char* buffer) {
-    sprintf(buffer, "%lld", n);
+    snprintf(buffer, LONG_STR_BUF_SIZE, "%lld", n);
 }
 
 i64_res i64_add(int64_t a, int64_t b) {

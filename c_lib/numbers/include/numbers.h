@@ -11,6 +11,15 @@
 #define OVERFLOW_RES(result, type_of_overflow) {res.res = 0; res.overflow_type = type_of_overflow;}
 #define GOOD_INT_RES(result, value) {res.res = value; res.overflow_type = NOOVERFLOW;}
 
+#define NAN_STR_BUF_SIZE 3
+#define INF_STR_BUF_SIZE 4
+#define HALF_STR_BUF_SIZE 20
+#define FLOAT_STR_BUF_SIZE 40
+#define DOUBLE_STR_BUF_SIZE 310
+#define SCIENTIFIC_STR_BUF_SIZE 13
+#define INT_STR_BUF_SIZE 10
+#define LONG_STR_BUF_SIZE 20
+
 // Typedefs
 typedef float   float32_t;
 typedef double  float64_t;
