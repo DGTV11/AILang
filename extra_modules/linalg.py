@@ -1096,7 +1096,7 @@ class i64_matrix:
     def i64_stringify(i64: int64_t):
         c_stringified_value = ctypes.create_string_buffer(LONG_STR_BUF_SIZE)
         numbers_c.conv_i64_to_str(i64, c_stringified_value)
-        return c_stringified_value.value.decode('utf-8')+'i'
+        return c_stringified_value.value.decode('utf-8')+'l'
 
     def __repr__(self): #All items are left-padded like this: [0.4213312, 0.6412   , 0.3112333]
         matrix = list(map(lambda ptr: ptr[:self.x], getattr(self.m, 'm')[:self.y]))
