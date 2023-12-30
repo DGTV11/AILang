@@ -1280,6 +1280,30 @@ def f64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f64) -> f64_ma
             case _: raise Exception("Unknown error")
     return f64_matrix(getattr(c_res, 'res'))
 
+def i32m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: i32) -> i32_matrix:
+    if x.value < 1 or y.value < 1:
+        raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
+
+    c_res: Cint32_matrix_res_t = linalg_c.i32m_fill(x, y, fill_value.val)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix copy")
+            case _: raise Exception("Unknown error")
+    return i32_matrix(getattr(c_res, 'res'))
+
+def i64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: i64) -> i64_matrix:
+    if x.value < 1 or y.value < 1:
+        raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
+
+    c_res: Cint64_matrix_res_t = linalg_c.i64m_fill(x, y, fill_value.val)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix copy")
+            case _: raise Exception("Unknown error")
+    return i64_matrix(getattr(c_res, 'res'))
+
 #*(Row vector->matrix) broadcast functions
 def f16m_row_vector_to_matrix(v: f16_matrix, no_rows: ctypes.c_size_t) -> f16_matrix:
     if no_rows.value < 1:
