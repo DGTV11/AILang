@@ -178,6 +178,8 @@ float32_matrix_res_t i64m_to_f32m(int64_matrix_t m);
 float64_matrix_res_t i64m_to_f64m(int64_matrix_t m);
 int32_matrix_res_t   i64m_to_i32m(int64_matrix_t m);
 
+matrix_cast_res_t    matrix_cast(matrix_t in_m, matrix_type_t tgt_type);
+
 float16_matrix_res_t f16m_add(float16_matrix_t m1, float16_matrix_t m2);
 float32_matrix_res_t f32m_add(float32_matrix_t m1, float32_matrix_t m2);
 float64_matrix_res_t f64m_add(float64_matrix_t m1, float64_matrix_t m2);

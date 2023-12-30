@@ -1104,7 +1104,7 @@ int32_matrix_res_t i64m_to_i32m(int64_matrix_t m) {
 }
 
 //* Matrix casting
-matrix_cast_res_t matrix_cast(matrix_t in_m, matrix_type_t tgt_type) { //TODO!
+matrix_cast_res_t matrix_cast(matrix_t in_m, matrix_type_t tgt_type) { 
     matrix_cast_res_t res;
 
     if (in_m.matrix_type == tgt_type) {
