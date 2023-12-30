@@ -2391,6 +2391,14 @@ class BuiltInFunction(BaseFunction):
                     return res.success(Float64Matrix(
                         linalg.f64m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
+                case 'Int32Matrix':
+                    return res.success(Int32Matrix(
+                        linalg.i32m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'Int64Matrix':
+                    return res.success(Int64Matrix(
+                        linalg.i64m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
                 case _:
                     return res.failure(
                         err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
@@ -2407,7 +2415,7 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
             )
-    execute_row_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float32Matrix]], ['no_rows', [Type.Integer]]]
+    execute_row_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix]], ['no_rows', [Type.Integer]]]
 
     def execute_column_vector_to_matrix(self, exec_ctx):
         res = RTResult()
@@ -2428,6 +2436,14 @@ class BuiltInFunction(BaseFunction):
                     return res.success(Float64Matrix(
                         linalg.f64m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
+                case 'Int32Matrix':
+                    return res.success(Int32Matrix(
+                        linalg.i32m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'Int64Matrix':
+                    return res.success(Int64Matrix(
+                        linalg.i64m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
                 case _:
                     return res.failure(
                         err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
@@ -2444,7 +2460,7 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
             )
-    execute_column_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float32Matrix]], ['no_rows', [Type.Integer]]]
+    execute_column_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix]], ['no_rows', [Type.Integer]]]
 
     def execute_transpose_matrix(self, exec_ctx):
         res = RTResult()
