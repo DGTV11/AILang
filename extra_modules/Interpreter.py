@@ -29,7 +29,7 @@ class Interpreter:
                 int_value = int(node.tok.value)
                 if int_value > 2147483647:
                     return RTResult().failure(
-                        err.UnknownRTError(
+                        err.IntegerOverflowError(
                             node.pos_start, node.pos_end,
                             f"{int_value}i is above the upper 32-bit integer limit of 2147483647",
                             context
@@ -37,7 +37,7 @@ class Interpreter:
                     )
                 elif int_value < -2147483648:
                     return RTResult().failure(
-                        err.UnknownRTError(
+                        err.IntegerOverflowError(
                             node.pos_start, node.pos_end,
                             f"{int_value}i is below the lower 32-bit integer limit of -2147483648",
                             context
@@ -48,7 +48,7 @@ class Interpreter:
                 int_value = int(node.tok.value)
                 if int_value > 9223372036854775807:
                     return RTResult().failure(
-                        err.UnknownRTError(
+                        err.IntegerOverflowError(
                             node.pos_start, node.pos_end,
                             f"{int_value}l is above the upper 64-bit integer limit of 9223372036854775807",
                             context
@@ -56,7 +56,7 @@ class Interpreter:
                     )
                 elif int_value < -9223372036854775808:
                     return RTResult().failure(
-                        err.UnknownRTError(
+                        err.IntegerOverflowError(
                             node.pos_start, node.pos_end,
                             f"{int_value}l is below the lower 64-bit integer limit of -9223372036854775808",
                             context
@@ -129,6 +129,10 @@ class Interpreter:
                     matrix = Float32Matrix(linalg.f32_matrix(subvectors))
                 case 'Float64':
                     matrix = Float64Matrix(linalg.f64_matrix(subvectors))
+                case 'Int32':
+                    matrix = Int32Matrix(linalg.i32_matrix(subvectors))
+                case 'Int64':
+                    matrix = Int64Matrix(linalg.i64_matrix(subvectors))
                 case _:
                     return res.failure(err.RTError(
                         node.pos_start, node.pos_end,

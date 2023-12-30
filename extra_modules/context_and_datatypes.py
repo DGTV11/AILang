@@ -454,8 +454,48 @@ class Int32(BaseValue):
         else:
             return None, BaseValue.illegal_operation(self, other)
     
+    def bitwise_and_by(self, other):
+        if isinstance(other, Int32):
+            return Int32(self.value & other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_or_by(self, other):
+        if isinstance(other, Int32):
+            return Int32(self.value | other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def bitwise_xor_by(self, other):
+        if isinstance(other, Int32):
+            return Int32(self.value ^ other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def left_shift_by(self, other):
+        if isinstance(other, Int32):
+            return Int32(self.value << other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def right_shift_by(self, other):
+        if isinstance(other, Int32):
+            return Int32(self.value >> other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def complement(self):
+        return Int32(~self.value).set_context(self.context), None
+
+    def not_(self):
+        n = Int32(0) if self.is_true() else Int32(1)
+        return n, None
+
     def neg(self):
-        return Int32(-self.value)
+        try:
+            return Int32(-self.value), None
+        except OverflowError as e:
+            return None, err.IntegerOverflowError(self.pos_start, self.pos_end, e, self.context)
 
     def copy(self):
         copy = Int32(self.value)
@@ -578,8 +618,48 @@ class Int64(BaseValue):
         else:
             return None, BaseValue.illegal_operation(self, other)
     
+    def bitwise_and_by(self, other):
+        if isinstance(other, Int64):
+            return Int64(self.value & other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_or_by(self, other):
+        if isinstance(other, Int64):
+            return Int64(self.value | other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def bitwise_xor_by(self, other):
+        if isinstance(other, Int64):
+            return Int64(self.value ^ other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def left_shift_by(self, other):
+        if isinstance(other, Int64):
+            return Int64(self.value << other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def right_shift_by(self, other):
+        if isinstance(other, Int64):
+            return Int64(self.value >> other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def complement(self):
+        return Int64(~self.value).set_context(self.context), None
+
+    def not_(self):
+        n = Int64(0) if self.is_true() else Int64(1)
+        return n, None
+
     def neg(self):
-        return Int64(-self.value)
+        try:
+            return Int64(-self.value), None
+        except OverflowError as e:
+            return None, err.IntegerOverflowError(self.pos_start, self.pos_end, e, self.context)
 
     def copy(self):
         copy = Int64(self.value)
@@ -686,7 +766,7 @@ class Float16(BaseValue):
             return None, BaseValue.illegal_operation(self, other)
     
     def neg(self):
-        return Float16(-self.value)
+        return Float16(-self.value), None
 
     def copy(self):
         copy = Float16(self.value)
@@ -791,7 +871,7 @@ class Float32(BaseValue):
             return None, BaseValue.illegal_operation(self, other)
     
     def neg(self):
-        return Float32(-self.value)
+        return Float32(-self.value), None
 
     def copy(self):
         copy = Float32(self.value)
@@ -896,7 +976,7 @@ class Float64(BaseValue):
             return None, BaseValue.illegal_operation(self, other)
     
     def neg(self):
-        return Float64(-self.value)
+        return Float64(-self.value), None
 
     def copy(self):
         copy = Float64(self.value)
@@ -995,8 +1075,13 @@ class Float16Matrix(BaseValue):
         else:
             return None, BaseValue.illegal_operation(self, other)
         
-    def not_(self):
-        return Float16Matrix(-self.matrix)
+    def neg(self):
+        try:
+            return Float16Matrix(-self.matrix), None
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
     
     def copy(self):
         try:
@@ -1091,8 +1176,13 @@ class Float32Matrix(BaseValue):
         else:
             return None, BaseValue.illegal_operation(self, other)
         
-    def not_(self):
-        return Float32Matrix(-self.matrix)
+    def neg(self):
+        try:
+            return Float32Matrix(-self.matrix), None
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
     
     def copy(self):
         try:
@@ -1125,7 +1215,7 @@ class Float64Matrix(BaseValue):
             try:
                 return Float64Matrix(self.matrix + other.matrix), None
             except MemoryError as e:
-                return None, err.mallocError(self.pos_start, other.pos_end, e, self.context)
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
             except ValueError as e:
                 return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
             except Exception as e:
@@ -1187,12 +1277,239 @@ class Float64Matrix(BaseValue):
         else:
             return None, BaseValue.illegal_operation(self, other)
         
-    def not_(self):
-        return Float64Matrix(-self.matrix)
+    def neg(self):
+        try:
+            return Float64Matrix(-self.matrix), None
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
     
     def copy(self):
         try:
             return Float64Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.copywarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
+Type.Int32Matrix = Type('Int32Matrix')
+class Int32Matrix(BaseValue):
+    def __init__(self, matrix: linalg.i32_matrix):
+        super().__init__()
+        self.type = 'Int32Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, Int32Matrix):
+            try:
+                return Int32Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Int32Matrix):
+            try:
+                return Int32Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Int32Matrix):
+            try:
+                return Int32Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Int32Matrix):
+            try:
+                return Int32Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, Int32Matrix):
+            try:
+                return Int32Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def neg(self):
+        try:
+            return Int32Matrix(-self.matrix), None
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except OverflowError as e:
+            return None, err.IntegerOverflowError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+    
+    def copy(self):
+        try:
+            return Int32Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.copywarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
+Type.Int64Matrix = Type('Int64Matrix')
+class Int64Matrix(BaseValue):
+    def __init__(self, matrix: linalg.i64_matrix):
+        super().__init__()
+        self.type = 'Int64Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, Int64Matrix):
+            try:
+                return Int64Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, Int64Matrix):
+            try:
+                return Int64Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, Int64Matrix):
+            try:
+                return Int64Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, Int64Matrix):
+            try:
+                return Int64Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, Int64Matrix):
+            try:
+                return Int64Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def neg(self):
+        try:
+            return Int64Matrix(-self.matrix), None
+        except MemoryError as e:
+            return None, err.MallocError(self.pos_start, self.pos_end, e, self.context)
+        except OverflowError as e:
+            return None, err.IntegerOverflowError(self.pos_start, self.pos_end, e, self.context)
+        except Exception as e:
+            return None, err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
+    
+    def copy(self):
+        try:
+            return Int64Matrix(self.matrix.copy())
         except Exception as e:
             wrn.copywarning(self.pos_start, self.pos_end, e)
             return Null()

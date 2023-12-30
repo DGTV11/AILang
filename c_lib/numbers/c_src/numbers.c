@@ -353,6 +353,30 @@ bool i32_neq(int32_t a, int32_t b) {
     return a != b;
 }
 
+int32_t i32_bitwise_lshift(int32_t a, int32_t b) {
+    return a << b;
+}
+
+int32_t i32_bitwise_rshift(int32_t a, int32_t b) {
+    return a >> b;
+}
+
+int32_t i32_bitwise_xor(int32_t a, int32_t b) {
+    return a ^ b;
+}
+
+int32_t i32_bitwise_or(int32_t a, int32_t b) {
+    return a | b;
+}
+
+int32_t i32_bitwise_and(int32_t a, int32_t b) {
+    return a & b;
+}
+
+int32_t i32_bitwise_not(int32_t a) {
+    return ~a;
+}
+
 //i64
 int64_t str2i64(char str[]) {
     return atoll(str);
@@ -446,6 +470,30 @@ bool i64_lt(int64_t a, int64_t b) {
 
 bool i64_neq(int64_t a, int64_t b) {
     return a != b;
+}
+
+int64_t i64_bitwise_lshift(int64_t a, int64_t b) {
+    return a << b;
+}
+
+int64_t i64_bitwise_rshift(int64_t a, int64_t b) {
+    return a >> b;
+}
+
+int64_t i64_bitwise_xor(int64_t a, int64_t b) {
+    return a ^ b;
+}
+
+int64_t i64_bitwise_or(int64_t a, int64_t b) {
+    return a | b;
+}
+
+int64_t i64_bitwise_and(int64_t a, int64_t b) {
+    return a & b;
+}
+
+int64_t i64_bitwise_not(int64_t a) {
+    return ~a;
 }
 
 // Numerical casting

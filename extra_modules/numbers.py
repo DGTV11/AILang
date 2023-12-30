@@ -1,7 +1,5 @@
 import ctypes
 import os
-import extra_modules.Errors as errs
-import extra_modules.position as pos
 from extra_modules.constant_system_values import *
 
 numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/c_lib/numbers/c_src/numbers.so')
@@ -47,7 +45,7 @@ class Ci64_res(ctypes.Structure):
         ("overflow_type", overflow_type_t),
     ]
 
-# Numerical cast structures
+# Numerical cast structures and types
 class Cnum_container_t(ctypes.Union):
     _fields_ = [
         ("f16", float16_t),
@@ -248,6 +246,24 @@ numbers_c.i32_lt.restype = ctypes.c_bool
 numbers_c.i32_neq.argtypes = [int32_t, int32_t]
 numbers_c.i32_neq.restype = ctypes.c_bool
 
+numbers_c.i32_bitwise_lshift.argtypes = [int32_t, int32_t]
+numbers_c.i32_bitwise_lshift.restype = int32_t
+
+numbers_c.i32_bitwise_rshift.argtypes = [int32_t, int32_t]
+numbers_c.i32_bitwise_rshift.restype = int32_t
+
+numbers_c.i32_bitwise_xor.argtypes = [int32_t, int32_t]
+numbers_c.i32_bitwise_xor.restype = int32_t
+
+numbers_c.i32_bitwise_or.argtypes = [int32_t, int32_t]
+numbers_c.i32_bitwise_or.restype = int32_t
+
+numbers_c.i32_bitwise_and.argtypes = [int32_t, int32_t]
+numbers_c.i32_bitwise_and.restype = int32_t
+
+numbers_c.i32_bitwise_not.argtypes = [int32_t]
+numbers_c.i32_bitwise_not.restype = int32_t
+
 ## i64
 numbers_c.str2i64.argtypes = [ctypes.c_char_p]
 numbers_c.str2i64.restype = int64_t
@@ -290,6 +306,24 @@ numbers_c.i64_lt.restype = ctypes.c_bool
 
 numbers_c.i64_neq.argtypes = [int64_t, int64_t]
 numbers_c.i64_neq.restype = ctypes.c_bool
+
+numbers_c.i64_bitwise_lshift.argtypes = [int64_t, int64_t]
+numbers_c.i64_bitwise_lshift.restype = int64_t
+
+numbers_c.i64_bitwise_rshift.argtypes = [int64_t, int64_t]
+numbers_c.i64_bitwise_rshift.restype = int64_t
+
+numbers_c.i64_bitwise_xor.argtypes = [int64_t, int64_t]
+numbers_c.i64_bitwise_xor.restype = int64_t
+
+numbers_c.i64_bitwise_or.argtypes = [int64_t, int64_t]
+numbers_c.i64_bitwise_or.restype = int64_t
+
+numbers_c.i64_bitwise_and.argtypes = [int64_t, int64_t]
+numbers_c.i64_bitwise_and.restype = int64_t
+
+numbers_c.i64_bitwise_not.argtypes = [int64_t]
+numbers_c.i64_bitwise_not.restype = int64_t
 
 # Conversions
 numbers_c.numerical_cast.argtypes = [Cnum_t, num_type_t]
@@ -747,6 +781,39 @@ class i32:
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'i32' and '{type(other)}'")
 
+    def __lshift__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_lshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <<: 'i32' and '{type(other)}'")
+        
+    def __rshift__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_rshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >>: 'i32' and '{type(other)}'")
+
+    def __xor__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_xor(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ^: 'i32' and '{type(other)}'")
+
+    def __or__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_or(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for |: 'i32' and '{type(other)}'")
+        
+    def __and__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_and(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for &: 'i32' and '{type(other)}'")
+        
+    def __invert__(self):
+        return i32(numbers_c.i32_bitwise_not(self.val))
+
 class i64:
     def __init__(self, val: str|int|int64_t):
         if isinstance(val, str):
@@ -761,9 +828,9 @@ class i64:
 
     def __repr__(self) -> str:
         if not self.stringified_value:
-            c_stringified_value = ctypes.create_string_buffer(INT_STR_BUF_SIZE)
+            c_stringified_value = ctypes.create_string_buffer(LONG_STR_BUF_SIZE)
             numbers_c.conv_i64_to_str(self.val, c_stringified_value)
-            self.stringified_value = c_stringified_value.value.decode('utf-8')+'i'
+            self.stringified_value = c_stringified_value.value.decode('utf-8')+'l'
             del c_stringified_value
         return self.stringified_value
     
@@ -879,6 +946,39 @@ class i64:
             return numbers_c.i64_neq(self.val, other.val)
         else:
             raise TypeError(f"Unsupported operand type(s) for !=: 'i64' and '{type(other)}'")
+        
+    def __lshift__(self, other):
+        if isinstance(other, i64):
+            return i64(numbers_c.i64_bitwise_lshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <<: 'i64' and '{type(other)}'")
+        
+    def __rshift__(self, other):
+        if isinstance(other, i64):
+            return i64(numbers_c.i64_bitwise_rshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >>: 'i64' and '{type(other)}'")
+
+    def __xor__(self, other):
+        if isinstance(other, i64):
+            return i64(numbers_c.i64_bitwise_xor(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ^: 'i64' and '{type(other)}'")
+
+    def __or__(self, other):
+        if isinstance(other, i64):
+            return i64(numbers_c.i64_bitwise_or(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for |: 'i64' and '{type(other)}'")
+        
+    def __and__(self, other):
+        if isinstance(other, i64):
+            return i64(numbers_c.i64_bitwise_and(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for &: 'i64' and '{type(other)}'")
+        
+    def __invert__(self):
+        return i64(numbers_c.i64_bitwise_not(self.val))
 
 # Numerical casting
 py_num_type_to_num_type_t = {
