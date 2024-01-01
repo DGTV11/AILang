@@ -1481,7 +1481,7 @@ int_to_py_matrix = {
     4: (i64_matrix, 'i64m'),
 }
 
-def matrix_cast(m: matrix_t, tgt_type: type) -> matrix_t: 
+def matrix_cast(m: matrix_t, tgt_type: type) -> matrix_t: #TODO: FIX ERROR! (var x: Int32Matrix = matrix_fill(10b, 10b, 10i);matrix_cast(x, Float16Matrix))
     c_current_type  = py_matrix_type_to_matrix_type_t[type(m)]
     c_tgt_type      = py_matrix_type_to_matrix_type_t[tgt_type]
 
@@ -1493,7 +1493,7 @@ def matrix_cast(m: matrix_t, tgt_type: type) -> matrix_t:
 
     err: int = getattr(out_res, 'err')
     if err != 0:
-        print(err) #TODO: FIX ERROR! (var x: Int32Matrix = matrix_fill(10b, 10b, 10i);matrix_cast(x, Float16Matrix))
+        print(err) #*DEBUG
         match err:
             case 1: raise MemoryError("Failed to allocate matrix")
             case _: raise Exception("Unknown error")
