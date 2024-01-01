@@ -2324,11 +2324,11 @@ class BuiltInFunction(BaseFunction):
             )
         
         try:
-            matrix_res = linalg.matrix_cast(m.value, tgt_valuetype)
+            matrix_res = linalg.matrix_cast(m.matrix, tgt_valuetype)
         except MemoryError as e:
             return res.failure(err.MallocError(self.pos_start, self.pos_end, e, self.context))
         except Exception as e:
-            return res.failure(err.UnknownError(self.pos_start, self.pos_end, e, self.context))
+            return res.failure(err.UnknownRTError(self.pos_start, self.pos_end, e, self.context))
 
         return res.success(
             BuiltInFunction.matrixcast_conv_matrix_type_to_matrix_wrapper[type(matrix_res)](matrix_res)
@@ -2531,7 +2531,7 @@ BuiltInFunction.load_module                     = BuiltInFunction('load_module')
 BuiltInFunction.range                           = BuiltInFunction('range')
 BuiltInFunction.map                             = BuiltInFunction('map')
 BuiltInFunction.numerical_cast                  = BuiltInFunction('numerical_cast')
-BuiltinFunction.matrix_cast                     = BuiltInFunction('matrix_cast')
+BuiltInFunction.matrix_cast                     = BuiltInFunction('matrix_cast')
 BuiltInFunction.matrix_fill                     = BuiltInFunction('matrix_fill')
 BuiltInFunction.row_vector_to_matrix            = BuiltInFunction('row_vector_to_matrix')
 BuiltInFunction.column_vector_to_matrix         = BuiltInFunction('column_vector_to_matrix')
