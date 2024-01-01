@@ -2308,23 +2308,46 @@ class BuiltInFunction(BaseFunction):
     }
     execute_numerical_cast.arg_prototypes = [['x', [Type.Integer, Type.Int32, Type.Int64, Type.Float16, Type.Float32, Type.Float64]], ['tgt_type', [Type.Type]]]
 
-    def execute_matrix_to_f16m(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('m')
-        if x.type == 'Float32Matrix': return RTResult().success(Float16Matrix(linalg.f32m_to_f16m(x.m)))
-        elif x.type == 'Float64Matrix': return RTResult().success(Float16Matrix(linalg.f64m_to_f16m(x.m)))
-    execute_matrix_to_f16m.arg_prototypes = [['m', [Type.Float32Matrix, Type.Float64Matrix]]]
+    def execute_matrix_cast(self, exec_ctx):
+        res = RTResult()
+        m = exec_ctx.symbol_table.get_var('m')
+        tgt_type = exec_ctx.symbol_table.get_var('tgt_type')
 
-    def execute_matrix_to_f32m(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('m')
-        if x.type == 'Float16Matrix': return RTResult().success(Float32Matrix(linalg.f16m_to_f32m(x.m)))
-        elif x.type == 'Float64Matrix': return RTResult().success(Float32Matrix(linalg.f64m_to_f32m(x.m)))
-    execute_matrix_to_f32m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float64Matrix]]]
+        tgt_valuetype = BuiltInFunction.matrixcast_conv_tgt_types_to_tgt_valuetypes.get(tgt_type.typename, None)
+        if not tgt_valuetype:
+            return res.failure(
+                err.RTError(
+                    self.pos_start, self.pos_end,
+                    "Invalid target datatype for numerical cast",
+                    self.context
+                )
+            )
+        
+        try:
+            matrix_res = linalg.matrix_cast(m.value, tgt_valuetype)
+        except MemoryError as e:
+            return res.failure(err.MallocError(self.pos_start, self.pos_end, e, self.context))
+        except Exception as e:
+            return res.failure(err.UnknownError(self.pos_start, self.pos_end, e, self.context))
 
-    def execute_matrix_to_f64m(self, exec_ctx):
-        x = exec_ctx.symbol_table.get_var('m')
-        if x.type == 'Float16Matrix': return RTResult().success(Float64Matrix(linalg.f16m_to_f64m(x.m)))
-        elif x.type == 'Float32Matrix': return RTResult().success(Float64Matrix(linalg.f32m_to_f64m(x.m)))
-    execute_matrix_to_f64m.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix]]]
+        return res.success(
+            BuiltInFunction.matrixcast_conv_matrix_type_to_matrix_wrapper[type(matrix_res)](matrix_res)
+        )
+    matrixcast_conv_tgt_types_to_tgt_valuetypes = {
+        'Float16Matrix':    linalg.f16_matrix,
+        'Float32Matrix':    linalg.f32_matrix,
+        'Float64Matrix':    linalg.f64_matrix,
+        'Int32Matrix':      linalg.i32_matrix,
+        'Int64Matrix':      linalg.i64_matrix,
+    }
+    matrixcast_conv_matrix_type_to_matrix_wrapper = {
+        linalg.f16_matrix:  Float16Matrix,
+        linalg.f32_matrix:  Float32Matrix,
+        linalg.f64_matrix:  Float64Matrix,
+        linalg.i32_matrix:  Int32Matrix,
+        linalg.i64_matrix:  Int64Matrix,
+    }
+    execute_matrix_cast.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix]], ['tgt_type', [Type.Type]]]
 
     def execute_matrix_fill(self, exec_ctx):
         res = RTResult()
@@ -2500,20 +2523,15 @@ BuiltInFunction.clear                           = BuiltInFunction('clear')
 BuiltInFunction.terminal_prompt                 = BuiltInFunction('terminal_prompt')
 BuiltInFunction.exit                            = BuiltInFunction('exit')
 BuiltInFunction.quit                            = BuiltInFunction('quit')
-BuiltInFunction.reload_shell                    = BuiltInFunction('reload_shell')
 BuiltInFunction.push                            = BuiltInFunction('push')
 BuiltInFunction.pop                             = BuiltInFunction('pop')
-BuiltInFunction.get_item                        = BuiltInFunction('get_item')
 BuiltInFunction.len                             = BuiltInFunction('len')
 BuiltInFunction.exec_prog                       = BuiltInFunction('exec_prog')
 BuiltInFunction.load_module                     = BuiltInFunction('load_module')
 BuiltInFunction.range                           = BuiltInFunction('range')
-BuiltInFunction.set_multi_float_type            = BuiltInFunction('set_multi_float_type')
 BuiltInFunction.map                             = BuiltInFunction('map')
 BuiltInFunction.numerical_cast                  = BuiltInFunction('numerical_cast')
-BuiltInFunction.float_matrix_to_f16m            = BuiltInFunction('float_matrix_to_f16')
-BuiltInFunction.float_matrix_to_f32m            = BuiltInFunction('float_matrix_to_f32')
-BuiltInFunction.float_matrix_to_f64m            = BuiltInFunction('float_matrix_to_f64')
+BuiltinFunction.matrix_cast                     = BuiltInFunction('matrix_cast')
 BuiltInFunction.matrix_fill                     = BuiltInFunction('matrix_fill')
 BuiltInFunction.row_vector_to_matrix            = BuiltInFunction('row_vector_to_matrix')
 BuiltInFunction.column_vector_to_matrix         = BuiltInFunction('column_vector_to_matrix')

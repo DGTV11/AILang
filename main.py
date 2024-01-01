@@ -12,9 +12,6 @@ from extra_modules.Interpreter import Interpreter
 # import resource
 import os
 import sys
-import hashlib
-import pickle
-import hmac
 # import time
 # import inspect #debug
     
@@ -87,25 +84,19 @@ global_symbol_table.set_sys_var('print_without_end',        BuiltInFunction.prin
 global_symbol_table.set_sys_var('get_float_sci_str',        BuiltInFunction.get_float_sci_str)
 global_symbol_table.set_sys_var('input',                    BuiltInFunction.input)
 global_symbol_table.set_sys_var('input_int',                BuiltInFunction.input_int)
-global_symbol_table.set_sys_var('input_multi_float',        BuiltInFunction.input_multi_float)
 global_symbol_table.set_sys_var('clear',                    BuiltInFunction.clear)
 global_symbol_table.set_sys_var('terminal_prompt',          BuiltInFunction.terminal_prompt)
 global_symbol_table.set_sys_var('exit',                     BuiltInFunction.exit)
 global_symbol_table.set_sys_var('quit',                     BuiltInFunction.quit)
-global_symbol_table.set_sys_var('reload_shell',             BuiltInFunction.reload_shell)
 global_symbol_table.set_sys_var('push',                     BuiltInFunction.push)
 global_symbol_table.set_sys_var('pop',                      BuiltInFunction.pop)
-global_symbol_table.set_sys_var('get_item',                 BuiltInFunction.get_item)
 global_symbol_table.set_sys_var('len',                      BuiltInFunction.len)
 global_symbol_table.set_sys_var('exec_prog',                BuiltInFunction.exec_prog)
 global_symbol_table.set_sys_var('load_module',              BuiltInFunction.load_module)
 global_symbol_table.set_sys_var('range',                    BuiltInFunction.range)
-global_symbol_table.set_sys_var('set_multi_float_type',     BuiltInFunction.set_multi_float_type)
 global_symbol_table.set_sys_var('map',                      BuiltInFunction.map)
 global_symbol_table.set_sys_var('numerical_cast',           BuiltInFunction.numerical_cast)
-global_symbol_table.set_sys_var('float_matrix_to_f16m',     BuiltInFunction.float_matrix_to_f16m)
-global_symbol_table.set_sys_var('float_matrix_to_f32m',     BuiltInFunction.float_matrix_to_f32m)
-global_symbol_table.set_sys_var('float_matrix_to_f64m',     BuiltInFunction.float_matrix_to_f64m)
+global_symbol_table.set_sys_var('matrix_cast',              BuiltInFunction.matrix_cast)
 global_symbol_table.set_sys_var('matrix_fill',              BuiltInFunction.matrix_fill)
 global_symbol_table.set_sys_var('row_vector_to_matrix',     BuiltInFunction.row_vector_to_matrix)
 global_symbol_table.set_sys_var('column_vector_to_matrix',  BuiltInFunction.column_vector_to_matrix)
