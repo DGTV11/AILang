@@ -14,8 +14,7 @@ Roadmap:
 
 
 Immediate changes:
-1: Add matrix casting to linalg.py
-2: Add matrix cast functions to context_and_datatypes.py
+1: Add matrix cast functions to context_and_datatypes.py
 
 
 Note:
