@@ -3,6 +3,7 @@
         "numbers.h": "c",
         "ratio": "c",
         "limits.h": "c",
-        "complex": "c"
+        "complex": "c",
+        "linalg.h": "c"
     }
 }

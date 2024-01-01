@@ -1491,7 +1491,7 @@ def matrix_cast(m: matrix_t, tgt_type: type) -> matrix_t: #TODO: FIX ERROR! (var
 
     out_res: Cmatrix_cast_res_t = linalg_c.matrix_cast(Cmatrix_t(container, c_current_type[0]), c_tgt_type[0])
 
-    err: int = getattr(out_res, 'err')
+    err: int = getattr(out_res, 'err') #!ERROR IS RELATED TO err ONLY
     if err != 0:
         print(err) #*DEBUG
         match err:

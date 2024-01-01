@@ -1320,6 +1320,7 @@ matrix_cast_res_t matrix_cast(matrix_t in_m, matrix_type_t tgt_type) {
             MC_SET_RES_ERROR(res, CASTTYPEERROR);
             break;
     }
+    MC_GOOD_RES(res);
     return res;
 }
 
