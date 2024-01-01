@@ -2318,7 +2318,7 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.RTError(
                     self.pos_start, self.pos_end,
-                    "Invalid target datatype for numerical cast",
+                    "Invalid target datatype for matrix cast",
                     self.context
                 )
             )
