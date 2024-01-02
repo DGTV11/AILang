@@ -4,6 +4,7 @@
         "ratio": "c",
         "limits.h": "c",
         "complex": "c",
-        "linalg.h": "c"
+        "linalg.h": "c",
+        "float16.h": "c"
     }
 }

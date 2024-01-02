@@ -1,10 +1,8 @@
-// clang -shared -o 'c_lib/linalg/c_src/linalg.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/linalg/c_src/linalg.c' 'c_lib/float16/c_src/float16.c'
-// DEBUG: clang -shared -o 'c_lib/linalg/c_src/linalg.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/linalg/c_src/linalg.c' 'c_lib/float16/c_src/float16.c'
-// TEST: clang -o 'c_lib/linalg/c_src/linalg' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/linalg/c_src/linalg.c' 'c_lib/float16/c_src/float16.c'
+// clang -shared -o 'c_lib/linalg/c_src/linalg.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/linalg/c_src/linalg.c' 'c_lib/external_libraries/float16/c_src/float16.c'
+// DEBUG: clang -shared -o 'c_lib/linalg/c_src/linalg.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/linalg/c_src/linalg.c' 'c_lib/external_libraries/float16/c_src/float16.c'
+// TEST: clang -o 'c_lib/linalg/c_src/linalg' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/linalg/c_src/linalg.c' 'c_lib/external_libraries/float16/c_src/float16.c'
 
 #include "../include/linalg.h"
-#include "../../float16/include/float16.h"
-#include "../../float16/c_src/conv.h"
 
 // Memory-related functions
 //*Free matrices
