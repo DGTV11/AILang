@@ -25,6 +25,10 @@
  * This file was mechanically generated from tests/check-pcg32.c
  */
 
+/*
+ * This file was added to a test folder by Daniel Wee to maintain consistency with the rest of c_src, and was edited to account for the different relative nesting of pcg_basic.h
+ */
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -33,7 +37,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "pcg_basic.h"
+#include "../include/pcg_basic.h"
 
 int main(int argc, char** argv)
 {

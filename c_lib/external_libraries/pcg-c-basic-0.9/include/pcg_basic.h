@@ -28,6 +28,10 @@
  * your project.
  */
 
+/*
+ * This file was added to an 'include' folder by Daniel Wee to maintain consistency with the rest of c_src
+ */
+
 #ifndef PCG_BASIC_H_INCLUDED
 #define PCG_BASIC_H_INCLUDED 1
 
