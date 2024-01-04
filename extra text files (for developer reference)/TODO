@@ -19,6 +19,7 @@ Immediate changes:
 3: Add RNG for f16
 4: Add RNG for f32
 5: Add RNG for f64
+6: Implement RNG interfaces (python APIs and AILang front-end)
 
 
 Note:
