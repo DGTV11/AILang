@@ -16,11 +16,8 @@ typedef struct {
 
 // Functions
 //*i32
-void seed_global_pcgi32(uint64_t seed, uint64_t seq);
 void seed_local_pcgi32(pcg32_random_t* rng, uint64_t seed, uint64_t seq);
 
-int32_t gen_global_pcgi32();
 int32_t gen_local_pcgi32(pcg32_random_t* rng);
 
-int32_t bounded_gen_global_pcgi32(uint32_t bound);
-int32_t bounded_gen_local_pcgi32(pcg32_random_t* rng, uint32_t bound);
+i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bound, int32_t upper_bound);

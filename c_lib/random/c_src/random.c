@@ -5,25 +5,13 @@
 #include "../include/random.h"
 
 //i32
-void seed_global_pcgi32(uint64_t seed, uint64_t seq) {
-    pcg2_srandom(seed, seq);
-}
 
 void seed_local_pcgi32(pcg32_random_t* rng, uint64_t seed, uint64_t seq) {
     pcg32_srandom_r(rng, seed, seq);
-    return rng;
-}
-
-int32_t gen_global_pcgi32() {
-    return pcg32_random();
 }
 
 int32_t gen_local_pcgi32(pcg32_random_t* rng) {
     return pcg32_random_r(rng);
-}
-
-int32_t bounded_gen_global_pcgu32(uint32_t bound) {
-    return pcg32_boundedrand(bound);
 }
 
 i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bound, int32_t upper_bound) {
