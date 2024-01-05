@@ -21,7 +21,7 @@ i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bou
     if (lower_bound > upper_bound) {
         res.has_err = true;
         return res;
-    } else if (lower_bound == upper_bound) { 
+    } else if (lower_bound == upper_bound) {
         res.n = lower_bound;
         return res;
     }
