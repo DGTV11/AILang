@@ -31,6 +31,9 @@
 /*
  * This file was added to an 'include' folder by Daniel Wee to maintain consistency with the rest of c_src
  * This file was renamed to pcg.h
+ * Removed unnecessary global pcg functions
+ * Added pcg32x2 functions
+ * Tweaked formatting
  */
 
 #ifndef PCG_BASIC_H_INCLUDED
@@ -42,39 +45,48 @@
 extern "C" {
 #endif
 
-struct pcg_state_setseq_64 {    // Internals are *Private*.
-    uint64_t state;             // RNG state.  All values are possible.
-    uint64_t inc;               // Controls which RNG sequence (stream) is
-                                // selected. Must *always* be odd.
-};
-typedef struct pcg_state_setseq_64 pcg32_random_t;
+typedef struct {    // Internals are *Private*.
+    uint64_t state; // RNG state.  All values are possible.
+    uint64_t inc;   // Controls which RNG sequence (stream) is
+                    // selected. Must *always* be odd.
+} pcg32_random_t;
+
+typedef struct {
+    pcg32_random_t gen[2];
+} pcg32x2_random_t;
 
 // If you *must* statically initialize it, here's one.
 
 #define PCG32_INITIALIZER   { 0x853c49e6748fea9bULL, 0xda3e39cb94b95bdbULL }
 
-// pcg32_srandom(initstate, initseq)
+//* pcg32
 // pcg32_srandom_r(rng, initstate, initseq):
-//     Seed the rng.  Specified in two parts, state initializer and a
+//     Seed the rng. Specified in two parts, state initializer and a
 //     sequence selection constant (a.k.a. stream id)
-
-void pcg32_srandom(uint64_t initstate, uint64_t initseq);
 void pcg32_srandom_r(pcg32_random_t* rng, uint64_t initstate,
                      uint64_t initseq);
 
-// pcg32_random()
 // pcg32_random_r(rng)
 //     Generate a uniformly distributed 32-bit random number
-
-uint32_t pcg32_random(void);
 uint32_t pcg32_random_r(pcg32_random_t* rng);
 
-// pcg32_boundedrand(bound):
 // pcg32_boundedrand_r(rng, bound):
-//     Generate a uniformly distributed number, r, where 0 <= r < bound
-
-uint32_t pcg32_boundedrand(uint32_t bound);
+//     Generate a uniformly distributed 32-bit random number, r, where 0 <= r < bound
 uint32_t pcg32_boundedrand_r(pcg32_random_t* rng, uint32_t bound);
+
+//* pcg32x2
+// pcg32x2_srandom_r(rng, seed1, seed2, seq1, seq2):
+//     Seed both of the rngs to be tied together. Has two seeds and two sequences.
+void pcg32x2_srandom_r(pcg32x2_random_t* rng, uint64_t seed1, uint64_t seed2,
+                       uint64_t seq1,  uint64_t seq2);
+
+// pcg32x2_random_r(rng)
+//     Generate a (hopefully) uniformly distributed 64-bit random number
+uint64_t pcg32x2_random_r(pcg32x2_random_t* rng);
+
+// pcg32_boundedrand_r(rng, bound):
+//     Generate a (hopefully) uniformly distributed 64-bit random number, r, where 0 <= r < bound
+uint64_t pcg32x2_boundedrand_r(pcg32x2_random_t* rng, uint64_t bound);
 
 #if __cplusplus
 }
