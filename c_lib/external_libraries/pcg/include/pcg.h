@@ -30,6 +30,7 @@
 
 /*
  * This file was added to an 'include' folder by Daniel Wee to maintain consistency with the rest of c_src
+ * This file was renamed to pcg.h
  */
 
 #ifndef PCG_BASIC_H_INCLUDED

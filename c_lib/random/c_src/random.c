@@ -1,6 +1,6 @@
-// clang -shared -o 'c_lib/random/c_src/random.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/random/c_src/random.c' 'c_lib/external_libraries/float16/c_src/float16.c'
-// DEBUG: clang -shared -o 'c_lib/random/c_src/random.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/random/c_src/random.c' 'c_lib/external_libraries/float16/c_src/float16.c'
-// TEST: clang -o 'c_lib/random/c_src/random' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/random/c_src/random.c' 'c_lib/external_libraries/float16/c_src/float16.c' 'c_lib/external_libraries/pcg-c-basic-0.9/c_src/pcg_basic.c'
+// clang -shared -o 'c_lib/random/c_src/random.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/random/c_src/random.c' 'c_lib/external_libraries/float16/c_src/float16.c' 'c_lib/external_libraries/pcg/c_src/pcg.c'
+// DEBUG: clang -shared -o 'c_lib/random/c_src/random.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/random/c_src/random.c' 'c_lib/external_libraries/float16/c_src/float16.c' 'c_lib/external_libraries/pcg/c_src/pcg.c'
+// TEST: clang -o 'c_lib/random/c_src/random' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/random/c_src/random.c' 'c_lib/external_libraries/float16/c_src/float16.c' 'c_lib/external_libraries/pcg/c_src/pcg.c'
 
 #include "../include/random.h"
 
@@ -21,9 +21,10 @@ i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bou
     if (lower_bound > upper_bound) {
         res.has_err = true;
         return res;
-    } if (lower_bound == upper_bound) {
+    } else if (lower_bound == upper_bound) { 
         res.n = lower_bound;
         return res;
     }
-    return pcg32_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound;
+    res.n = pcg32_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound;
+    return res;
 }
