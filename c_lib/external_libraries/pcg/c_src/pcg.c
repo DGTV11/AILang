@@ -30,9 +30,10 @@
 
 /*
  * This file was added to a 'c_src' folder by Daniel Wee to maintain consistency with the rest of c_src, and was edited to account for the different relative nesting of pcg_basic.h
+ * This file was renamed to pcg.c
  */
 
-#include "../include/pcg_basic.h"
+#include "../include/pcg.h"
 
 // state for global RNGs
 

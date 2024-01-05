@@ -1,6 +1,6 @@
 #include "../../external_libraries/float16/include/float16.h"
 #include "../../external_libraries/float16/c_src/conv.h"
-#include "../../external_libraries/pcg-c-basic-0.9/include/pcg_basic.h"
+#include "../../external_libraries/pcg/include/pcg.h"
 #include <stdint.h>
 #include <stdbool.h>
 
