@@ -24,7 +24,7 @@ i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bou
         res.n = lower_bound;
         return res;
     }
-    res.n = pcg32_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound; //TODO: TEST!
+    res.n = (int32_t)pcg32_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound; //TODO: TEST!
     return res;
 }
 
@@ -48,6 +48,6 @@ i64resWboolErr_t bounded_gen_local_pcgi64(pcg32x2_random_t* rng, int64_t lower_b
         res.n = lower_bound;
         return res;
     }
-    res.n = pcg32x2_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound; //TODO: TEST!
+    res.n = (int64_t)pcg32x2_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound; //TODO: TEST!
     return res;
 }
