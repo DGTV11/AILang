@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/local/bin/python3.12
 
 # Credit to CodePulse and his videos! Base code here: https://github.com/davidcallanan/py-myopl-code
 
