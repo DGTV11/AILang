@@ -5,7 +5,6 @@
 #include "../include/random.h"
 
 //*i32
-
 void seed_local_pcgi32(pcg32_random_t* rng, uint64_t seed, uint64_t seq) {
     pcg32_srandom_r(rng, seed, seq);
 }
@@ -25,9 +24,30 @@ i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bou
         res.n = lower_bound;
         return res;
     }
-    res.n = pcg32_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound;
+    res.n = pcg32_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound; //TODO: TEST!
     return res;
 }
 
 //*i64
-//TODO
+void seed_local_pcgi64(pcg32x2_random_t* rng, uint64_t seed1, uint64_t seed2, uint64_t seq1, uint64_t seq2) {
+    pcg32x2_srandom_r(rng, seed, seq);
+}
+
+int64_t gen_local_pcgi64(pcg32x2_random_t* rng) {
+    return pcg32z2_random_r(rng);
+}
+
+i64resWboolErr_t bounded_gen_local_pcgi64(pcg32x2_random_t* rng, int64_t lower_bound, int64_t upper_bound) {
+    i64resWboolErr_t res;
+    res.has_err = false;
+
+    if (lower_bound > upper_bound) {
+        res.has_err = true;
+        return res;
+    } else if (lower_bound == upper_bound) {
+        res.n = lower_bound;
+        return res;
+    }
+    res.n = pcg32x2_boundedrand_r(rng, upper_bound-lower_bound) + lower_bound; //TODO: TEST!
+    return res;
+}

@@ -14,6 +14,11 @@ typedef struct {
     bool has_err;
 } i32resWboolErr_t;
 
+typedef struct {
+    int64_t n;
+    bool has_err;
+} i64resWboolErr_t;
+
 // Functions
 //*i32
 void seed_local_pcgi32(pcg32_random_t* rng, uint64_t seed, uint64_t seq);
