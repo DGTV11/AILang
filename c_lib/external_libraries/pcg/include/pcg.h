@@ -78,7 +78,7 @@ uint32_t pcg32_boundedrand_r(pcg32_random_t* rng, uint32_t bound);
 // pcg32x2_srandom_r(rng, seed1, seed2, seq1, seq2):
 //     Seed both of the rngs to be tied together. Has two seeds and two sequences.
 void pcg32x2_srandom_r(pcg32x2_random_t* rng, uint64_t seed1, uint64_t seed2,
-                       uint64_t seq1,  uint64_t seq2);
+                       uint64_t seq1, uint64_t seq2);
 
 // pcg32x2_random_r(rng)
 //     Generate a (hopefully) uniformly distributed 64-bit random number
