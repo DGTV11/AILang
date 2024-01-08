@@ -14,12 +14,8 @@ Roadmap:
 
 
 Immediate changes:
-1: Add RNG for i64
-2: Add RNG for f16
-3: Add RNG for f32
-4: Add RNG for f64
-5: Implement Python APIs
-6: Implement AILang front-end
+1: Implement Python APIs
+2: Implement AILang front-end
 
 
 Note:
