@@ -14,9 +14,8 @@ Roadmap:
 
 
 Immediate changes:
-1: Implement float RNGs that use raw pcg32
-2: Implement Python APIs
-3: Implement AILang front-end
+1: Implement Python APIs
+2: Implement AILang front-end
 
 
 Note:
