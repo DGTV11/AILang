@@ -1,9 +1,9 @@
 import ctypes
 import os
-import extra_modules.context_and_datatypes as dta
+import extra_modules.execution_components.context_and_datatypes as dta
 from itertools import chain
-from extra_modules.constant_system_values import SCIENTIFIC_STR_BUF_SIZE, INT_STR_BUF_SIZE, LONG_STR_BUF_SIZE
-from extra_modules.numbers import numbers_c, f16, f32, f64, i32, i64
+from extra_modules.execution_components.constant_system_values import SCIENTIFIC_STR_BUF_SIZE, INT_STR_BUF_SIZE, LONG_STR_BUF_SIZE
+from extra_modules.c_apis.numbers import numbers_c, f16, f32, f64, i32, i64
 
 linalg_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/c_lib/linalg/c_src/linalg.so')
 

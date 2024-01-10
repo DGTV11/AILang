@@ -1,9 +1,9 @@
 # Imports
-from extra_modules.results import *
-from extra_modules.position import *
-from extra_modules.context_and_datatypes import *
+from extra_modules.c_apis.results import *
+from extra_modules.c_apis.position import *
+from extra_modules.execution_components.context_and_datatypes import *
 from main import Interpreter, run
-import extra_modules.Errors as err
+import extra_modules.errors_and_warnings.Errors as err
 
 # Initalise
 local_pusher = []

@@ -1,12 +1,12 @@
 # Imports
-from extra_modules.position import Position
-from extra_modules.results import RTResult
-from extra_modules.context_and_datatypes import *
-from extra_modules.Tokens import *
-from extra_modules.Nodes import *
-import extra_modules.Errors as err
-import extra_modules.linalg as linalg
-import extra_modules.Warnings as wrn
+from extra_modules.c_apis.position import Position
+from extra_modules.c_apis.results import RTResult
+from extra_modules.execution_components.context_and_datatypes import *
+from extra_modules.execution_components.Tokens import *
+from extra_modules.execution_components.Nodes import *
+import extra_modules.errors_and_warnings.Errors as err
+import extra_modules.c_apis.linalg as linalg
+import extra_modules.errors_and_warnings.Warnings as wrn
 
 # Interpreter
 

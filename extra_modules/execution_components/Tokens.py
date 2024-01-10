@@ -1,5 +1,5 @@
 # Imports
-from extra_modules.position import Position
+from extra_modules.c_apis.position import Position
 from string import ascii_letters
 
 # Constants

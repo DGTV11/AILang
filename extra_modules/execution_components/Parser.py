@@ -1,9 +1,9 @@
-from extra_modules.results import ParseResult
-from extra_modules.position import *
-from extra_modules.Tokens import *
-from extra_modules.Nodes import *
-import extra_modules.Errors as err
-import extra_modules.Warnings as wrn
+from extra_modules.c_apis.results import ParseResult
+from extra_modules.c_apis.position import *
+from extra_modules.execution_components.Tokens import *
+from extra_modules.execution_components.Nodes import *
+import extra_modules.errors_and_warnings.Errors as err
+import extra_modules.errors_and_warnings.Warnings as wrn
 
 # Parser
 

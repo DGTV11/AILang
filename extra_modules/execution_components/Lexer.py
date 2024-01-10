@@ -1,6 +1,6 @@
-from extra_modules.position import *
-from extra_modules.Tokens import *
-import extra_modules.Errors as err
+from extra_modules.c_apis.position import *
+from extra_modules.execution_components.Tokens import *
+import extra_modules.errors_and_warnings.Errors as err
 
 # Lexer
 

@@ -1,10 +1,10 @@
 # Imports
-from extra_modules.results import *
-from extra_modules.position import *
-import extra_modules.Errors as err
-import extra_modules.Warnings as wrn
-import extra_modules.numbers as numbers
-import extra_modules.linalg as linalg
+from extra_modules.c_apis.results import *
+from extra_modules.c_apis.position import *
+import extra_modules.errors_and_warnings.Errors as err
+import extra_modules.errors_and_warnings.Warnings as wrn
+import extra_modules.c_apis.numbers as numbers
+import extra_modules.c_apis.linalg as linalg
 
 from dataclasses import dataclass
 from copy import deepcopy
@@ -2711,4 +2711,4 @@ class Context:
 # Context-dependent imports
 from main import run
 
-from extra_modules.Interpreter import Interpreter
+from extra_modules.execution_components.Interpreter import Interpreter

@@ -4,10 +4,10 @@
 
 # Imports
 
-from extra_modules.context_and_datatypes import *
-from extra_modules.Lexer import Lexer
-from extra_modules.Parser import Parser
-from extra_modules.Interpreter import Interpreter
+from extra_modules.execution_components.context_and_datatypes import *
+from extra_modules.execution_components.Lexer import Lexer
+from extra_modules.execution_components.Parser import Parser
+from extra_modules.execution_components.Interpreter import Interpreter
 
 # import resource
 import os

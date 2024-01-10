@@ -1,4 +1,4 @@
-from extra_modules.string_with_arrows import string_with_arrows
+from extra_modules.errors_and_warnings.string_with_arrows import string_with_arrows
 
 # PYTHON-WISE MODULE LOAD ERROR
 
