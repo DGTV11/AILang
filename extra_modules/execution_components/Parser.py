@@ -1,4 +1,4 @@
-from extra_modules.c_apis.results import ParseResult
+from extra_modules.execution_components.results import ParseResult
 from extra_modules.c_apis.position import *
 from extra_modules.execution_components.Tokens import *
 from extra_modules.execution_components.Nodes import *
