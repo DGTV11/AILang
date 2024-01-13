@@ -17,14 +17,16 @@
 #define FLOAT_STR_BUF_SIZE 41
 #define DOUBLE_STR_BUF_SIZE 311
 #define SCIENTIFIC_STR_BUF_SIZE 14
-#define INT_STR_BUF_SIZE 11
+#define INT_STR_BUF_SIZE 12
 #define LONG_STR_BUF_SIZE 21
+#define UINT_STR_BUF_SIZE 11
+#define ULONG_STR_BUF_SIZE 21
 
 // Typedefs
 typedef float   float32_t;
 typedef double  float64_t;
 
-//Enums
+// Enums
 typedef enum {
     NOOVERFLOW = 0,
     INTOVERFLOW,
@@ -57,6 +59,16 @@ typedef struct {
     overflow_type_t overflow_type; 
 } i64_res;
 
+typedef struct {
+    uint32_t res;
+    overflow_type_t overflow_type; 
+} u32_res;
+
+typedef struct {
+    uint64_t res;
+    overflow_type_t overflow_type; 
+} u64_res;
+
 // Numerical cast structures
 typedef enum {
     F16 = 0,
@@ -64,6 +76,8 @@ typedef enum {
     F64,
     I32,
     I64,
+    U32,
+    U64,
     INVALID,
 } num_type_t;
 
@@ -73,6 +87,8 @@ typedef union {
     float64_t f64;
     int32_t i32;
     int64_t i64;
+    uint32_t u32;
+    uint64_t u64;
 } num_container_t;
 
 typedef struct {
@@ -164,6 +180,8 @@ int64_t     i64_bitwise_xor(int64_t a, int64_t b);
 int64_t     i64_bitwise_or(int64_t a, int64_t b);
 int64_t     i64_bitwise_and(int64_t a, int64_t b);
 int64_t     i64_bitwise_not(int64_t a);
+
+
 
 // Numerical casting
 num_t numerical_cast(num_t x, num_type_t tgt_type);

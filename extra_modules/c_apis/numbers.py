@@ -13,6 +13,8 @@ float32_t           = ctypes.c_float
 float64_t           = ctypes.c_double
 int32_t             = ctypes.c_int32
 int64_t             = ctypes.c_int64
+uint32_t            = ctypes.c_uint32
+uint64_t            = ctypes.c_uint64
 
 # Structs
 class Cf16_res(ctypes.Structure):
