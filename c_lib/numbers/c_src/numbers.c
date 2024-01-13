@@ -300,16 +300,18 @@ i32_res i32_mul(int32_t a, int32_t b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a < INT_MIN / b) {
             OVERFLOW_RES(res, INTUNDERFLOW);        
+        } else {
+            GOOD_INT_RES(res, a*b);
         }
     } else if (b < 0) {
         if (a < INT_MIN / b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a > INT_MAX / b) {
             OVERFLOW_RES(res, INTUNDERFLOW);
+        } else {
+            GOOD_INT_RES(res, a*b);
         }
-    } else {
-        GOOD_INT_RES(res, a*b);
-    }
+    } 
     return res;
 }
 
@@ -421,16 +423,18 @@ i64_res i64_mul(int64_t a, int64_t b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a < LLONG_MIN / b) {
             OVERFLOW_RES(res, INTUNDERFLOW);
+        } else {
+            GOOD_INT_RES(res, a*b);
         }
     } else if (b < 0) {
         if (a < LLONG_MIN / b) {
             OVERFLOW_RES(res, INTOVERFLOW);
         } else if (a > LLONG_MAX / b) {
             OVERFLOW_RES(res, INTUNDERFLOW);
+        } else {
+            GOOD_INT_RES(res, a*b);
         }
-    } else {
-        GOOD_INT_RES(res, a*b);
-    }
+    } 
     return res;
 }
 
@@ -500,7 +504,7 @@ int64_t i64_bitwise_not(int64_t a) {
     return ~a;
 }
 
-//u32 
+//u32
 uint32_t str2u32(char str[]) {
     char *ptr;
     return strtoul(str, &ptr, 10);
@@ -522,8 +526,8 @@ u32_res u32_add(uint32_t a, uint32_t b) {
 
 u32_res u32_sub(uint32_t a, uint32_t b) {
     u32_res res;
-    if (b < 0 - a) {
-        OVERFLOW_RES(res, INTOVERFLOW);
+    if (b > a) {
+        OVERFLOW_RES(res, INTUNDERFLOW);
     } else {
         GOOD_INT_RES(res, a-b);
     }
@@ -534,11 +538,12 @@ u32_res u32_mul(uint32_t a, uint32_t b) {
     u32_res res;
     if (a == 0 || b == 0) {
         GOOD_INT_RES(res, 0);
-    } else if (a > UINT_MAX) {
+    } else if ((a + b) < a) {
+        OVERFLOW_RES(res, INTOVERFLOW);
     } else {
         GOOD_INT_RES(res, a*b);
     }
-    return res;
+    return res; 
 }
 
 f64_res u32_divide(uint32_t a, uint32_t b) {
@@ -573,27 +578,125 @@ bool u32_neq(uint32_t a, uint32_t b) {
     return a != b;
 }
 
-int32_t u32_bitwise_lshift(uint32_t a, uint32_t b) {
+uint32_t u32_bitwise_lshift(uint32_t a, uint32_t b) {
     return a << b;
 }
 
-int32_t u32_bitwise_rshift(uint32_t a, uint32_t b) {
+uint32_t u32_bitwise_rshift(uint32_t a, uint32_t b) {
     return a >> b;
 }
 
-int32_t u32_bitwise_xor(uint32_t a, uint32_t b) {
+uint32_t u32_bitwise_xor(uint32_t a, uint32_t b) {
     return a ^ b;
 }
 
-int32_t u32_bitwise_or(uint32_t a, uint32_t b) {
+uint32_t u32_bitwise_or(uint32_t a, uint32_t b) {
     return a | b;
 }
 
-int32_t u32_bitwise_and(uint32_t a, uint32_t b) {
+uint32_t u32_bitwise_and(uint32_t a, uint32_t b) {
     return a & b;
 }
 
-int32_t u32_bitwise_not(uint32_t a) {
+uint32_t u32_bitwise_not(uint32_t a) {
+    return ~a;
+}
+
+//u64
+uint64_t str2u64(char str[]) {
+    char *ptr;
+    return strtoull(str, &ptr, 10);
+}
+
+void conv_u64_to_str(uint64_t n, char* buffer) {
+    snprintf(buffer, ULONG_STR_BUF_SIZE, "%llu", n);
+}
+
+u64_res u64_add(uint64_t a, uint64_t b) {
+    u64_res res;
+    if (b > ULLONG_MAX - a) {
+        OVERFLOW_RES(res, INTOVERFLOW);
+    } else {
+        GOOD_INT_RES(res, a+b);
+    }
+    return res;
+}
+
+u64_res u64_sub(uint64_t a, uint64_t b) {
+    u64_res res;
+    if (b > a) {
+        OVERFLOW_RES(res, INTUNDERFLOW);
+    } else {
+        GOOD_INT_RES(res, a-b);
+    }
+    return res;
+}
+
+u64_res u64_mul(uint64_t a, uint64_t b) {
+    u64_res res;
+    if (a == 0 || b == 0) {
+        GOOD_INT_RES(res, 0);
+    } else if ((a + b) < a) {
+        OVERFLOW_RES(res, INTOVERFLOW);
+    } else {
+        GOOD_INT_RES(res, a*b);
+    }
+    return res; 
+}
+
+f64_res u64_divide(uint64_t a, uint64_t b) {
+    return f64_divide((float64_t)a, (float64_t)b);
+}
+
+float64_t u64_pow(uint64_t a, uint64_t b) {
+    return f64_pow((float64_t)a, (float64_t)b);
+}
+
+bool u64_gte(uint64_t a, uint64_t b) {
+    return a >= b;
+}
+
+bool u64_gt(uint64_t a, uint64_t b) {
+    return a > b;
+}
+
+bool u64_eq(uint64_t a, uint64_t b) {
+    return a == b;
+}
+
+bool u64_lte(uint64_t a, uint64_t b) {
+    return a <= b;
+}
+
+bool u64_lt(uint64_t a, uint64_t b) {
+    return a < b;
+}
+
+bool u64_neq(uint64_t a, uint64_t b) {
+    return a != b;
+}
+
+uint64_t u64_bitwise_lshift(uint64_t a, uint64_t b) {
+    return a << b;
+}
+
+uint64_t u64_bitwise_rshift(uint64_t a, uint64_t b) {
+    return a >> b;
+}
+
+uint64_t u64_bitwise_xor(uint64_t a, uint64_t b) {
+    return a ^ b;
+}
+
+uint64_t u64_bitwise_or(uint64_t a, uint64_t b) {
+    return a | b;
+}
+
+uint64_t u64_bitwise_and(uint64_t a, uint64_t b) {
+    return a & b;
+}
+
+uint64_t u64_bitwise_not(uint64_t a) {
     return ~a;
 }
 

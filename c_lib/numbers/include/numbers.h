@@ -181,7 +181,47 @@ int64_t     i64_bitwise_or(int64_t a, int64_t b);
 int64_t     i64_bitwise_and(int64_t a, int64_t b);
 int64_t     i64_bitwise_not(int64_t a);
 
+// u32
+uint32_t    str2u32(char str[]);
+void        conv_u32_to_str(uint32_t n, char* buffer);
+u32_res     u32_add(uint32_t a, uint32_t b);
+u32_res     u32_sub(uint32_t a, uint32_t b);
+u32_res     u32_mul(uint32_t a, uint32_t b);
+f64_res     u32_divide(uint32_t a, uint32_t b);
+float64_t   u32_pow(uint32_t a, uint32_t b);
+bool        u32_gte(uint32_t a, uint32_t b);
+bool        u32_gt(uint32_t a, uint32_t b);
+bool        u32_eq(uint32_t a, uint32_t b);
+bool        u32_lte(uint32_t a, uint32_t b);
+bool        u32_lt(uint32_t a, uint32_t b);
+bool        u32_neq(uint32_t a, uint32_t b);
+uint32_t    u32_bitwise_lshift(uint32_t a, uint32_t b);
+uint32_t    u32_bitwise_rshift(uint32_t a, uint32_t b);
+uint32_t    u32_bitwise_xor(uint32_t a, uint32_t b);
+uint32_t    u32_bitwise_or(uint32_t a, uint32_t b);
+uint32_t    u32_bitwise_and(uint32_t a, uint32_t b);
+uint32_t    u32_bitwise_not(uint32_t a);
 
+// u64
+uint64_t    str2u64(char str[]);
+void        conv_u64_to_str(uint64_t n, char* buffer);
+u64_res     u64_add(uint64_t a, uint64_t b);
+u64_res     u64_sub(uint64_t a, uint64_t b);
+u64_res     u64_mul(uint64_t a, uint64_t b);
+f64_res     u64_divide(uint64_t a, uint64_t b);
+float64_t   u64_pow(uint64_t a, uint64_t b);
+bool        u64_gte(uint64_t a, uint64_t b);
+bool        u64_gt(uint64_t a, uint64_t b);
+bool        u64_eq(uint64_t a, uint64_t b);
+bool        u64_lte(uint64_t a, uint64_t b);
+bool        u64_lt(uint64_t a, uint64_t b);
+bool        u64_neq(uint64_t a, uint64_t b);
+uint64_t    u64_bitwise_lshift(uint64_t a, uint64_t b);
+uint64_t    u64_bitwise_rshift(uint64_t a, uint64_t b);
+uint64_t    u64_bitwise_xor(uint64_t a, uint64_t b);
+uint64_t    u64_bitwise_or(uint64_t a, uint64_t b);
+uint64_t    u64_bitwise_and(uint64_t a, uint64_t b);
+uint64_t    u64_bitwise_not(uint64_t a);
 
 // Numerical casting
-num_t numerical_cast(num_t x, num_type_t tgt_type);
+num_t       numerical_cast(num_t x, num_type_t tgt_type);
