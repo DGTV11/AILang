@@ -29,7 +29,7 @@ for i = 0b to 5b then
     print(join_test(map_test(oopify, ["l", "sp"]), ", "))
 end
 
-#let range_1_10 = range(1b, 10b)
+var range_1_10: IterArray = range(1b, 10b)
 print(range_1_10)
 
 print(range_1_10[0b:5b:1b])
