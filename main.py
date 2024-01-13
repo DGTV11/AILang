@@ -46,9 +46,6 @@ def load_path(progpath: str):
 
 global_symbol_table = SymbolTable()
 
-# Test items
-global_symbol_table.set_sys_var('range_1_10', IterArray([Integer(n) for n in [1, 2, 3, 4, 5, 6, 7, 8, 9]]))
-
 # Types
 global_symbol_table.set_sys_var('Any',                      Type.Any)
 global_symbol_table.set_sys_var('Type',                     Type.Type)
