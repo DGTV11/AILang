@@ -1,5 +1,5 @@
 # Imports
-from extra_modules.execution_components.context_and_datatypes import Float16, Float32, Float64
+from extra_modules.execution_components.context_and_datatypes import Float16, Float32, Float64, Int32, Int64
 
 # Initalise
 local_pusher = []
@@ -19,3 +19,9 @@ local_pusher.append(('f64_pi',      Float64('3.14159265358979324')))
 local_pusher.append(('f64_e',       Float64('2.71828182845904524')))
 local_pusher.append(('f64_ln2',     Float64('0.69314718055994531')))
 local_pusher.append(('f64_ln10',    Float64('2.30258509299404568')))
+
+local_pusher.append(('i32_min',     Int32('-2147483648')))
+local_pusher.append(('i32_max',     Int32('2147483647')))
+
+local_pusher.append(('i64_min',     Int64('-9223372036854775808')))
+local_pusher.append(('i64_max',     Int64('9223372036854775807')))
