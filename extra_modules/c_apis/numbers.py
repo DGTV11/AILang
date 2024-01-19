@@ -47,6 +47,18 @@ class Ci64_res(ctypes.Structure):
         ("overflow_type", overflow_type_t),
     ]
 
+class Cu32_res(ctypes.Structure):
+    _fields_ = [
+        ("res", uint32_t),
+        ("overflow_type", overflow_type_t),
+    ]
+
+class Cu64_res(ctypes.Structure):
+    _fields_ = [
+        ("res", uint64_t),
+        ("overflow_type", overflow_type_t),
+    ]
+
 # Numerical cast structures and types
 class Cnum_container_t(ctypes.Union):
     _fields_ = [
@@ -55,6 +67,8 @@ class Cnum_container_t(ctypes.Union):
         ("f64", float64_t),
         ("i32", int32_t),
         ("i64", int64_t),
+        ("u32", uint32_t),
+        ("u64", uint64_t),
     ]
 
 class Cnum_t(ctypes.Structure):
@@ -63,7 +77,7 @@ class Cnum_t(ctypes.Structure):
         ("type", num_type_t),
     ]
 
-type num_t = int|f16|f32|f64|i32|i64
+type num_t = int|f16|f32|f64|i32|i64|u32|u64
 
 # Functions
 
@@ -326,6 +340,101 @@ numbers_c.i64_bitwise_and.restype = int64_t
 
 numbers_c.i64_bitwise_not.argtypes = [int64_t]
 numbers_c.i64_bitwise_not.restype = int64_t
+
+## u32
+numbers_c.str2u32.argtypes = [ctypes.c_char_p]
+numbers_c.str2u32.restype = uint32_t
+
+numbers_c.conv_u32_to_str.argtypes = [uint32_t, ctypes.c_char_p]
+numbers_c.conv_u32_to_str.restype = ctypes.c_void_p
+
+numbers_c.u32_add.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_add.restype = Cu32_res
+
+numbers_c.u32_sub.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_sub.restype = Cu32_res
+
+numbers_c.u32_mul.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_mul.restype = Cu32_res
+
+numbers_c.u32_divide.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_divide.restype = Cf64_res
+
+numbers_c.u32_pow.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_pow.restype = float64_t
+
+numbers_c.u32_gte.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_gte.restype = ctypes.c_bool
+
+numbers_c.u32_gt.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_gt.restype = ctypes.c_bool
+
+numbers_c.u32_eq.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_eq.restype = ctypes.c_bool
+
+numbers_c.u32_lte.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_lte.restype = ctypes.c_bool
+
+numbers_c.u32_lt.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_lt.restype = ctypes.c_bool
+
+numbers_c.u32_neq.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_neq.restype = ctypes.c_bool
+
+numbers_c.u32_bitwise_lshift.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_bitwise_lshift.restype = uint32_t
+
+numbers_c.u32_bitwise_rshift.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_bitwise_rshift.restype = uint32_t
+
+numbers_c.u32_bitwise_xor.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_bitwise_xor.restype = uint32_t
+
+numbers_c.u32_bitwise_or.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_bitwise_or.restype = uint32_t
+
+numbers_c.u32_bitwise_and.argtypes = [uint32_t, uint32_t]
+numbers_c.u32_bitwise_and.restype = uint32_t
+
+numbers_c.u32_bitwise_not.argtypes = [uint32_t]
+numbers_c.u32_bitwise_not.restype = uint32_t
+
+## u64
+numbers_c.u64_str2u64.argtypes = [ctypes.c_char_p]
+numbers_c.u64_str2u64.restype = uint64_t
+
+numbers_c.conv_u64_to_str.argtypes = [uint64_t, ctypes.c_char_p]
+numbers_c.conv_u64_to_str.restype = ctypes.c_void_p
+
+numbers_c.u64_add.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_add.restype = Cu64_res
+
+numbers_c.u64_sub.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_sub.restype = Cu64_res
+
+numbers_c.u64_mul.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_mul.restype = Cu64_res
+
+numbers_c.u64_divide.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_divide.restype = Cf64_res
+
+numbers_c.u64_pow.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_pow.restype = float64_t
+
+numbers_c.u64_gte.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_gte.restype = ctypes.c_bool
+
+numbers_c.u64_gt.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_gt.restype = ctypes.c_bool
+
+numbers_c.u64_eq.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_eq.restype = ctypes.c_bool
+
+numbers_c.u64_lte.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_lte.restype = ctypes.c_bool
+
+numbers_c.u64_lt.argtypes = [uint64_t, uint64_t]
+numbers_c.u64_lt.restype = ctypes.c_bool
 
 # Conversions
 numbers_c.numerical_cast.argtypes = [Cnum_t, num_type_t]
@@ -981,6 +1090,170 @@ class i64:
         
     def __invert__(self):
         return i64(numbers_c.i64_bitwise_not(self.val))
+
+class u32:
+    def __init__(self, val: str|int|uint32_t):
+        if isinstance(val, str):
+            c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
+            self.val: uint32_t = numbers_c.str2u32(c_stringified_value)
+        elif isinstance(val, int):
+            self.val: uint32_t = int32_t(val)
+        elif isinstance(val, uint32_t):
+            self.val: uint32_t = val
+
+        self.stringified_value = None
+
+    def __repr__(self) -> str:
+        if not self.stringified_value:
+            c_stringified_value = ctypes.create_string_buffer(UINT_STR_BUF_SIZE)
+            numbers_c.conv_u32_to_str(self.val, c_stringified_value)
+            self.stringified_value = c_stringified_value.value.decode('utf-8')+'ui'
+            del c_stringified_value
+        return self.stringified_value
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+    def __add__(self, other):
+        if isinstance(other, u32):
+            res: Cu32_res = numbers_c.u32_add(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return u32(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for +: 'u32' and '{type(other)}'")
+    
+    def __sub__(self, other):
+        if isinstance(other, u32):
+            res: Cu32_res = numbers_c.i32_sub(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i32(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for -: 'i32' and '{type(other)}'")
+        
+    def __mul__(self, other):
+        if isinstance(other, i32):
+            res: Ci32_res = numbers_c.i32_mul(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return i32(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for *: 'i32' and '{type(other)}'")
+        
+    def __truediv__(self, other):
+        if isinstance(other, i32):
+            res: Cf64_res = numbers_c.i32_divide(self.val, other.val)
+            if bool(getattr(res, 'error')):
+                raise ZeroDivisionError('Division by zero')
+            return f64(getattr(res, 'res')) 
+        else:
+            raise TypeError(f"Unsupported operand type(s) for /: 'i32' and '{type(other)}'")
+        
+    def __pow__(self, other):
+        if isinstance(other, i32):
+            return f64(numbers_c.i32_pow(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for **: 'i32' and '{type(other)}'")
+        
+    def __neg__(self):
+        res: Ci32_res = numbers_c.i32_neg(self.val)
+        overflow_type: int = getattr(res, 'overflow_type')
+        if overflow_type != 0:
+            match overflow_type:
+                case 1: #INTOVERFLOW
+                    raise OverflowError('Integer overflow')
+                case _:
+                    raise Exception('Unknown error')
+        return i32(getattr(res, 'res'))
+    
+    def __ge__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_gte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >=: 'i32' and '{type(other)}'")
+
+    def __gt__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_gt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >: 'i32' and '{type(other)}'")
+        
+    def __eq__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_eq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ==: 'i32' and '{type(other)}'")
+        
+    def __le__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_lte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <=: 'i32' and '{type(other)}'")
+        
+    def __lt__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_lt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <: 'i32' and '{type(other)}'")
+        
+    def __ne__(self, other):
+        if isinstance(other, i32):
+            return numbers_c.i32_neq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for !=: 'i32' and '{type(other)}'")
+
+    def __lshift__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_lshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <<: 'i32' and '{type(other)}'")
+        
+    def __rshift__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_rshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >>: 'i32' and '{type(other)}'")
+
+    def __xor__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_xor(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ^: 'i32' and '{type(other)}'")
+
+    def __or__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_or(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for |: 'i32' and '{type(other)}'")
+        
+    def __and__(self, other):
+        if isinstance(other, i32):
+            return i32(numbers_c.i32_bitwise_and(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for &: 'i32' and '{type(other)}'")
+        
+    def __invert__(self):
+        return i32(numbers_c.i32_bitwise_not(self.val))
 
 # Numerical casting
 py_num_type_to_num_type_t = {

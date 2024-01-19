@@ -1,6 +1,6 @@
-// clang -shared -o 'c_lib/numbers/c_src/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/external_libraries/float16/c_src/float16.c'
-// DEBUG: clang -shared -o 'c_lib/numbers/c_src/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/external_libraries/float16/c_src/float16.c'
-// TEST: clang -o 'c_lib/numbers/c_src/numbers' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/external_libraries/float16/c_src/float16.c'
+// clang -shared -o 'c_lib/numbers/lib/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/external_libraries/float16/c_src/float16.c'
+// DEBUG: clang -shared -o 'c_lib/numbers/lib/numbers.so' -O3 -Xpreprocessor -fopenmp -lomp -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/external_libraries/float16/c_src/float16.c'
+// TEST: clang -o 'c_lib/numbers/lib/numbers' -O3 -Xpreprocessor -fopenmp -lomp -fomit-frame-pointer -mf16c 'c_lib/numbers/c_src/numbers.c' 'c_lib/external_libraries/float16/c_src/float16.c'
 
 #include "../include/numbers.h"
 
@@ -722,6 +722,12 @@ num_t numerical_cast(num_t x, num_type_t tgt_type) {
                 case I64:
                     res.num.i64 = (int64_t)float16_to_float32(x.num.f16);
                     break;
+                case U32:
+                    res.num.u32 = (uint32_t)float16_to_float32(x.num.f16);
+                    break;
+                case U64:
+                    res.num.u64 = (uint64_t)float16_to_float32(x.num.f16);
+                    break;
                 default:
                     res.type = INVALID;
                     break;
@@ -740,6 +746,12 @@ num_t numerical_cast(num_t x, num_type_t tgt_type) {
                     break;
                 case I64:
                     res.num.i64 = (int64_t)x.num.f32;
+                    break;
+                case U32:
+                    res.num.u32 = (uint32_t)x.num.f32;
+                    break;
+                case U64:
+                    res.num.u64 = (uint64_t)x.num.f32;
                     break;
                 default:
                     res.type = INVALID;
@@ -760,6 +772,12 @@ num_t numerical_cast(num_t x, num_type_t tgt_type) {
                 case I64:
                     res.num.i64 = (int64_t)x.num.f64;
                     break;
+                case U32:
+                    res.num.u32 = (uint32_t)x.num.f64;
+                    break;
+                case U64:
+                    res.num.u64 = (uint64_t)x.num.f64;
+                    break;
                 default:
                     res.type = INVALID;
                     break;
@@ -779,6 +797,12 @@ num_t numerical_cast(num_t x, num_type_t tgt_type) {
                 case I64:
                     res.num.i64 = (int64_t)x.num.i32;
                     break;
+                case U32:
+                    res.num.u32 = (uint32_t)x.num.i32;
+                    break;
+                case U64:
+                    res.num.u64 = (uint64_t)x.num.i32;
+                    break;
                 default:
                     res.type = INVALID;
                     break;
@@ -797,6 +821,62 @@ num_t numerical_cast(num_t x, num_type_t tgt_type) {
                     break;
                 case I32:
                     res.num.i32 = (int32_t)x.num.i64;
+                    break;
+                case U32:
+                    res.num.u32 = (uint32_t)x.num.i64;
+                    break;
+                case U64:
+                    res.num.u64 = (uint64_t)x.num.i64;
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        case U32:
+            switch (tgt_type) {
+                case F16:
+                    res.num.f16 = float32_to_float16((float32_t)x.num.u32);
+                    break;
+                case F32:
+                    res.num.f32 = (float32_t)x.num.u32;
+                    break;
+                case F64:
+                    res.num.f64 = (float64_t)x.num.u32;
+                    break;
+                case I32:
+                    res.num.i32 = (int32_t)x.num.u32;
+                    break;
+                case I64:
+                    res.num.i64 = (int64_t)x.num.u32;
+                    break;
+                case U64:
+                    res.num.u64 = (uint64_t)x.num.u32;
+                    break;
+                default:
+                    res.type = INVALID;
+                    break;
+            }
+            break;
+        case U64:
+            switch (tgt_type) {
+                case F16:
+                    res.num.f16 = float32_to_float16((float32_t)x.num.u64);
+                    break;
+                case F32:
+                    res.num.f32 = (float32_t)x.num.u64;
+                    break;
+                case F64:
+                    res.num.f64 = (float64_t)x.num.u64;
+                    break;
+                case I32:
+                    res.num.i32 = (int32_t)x.num.u64;
+                    break;
+                case I64:
+                    res.num.i64 = (int64_t)x.num.u64;
+                    break;
+                case U32:
+                    res.num.u32 = (uint32_t)x.num.u64;
                     break;
                 default:
                     res.type = INVALID;
