@@ -1091,7 +1091,7 @@ class i64:
     def __invert__(self):
         return i64(numbers_c.i64_bitwise_not(self.val))
 
-class u32: #TODO
+class u32:
     def __init__(self, val: str|int|uint32_t):
         if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
@@ -1130,130 +1130,115 @@ class u32: #TODO
     
     def __sub__(self, other):
         if isinstance(other, u32):
-            res: Cu32_res = numbers_c.i32_sub(self.val, other.val)
+            res: Cu32_res = numbers_c.u32_sub(self.val, other.val)
             overflow_type: int = getattr(res, 'overflow_type')
             if overflow_type != 0:
                 match overflow_type:
-                    case 1: #INTOVERFLOW
-                        raise OverflowError('Integer overflow')
                     case 2: #INTUNDERFLOW
                         raise OverflowError('Integer underflow')
                     case _:
                         raise Exception('Unknown error')
-            return i32(getattr(res, 'res'))
+            return u32(getattr(res, 'res'))
         else:
-            raise TypeError(f"Unsupported operand type(s) for -: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for -: 'u32' and '{type(other)}'")
         
     def __mul__(self, other):
-        if isinstance(other, i32):
-            res: Ci32_res = numbers_c.i32_mul(self.val, other.val)
+        if isinstance(other, u32):
+            res: Cu32_res = numbers_c.u32_mul(self.val, other.val)
             overflow_type: int = getattr(res, 'overflow_type')
             if overflow_type != 0:
                 match overflow_type:
                     case 1: #INTOVERFLOW
                         raise OverflowError('Integer overflow')
-                    case 2: #INTUNDERFLOW
-                        raise OverflowError('Integer underflow')
                     case _:
                         raise Exception('Unknown error')
-            return i32(getattr(res, 'res'))
+            return u32(getattr(res, 'res'))
         else:
-            raise TypeError(f"Unsupported operand type(s) for *: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for *: 'u32' and '{type(other)}'")
         
     def __truediv__(self, other):
-        if isinstance(other, i32):
-            res: Cf64_res = numbers_c.i32_divide(self.val, other.val)
+        if isinstance(other, u32):
+            res: Cf64_res = numbers_c.u32_divide(self.val, other.val)
             if bool(getattr(res, 'error')):
                 raise ZeroDivisionError('Division by zero')
             return f64(getattr(res, 'res')) 
         else:
-            raise TypeError(f"Unsupported operand type(s) for /: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for /: 'u32' and '{type(other)}'")
         
     def __pow__(self, other):
-        if isinstance(other, i32):
-            return f64(numbers_c.i32_pow(self.val, other.val))
+        if isinstance(other, u32):
+            return f64(numbers_c.u32_pow(self.val, other.val))
         else:
-            raise TypeError(f"Unsupported operand type(s) for **: 'i32' and '{type(other)}'")
-        
-    def __neg__(self):
-        res: Ci32_res = numbers_c.i32_neg(self.val)
-        overflow_type: int = getattr(res, 'overflow_type')
-        if overflow_type != 0:
-            match overflow_type:
-                case 1: #INTOVERFLOW
-                    raise OverflowError('Integer overflow')
-                case _:
-                    raise Exception('Unknown error')
-        return i32(getattr(res, 'res'))
+            raise TypeError(f"Unsupported operand type(s) for **: 'u32' and '{type(other)}'")
     
     def __ge__(self, other):
-        if isinstance(other, i32):
-            return numbers_c.i32_gte(self.val, other.val)
+        if isinstance(other, u32):
+            return numbers_c.u32_gte(self.val, other.val)
         else:
-            raise TypeError(f"Unsupported operand type(s) for >=: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for >=: 'u32' and '{type(other)}'")
 
     def __gt__(self, other):
-        if isinstance(other, i32):
-            return numbers_c.i32_gt(self.val, other.val)
+        if isinstance(other, u32):
+            return numbers_c.u32_gt(self.val, other.val)
         else:
-            raise TypeError(f"Unsupported operand type(s) for >: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for >: 'u32' and '{type(other)}'")
         
     def __eq__(self, other):
-        if isinstance(other, i32):
-            return numbers_c.i32_eq(self.val, other.val)
+        if isinstance(other, u32):
+            return numbers_c.u32_eq(self.val, other.val)
         else:
-            raise TypeError(f"Unsupported operand type(s) for ==: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for ==: 'u32' and '{type(other)}'")
         
     def __le__(self, other):
-        if isinstance(other, i32):
-            return numbers_c.i32_lte(self.val, other.val)
+        if isinstance(other, u32):
+            return numbers_c.u32_lte(self.val, other.val)
         else:
-            raise TypeError(f"Unsupported operand type(s) for <=: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for <=: 'u32' and '{type(other)}'")
         
     def __lt__(self, other):
-        if isinstance(other, i32):
-            return numbers_c.i32_lt(self.val, other.val)
+        if isinstance(other, u32):
+            return numbers_c.u32_lt(self.val, other.val)
         else:
-            raise TypeError(f"Unsupported operand type(s) for <: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for <: 'u32' and '{type(other)}'")
         
     def __ne__(self, other):
-        if isinstance(other, i32):
-            return numbers_c.i32_neq(self.val, other.val)
+        if isinstance(other, u32):
+            return numbers_c.u32_neq(self.val, other.val)
         else:
-            raise TypeError(f"Unsupported operand type(s) for !=: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for !=: 'u32' and '{type(other)}'")
 
     def __lshift__(self, other):
-        if isinstance(other, i32):
-            return i32(numbers_c.i32_bitwise_lshift(self.val, other.val))
+        if isinstance(other, u32):
+            return u32(numbers_c.u32_bitwise_lshift(self.val, other.val))
         else:
-            raise TypeError(f"Unsupported operand type(s) for <<: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for <<: 'u32' and '{type(other)}'")
         
     def __rshift__(self, other):
-        if isinstance(other, i32):
-            return i32(numbers_c.i32_bitwise_rshift(self.val, other.val))
+        if isinstance(other, u32):
+            return u32(numbers_c.u32_bitwise_rshift(self.val, other.val))
         else:
-            raise TypeError(f"Unsupported operand type(s) for >>: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for >>: 'u32' and '{type(other)}'")
 
     def __xor__(self, other):
-        if isinstance(other, i32):
-            return i32(numbers_c.i32_bitwise_xor(self.val, other.val))
+        if isinstance(other, u32):
+            return u32(numbers_c.u32_bitwise_xor(self.val, other.val))
         else:
-            raise TypeError(f"Unsupported operand type(s) for ^: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for ^: 'u32' and '{type(other)}'")
 
     def __or__(self, other):
-        if isinstance(other, i32):
-            return i32(numbers_c.i32_bitwise_or(self.val, other.val))
+        if isinstance(other, u32):
+            return u32(numbers_c.u32_bitwise_or(self.val, other.val))
         else:
-            raise TypeError(f"Unsupported operand type(s) for |: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for |: 'u32' and '{type(other)}'")
         
     def __and__(self, other):
-        if isinstance(other, i32):
-            return i32(numbers_c.i32_bitwise_and(self.val, other.val))
+        if isinstance(other, u32):
+            return u32(numbers_c.u32_bitwise_and(self.val, other.val))
         else:
-            raise TypeError(f"Unsupported operand type(s) for &: 'i32' and '{type(other)}'")
+            raise TypeError(f"Unsupported operand type(s) for &: 'u32' and '{type(other)}'")
         
     def __invert__(self):
-        return i32(numbers_c.i32_bitwise_not(self.val))
+        return u32(numbers_c.u32_bitwise_not(self.val))
 
 # Numerical casting
 py_num_type_to_num_type_t = {
@@ -1262,6 +1247,8 @@ py_num_type_to_num_type_t = {
     f64: (num_type_t(2), 'f64'),
     i32: (num_type_t(3), 'i32'),
     i64: (num_type_t(4), 'i64'),
+    u32: (num_type_t(5), 'u32'),
+    u64: (num_type_t(6), 'u64'),
 }
 
 int_to_py_num = {
@@ -1270,6 +1257,8 @@ int_to_py_num = {
     2: (f64, 'f64'),
     3: (i32, 'i32'),
     4: (i64, 'i64'),
+    5: (u32, 'u32'),
+    6: (u64, 'u64'),
 }
 
 def numerical_cast(x: num_t, tgt_type: type) -> num_t:
@@ -1284,6 +1273,10 @@ def numerical_cast(x: num_t, tgt_type: type) -> num_t:
             return i32(int32_t(x))
         elif tgt_type is i64:
             return i64(int64_t(x))
+        elif tgt_type is u32:
+            return u32(uint32_t(x))
+        elif tgt_type is u64:
+            return u64(uint64_t(x))
         elif tgt_type is int:
             return x
     
