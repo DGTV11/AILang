@@ -2,7 +2,7 @@ import ctypes
 import os
 from extra_modules.execution_components.constant_system_values import *
 
-numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/c_lib/numbers/c_src/numbers.so')
+numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/c_lib/numbers/lib/numbers.so')
 
 # Typedefs
 overflow_type_t     = ctypes.c_uint
@@ -1091,7 +1091,7 @@ class i64:
     def __invert__(self):
         return i64(numbers_c.i64_bitwise_not(self.val))
 
-class u32:
+class u32: #TODO
     def __init__(self, val: str|int|uint32_t):
         if isinstance(val, str):
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))

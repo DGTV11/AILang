@@ -1,5 +1,5 @@
 # Imports
-from extra_modules.c_apis.position import Position
+from extra_modules.execution_components.position import Position
 from string import ascii_letters
 
 # Constants
@@ -13,6 +13,8 @@ LETTERS_DIGITS = LETTERS + DIGITS
 TT_BIGINT               = 'BIGINT'
 TT_INT                  = 'INT'
 TT_LONGINT              = 'LONGINT'
+TT_UINT                 = 'UINT'
+TT_ULONGINT             = 'ULONGINT'
 TT_HALF                 = 'HALF'
 TT_FLOAT                = 'FLOAT'
 TT_DOUBLE               = 'DOUBLE'
@@ -55,6 +57,8 @@ TOKEN_TYPE_TO_STRING = {
     TT_BIGINT       : 'bigint',
     TT_INT          : 'int',
     TT_LONGINT      : 'longint',
+    TT_UINT         : 'uint',
+    TT_ULONGINT     : 'ulongint',
     TT_HALF         : 'half',
     TT_FLOAT        : 'float',
     TT_DOUBLE       : 'double',
