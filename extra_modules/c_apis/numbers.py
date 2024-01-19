@@ -400,8 +400,8 @@ numbers_c.u32_bitwise_not.argtypes = [uint32_t]
 numbers_c.u32_bitwise_not.restype = uint32_t
 
 ## u64
-numbers_c.u64_str2u64.argtypes = [ctypes.c_char_p]
-numbers_c.u64_str2u64.restype = uint64_t
+numbers_c.str2u64.argtypes = [ctypes.c_char_p]
+numbers_c.str2u64.restype = uint64_t
 
 numbers_c.conv_u64_to_str.argtypes = [uint64_t, ctypes.c_char_p]
 numbers_c.conv_u64_to_str.restype = ctypes.c_void_p
