@@ -2,7 +2,7 @@ import ctypes
 import os
 from extra_modules.execution_components.constant_system_values import *
 
-numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/c_lib/numbers/lib/numbers.so')
+numbers_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/c_lib/external_libraries/numbers/lib/numbers.so')
 
 # Typedefs
 overflow_type_t     = ctypes.c_uint
