@@ -189,6 +189,8 @@ float32_matrix_res_t    f32m_column_vector_to_matrix(float32_matrix_t v, size_t 
 float64_matrix_res_t    f64m_column_vector_to_matrix(float64_matrix_t v, size_t no_columns);
 int32_matrix_res_t      i32m_column_vector_to_matrix(int32_matrix_t v, size_t no_columns);
 int64_matrix_res_t      i64m_column_vector_to_matrix(int64_matrix_t v, size_t no_columns);
+uint32_matrix_res_t     u32m_column_vector_to_matrix(uint32_matrix_t v, size_t no_columns);
+uint64_matrix_res_t     u64m_column_vector_to_matrix(uint64_matrix_t v, size_t no_columns);
 
 float32_matrix_res_t    f16m_to_f32m(float16_matrix_t m);
 float64_matrix_res_t    f16m_to_f64m(float16_matrix_t m);
