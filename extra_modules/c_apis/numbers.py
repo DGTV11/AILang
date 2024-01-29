@@ -1240,6 +1240,155 @@ class u32:
     def __invert__(self):
         return u32(numbers_c.u32_bitwise_not(self.val))
 
+class u64:
+    def __init__(self, val: str|int|uint64_t):
+        if isinstance(val, str):
+            c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
+            self.val: uint64_t = numbers_c.str2u64(c_stringified_value)
+        elif isinstance(val, int):
+            self.val: uint64_t = int64_t(val)
+        elif isinstance(val, uint64_t):
+            self.val: uint64_t = val
+
+        self.stringified_value = None
+
+    def __repr__(self) -> str:
+        if not self.stringified_value:
+            c_stringified_value = ctypes.create_string_buffer(UINT_STR_BUF_SIZE)
+            numbers_c.conv_u64_to_str(self.val, c_stringified_value)
+            self.stringified_value = c_stringified_value.value.decode('utf-8')+'ui'
+            del c_stringified_value
+        return self.stringified_value
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+    def __add__(self, other):
+        if isinstance(other, u64):
+            res: Cu64_res = numbers_c.u64_add(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return u64(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for +: 'u64' and '{type(other)}'")
+    
+    def __sub__(self, other):
+        if isinstance(other, u64):
+            res: Cu64_res = numbers_c.u64_sub(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 2: #INTUNDERFLOW
+                        raise OverflowError('Integer underflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return u64(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for -: 'u64' and '{type(other)}'")
+        
+    def __mul__(self, other):
+        if isinstance(other, u64):
+            res: Cu64_res = numbers_c.u64_mul(self.val, other.val)
+            overflow_type: int = getattr(res, 'overflow_type')
+            if overflow_type != 0:
+                match overflow_type:
+                    case 1: #INTOVERFLOW
+                        raise OverflowError('Integer overflow')
+                    case _:
+                        raise Exception('Unknown error')
+            return u64(getattr(res, 'res'))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for *: 'u64' and '{type(other)}'")
+        
+    def __truediv__(self, other):
+        if isinstance(other, u64):
+            res: Cf64_res = numbers_c.u64_divide(self.val, other.val)
+            if bool(getattr(res, 'error')):
+                raise ZeroDivisionError('Division by zero')
+            return f64(getattr(res, 'res')) 
+        else:
+            raise TypeError(f"Unsupported operand type(s) for /: 'u64' and '{type(other)}'")
+        
+    def __pow__(self, other):
+        if isinstance(other, u64):
+            return f64(numbers_c.u64_pow(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for **: 'u64' and '{type(other)}'")
+    
+    def __ge__(self, other):
+        if isinstance(other, u64):
+            return numbers_c.u64_gte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >=: 'u64' and '{type(other)}'")
+
+    def __gt__(self, other):
+        if isinstance(other, u64):
+            return numbers_c.u64_gt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >: 'u64' and '{type(other)}'")
+        
+    def __eq__(self, other):
+        if isinstance(other, u64):
+            return numbers_c.u64_eq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ==: 'u64' and '{type(other)}'")
+        
+    def __le__(self, other):
+        if isinstance(other, u64):
+            return numbers_c.u64_lte(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <=: 'u64' and '{type(other)}'")
+        
+    def __lt__(self, other):
+        if isinstance(other, u64):
+            return numbers_c.u64_lt(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <: 'u64' and '{type(other)}'")
+        
+    def __ne__(self, other):
+        if isinstance(other, u64):
+            return numbers_c.u64_neq(self.val, other.val)
+        else:
+            raise TypeError(f"Unsupported operand type(s) for !=: 'u64' and '{type(other)}'")
+
+    def __lshift__(self, other):
+        if isinstance(other, u64):
+            return u64(numbers_c.u64_bitwise_lshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for <<: 'u64' and '{type(other)}'")
+        
+    def __rshift__(self, other):
+        if isinstance(other, u64):
+            return u64(numbers_c.u64_bitwise_rshift(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for >>: 'u64' and '{type(other)}'")
+
+    def __xor__(self, other):
+        if isinstance(other, u64):
+            return u64(numbers_c.u64_bitwise_xor(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for ^: 'u64' and '{type(other)}'")
+
+    def __or__(self, other):
+        if isinstance(other, u64):
+            return u64(numbers_c.u64_bitwise_or(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for |: 'u64' and '{type(other)}'")
+        
+    def __and__(self, other):
+        if isinstance(other, u64):
+            return u64(numbers_c.u64_bitwise_and(self.val, other.val))
+        else:
+            raise TypeError(f"Unsupported operand type(s) for &: 'u64' and '{type(other)}'")
+        
+    def __invert__(self):
+        return u64(numbers_c.u64_bitwise_not(self.val))
+
 # Numerical casting
 py_num_type_to_num_type_t = {
     f16: (num_type_t(0), 'f16'),
