@@ -41,6 +41,20 @@ void free_i64m(int64_matrix_t m) {
     free(m.m);
 }
 
+void free_u32m(uint32_matrix_t m) {
+    for (size_t i=0; i<m.y; i++) {
+        free(m.m[i]);
+    }
+    free(m.m);
+}
+
+void free_u64m(uint64_matrix_t m) {
+    for (size_t i=0; i<m.y; i++) {
+        free(m.m[i]);
+    }
+    free(m.m);
+}
+
 //*Copy matrices
 float16_matrix_res_t copy_f16m(float16_matrix_t m) {
     float16_matrix_res_t res;
@@ -154,6 +168,56 @@ int64_matrix_res_t copy_i64m(int64_matrix_t m) {
     }
     for (size_t i=0; i<m.y; i++) {
         res.res.m[i] = CALLOC(m.x, int64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint32_matrix_res_t copy_u32m(uint32_matrix_t m) {
+    uint32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, uint32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res;
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, uint32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint64_matrix_res_t copy_u64m(uint64_matrix_t m) {
+    uint64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, uint64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res;
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, uint64_t);
         if (res.res.m[i] == NULL) {
             ERROR_RES(res, MALLOCERROR);
             return res;
