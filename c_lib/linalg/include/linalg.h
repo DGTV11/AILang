@@ -80,6 +80,12 @@ typedef struct {
 } uint32_matrix_t;
 
 typedef struct {
+    uint64_t** m;
+    size_t x;
+    size_t y;
+}
+
+typedef struct {
     float16_matrix_t res;
     error_t err;
 } float16_matrix_res_t;
@@ -146,16 +152,19 @@ typedef struct {
 } matrix_cast_res_t;
 
 // Function prototypes
-void free_f16m(float16_matrix_t m);
-void free_f32m(float32_matrix_t m);
-void free_f64m(float64_matrix_t m);
-void free_i32m(int32_matrix_t m);
-void free_i64m(int64_matrix_t m);
-float16_matrix_res_t copy_f16m(float16_matrix_t m);
-float32_matrix_res_t copy_f32m(float32_matrix_t m);
-float64_matrix_res_t copy_f64m(float64_matrix_t m);
-int32_matrix_res_t   copy_i32m(int32_matrix_t m);
-int64_matrix_res_t   copy_i64m(int64_matrix_t m);
+void                    free_f16m(float16_matrix_t m);
+void                    free_f32m(float32_matrix_t m);
+void                    free_f64m(float64_matrix_t m);
+void                    free_i32m(int32_matrix_t m);
+void                    free_i64m(int64_matrix_t m);
+void                    free_u32m(uint32_matrix_t m);
+void                    free_u64m(uint64_matrix_t m);
+
+float16_matrix_res_t    copy_f16m(float16_matrix_t m);
+float32_matrix_res_t    copy_f32m(float32_matrix_t m);
+float64_matrix_res_t    copy_f64m(float64_matrix_t m);
+int32_matrix_res_t      copy_i32m(int32_matrix_t m);
+int64_matrix_res_t      copy_i64m(int64_matrix_t m);
 
 float16_matrix_res_t    f16m_fill(size_t x, size_t y, float16_t fill_value);
 float32_matrix_res_t    f32m_fill(size_t x, size_t y, float32_t fill_value);
