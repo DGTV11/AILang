@@ -2723,6 +2723,82 @@ int64_matrix_res_t i64m_sub(int64_matrix_t m1, int64_matrix_t m2) {
     return res;
 }
 
+uint32_matrix_res_t u32m_sub(uint32_matrix_t m1, uint32_matrix_t m2) {
+    uint32_matrix_res_t res;
+    uint32_t a;
+    uint32_t b;
+
+    if ((m1.x != m2.x) || (m1.y != m2.y)) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
+    SET_DIMS(res.res, m1.x, m1.y);
+
+    res.res.m = CALLOC(m1.y, uint32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m1.y; i++) {
+        res.res.m[i] = CALLOC(m1.x, uint32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m1.x; j++) {
+            a = m1.m[i][j];
+            b = m2.m[i][j];
+
+            if (b > a) {
+                ERROR_RES(res, UINTOVERFLOW);
+            }
+            res.res.m[i][j] = a - b;
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint64_matrix_res_t u64m_sub(uint64_matrix_t m1, uint64_matrix_t m2) {
+    uint64_matrix_res_t res;
+    uint64_t a;
+    uint64_t b;
+
+    if ((m1.x != m2.x) || (m1.y != m2.y)) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
+    SET_DIMS(res.res, m1.x, m1.y);
+
+    res.res.m = CALLOC(m1.y, uint64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m1.y; i++) {
+        res.res.m[i] = CALLOC(m1.x, uint64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m1.x; j++) {
+            a = m1.m[i][j];
+            b = m2.m[i][j];
+
+            if (b > a) {
+                ERROR_RES(res, UINTOVERFLOW);
+            }
+            res.res.m[i][j] = a - b;
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
 //*Multiplication
 float16_matrix_res_t f16m_mul(float16_matrix_t m1, float16_matrix_t m2) {
     float16_matrix_res_t res;

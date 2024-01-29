@@ -256,6 +256,8 @@ float32_matrix_res_t    f32m_sub(float32_matrix_t m1, float32_matrix_t m2);
 float64_matrix_res_t    f64m_sub(float64_matrix_t m1, float64_matrix_t m2);
 int32_matrix_res_t      i32m_sub(int32_matrix_t m1, int32_matrix_t m2);
 int64_matrix_res_t      i64m_sub(int64_matrix_t m1, int64_matrix_t m2);
+uint32_matrix_res_t     u32m_sub(uint32_matrix_t m1, uint32_matrix_t m2);
+uint64_matrix_res_t     u64m_sub(uint64_matrix_t m1, uint64_matrix_t m2);
 
 float16_matrix_res_t    f16m_mul(float16_matrix_t m1, float16_matrix_t m2);
 float32_matrix_res_t    f32m_mul(float32_matrix_t m1, float32_matrix_t m2);
