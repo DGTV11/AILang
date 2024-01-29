@@ -227,6 +227,20 @@ int32_matrix_res_t      i64m_to_i32m(int64_matrix_t m);
 uint32_matrix_res_t     i64m_to_u32m(int64_matrix_t m);
 uint64_matrix_res_t     i64m_to_u64m(int64_matrix_t m);
 
+float16_matrix_res_t    u32m_to_f16m(uint32_matrix_t m);
+float32_matrix_res_t    u32m_to_f32m(uint32_matrix_t m);
+float64_matrix_res_t    u32m_to_f64m(uint32_matrix_t m);
+int32_matrix_res_t      u32m_to_i32m(uint32_matrix_t m);
+int64_matrix_res_t      u32m_to_i64m(uint32_matrix_t m);
+uint64_matrix_res_t     u32m_to_u64m(uint32_matrix_t m);
+
+float16_matrix_res_t    u64m_to_f16m(uint64_matrix_t m);
+float32_matrix_res_t    u64m_to_f32m(uint64_matrix_t m);
+float64_matrix_res_t    u64m_to_f64m(uint64_matrix_t m);
+int32_matrix_res_t      u64m_to_i32m(uint64_matrix_t m);
+int64_matrix_res_t      u64m_to_i64m(uint64_matrix_t m);
+uint32_matrix_res_t     u64m_to_u32m(uint64_matrix_t m);
+
 matrix_cast_res_t       matrix_cast(matrix_t in_m, matrix_type_t tgt_type);
 
 float16_matrix_res_t    f16m_add(float16_matrix_t m1, float16_matrix_t m2);

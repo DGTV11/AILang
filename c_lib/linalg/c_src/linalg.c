@@ -1585,6 +1585,308 @@ uint64_matrix_res_t i64m_to_u64m(int64_matrix_t m) {
     return res;
 }
 
+//*From u32m to other matrix types
+float16_matrix_res_t u32m_to_f16m(uint32_matrix_t m) {
+    float16_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, float16_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, float16_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = float32_to_float16((float32_t)m.m[i][j]);
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+float32_matrix_res_t u32m_to_f32m(uint32_matrix_t m) {
+    float32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, float32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, float32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (float32_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+float64_matrix_res_t u32m_to_f64m(uint32_matrix_t m) {
+    float64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, float64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, float64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (float64_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+int32_matrix_res_t u32m_to_i32m(uint32_matrix_t m) {
+    int32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, int32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, int32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (int32_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+int64_matrix_res_t u32m_to_i64m(uint32_matrix_t m) {
+    int64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, int64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, int64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (int64_t)m.m[i][j];
+        }
+    }
+    
+    res.err = GOOD;
+    return res;
+}
+
+uint64_matrix_res_t u32m_to_u64m(uint32_matrix_t m) {
+    uint64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, uint64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, uint64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (uint64_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+//*From u64m to other matrix types
+float16_matrix_res_t u64m_to_f16m(uint64_matrix_t m) {
+    float16_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, float16_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, float16_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = float32_to_float16((float32_t)m.m[i][j]);
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+float32_matrix_res_t u64m_to_f32m(uint64_matrix_t m) {
+    float32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, float32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, float32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (float32_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+float64_matrix_res_t u64m_to_f64m(uint64_matrix_t m) {
+    float64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, float64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, float64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (float64_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+int32_matrix_res_t u64m_to_i32m(uint64_matrix_t m) {
+    int32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, int32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, int32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (int32_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+int64_matrix_res_t u64m_to_i64m(uint64_matrix_t m) {
+    int64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, int64_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, int64_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (int64_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint32_matrix_res_t u64m_to_u32m(uint64_matrix_t m) {
+    uint32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.x, m.y);
+
+    res.res.m = CALLOC(m.y, uint32_t*);
+    if (res.res.m == NULL) {
+        ERROR_RES(res, MALLOCERROR);
+        return res; 
+    }
+    for (size_t i=0; i<m.y; i++) {
+        res.res.m[i] = CALLOC(m.x, uint32_t);
+        if (res.res.m[i] == NULL) {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j=0; j<m.x; j++) {
+            res.res.m[i][j] = (uint32_t)m.m[i][j];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
 //* Matrix casting
 matrix_cast_res_t matrix_cast(matrix_t in_m, matrix_type_t tgt_type) { 
     matrix_cast_res_t res;
@@ -1600,6 +1902,8 @@ matrix_cast_res_t matrix_cast(matrix_t in_m, matrix_type_t tgt_type) {
     float64_matrix_res_t    f64mr;
     int32_matrix_res_t      i32mr;
     int64_matrix_res_t      i64mr;
+    uint32_matrix_res_t     u32mr;
+    uint64_matrix_res_t     u64mr;
 
     MC_SET_RES_TYPE(res, tgt_type);
     switch (in_m.matrix_type) {
