@@ -196,26 +196,36 @@ float32_matrix_res_t    f16m_to_f32m(float16_matrix_t m);
 float64_matrix_res_t    f16m_to_f64m(float16_matrix_t m);
 int32_matrix_res_t      f16m_to_i32m(float16_matrix_t m);
 int64_matrix_res_t      f16m_to_i64m(float16_matrix_t m);
+uint32_matrix_res_t     f16m_to_u32m(float16_matrix_t m);
+uint64_matrix_res_t     f16m_to_u64m(float16_matrix_t m);
 
 float16_matrix_res_t    f32m_to_f16m(float32_matrix_t m);
 float64_matrix_res_t    f32m_to_f64m(float32_matrix_t m); 
 int32_matrix_res_t      f32m_to_i32m(float32_matrix_t m);
 int64_matrix_res_t      f32m_to_i64m(float32_matrix_t m);
+uint32_matrix_res_t     f32m_to_u32m(float32_matrix_t m);
+uint64_matrix_res_t     f32m_to_u64m(float32_matrix_t m);
 
 float16_matrix_res_t    f64m_to_f16m(float64_matrix_t m);
 float32_matrix_res_t    f64m_to_f32m(float64_matrix_t m);
 int32_matrix_res_t      f64m_to_i32m(float64_matrix_t m);
 int64_matrix_res_t      f64m_to_i64m(float64_matrix_t m);
+uint32_matrix_res_t     f64m_to_u32m(float64_matrix_t m);
+uint64_matrix_res_t     f64m_to_u64m(float64_matrix_t m);
 
 float16_matrix_res_t    i32m_to_f16m(int32_matrix_t m);
 float32_matrix_res_t    i32m_to_f32m(int32_matrix_t m);
 float64_matrix_res_t    i32m_to_f64m(int32_matrix_t m);
 int64_matrix_res_t      i32m_to_i64m(int32_matrix_t m);
+uint32_matrix_res_t     i32m_to_u32m(int32_matrix_t m);
+uint64_matrix_res_t     i32m_to_u64m(int32_matrix_t m);
 
 float16_matrix_res_t    i64m_to_f16m(int64_matrix_t m);
 float32_matrix_res_t    i64m_to_f32m(int64_matrix_t m);
 float64_matrix_res_t    i64m_to_f64m(int64_matrix_t m);
 int32_matrix_res_t      i64m_to_i32m(int64_matrix_t m);
+uint32_matrix_res_t     i64m_to_u32m(int64_matrix_t m);
+uint64_matrix_res_t     i64m_to_u64m(int64_matrix_t m);
 
 matrix_cast_res_t       matrix_cast(matrix_t in_m, matrix_type_t tgt_type);
 
