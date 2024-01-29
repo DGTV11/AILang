@@ -173,6 +173,8 @@ float32_matrix_res_t    f32m_fill(size_t x, size_t y, float32_t fill_value);
 float64_matrix_res_t    f64m_fill(size_t x, size_t y, float64_t fill_value);
 int32_matrix_res_t      i32m_fill(size_t x, size_t y, int32_t fill_value);
 int64_matrix_res_t      i64m_fill(size_t x, size_t y, int64_t fill_value);
+uint32_matrix_res_t     u32m_fill(size_t x, size_t y, uint32_t fill_value);
+uint64_matrix_res_t     u64m_fill(size_t x, size_t y, uint64_t fill_value);
 
 float16_matrix_res_t    f16m_row_vector_to_matrix(float16_matrix_t v, size_t no_rows);
 float32_matrix_res_t    f32m_row_vector_to_matrix(float32_matrix_t v, size_t no_rows);
