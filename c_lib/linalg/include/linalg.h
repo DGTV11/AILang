@@ -104,6 +104,16 @@ typedef struct {
     error_t err;
 } int64_matrix_res_t;
 
+typedef struct {
+    uint32_matrix_t res;
+    error_t err;
+} uint32_matrix_res_t;
+
+typedef struct {
+    uint64_matrix_t res;
+    error_t err;
+} uint64_matrix_res_t;
+
 // Matrix cast structures
 typedef enum {
     F16MT = 0,
@@ -111,6 +121,8 @@ typedef enum {
     F64MT,
     I32MT,
     I64MT,
+    U32MT,
+    U64MT,
 } matrix_type_t;
 
 typedef union {
@@ -119,6 +131,8 @@ typedef union {
     float64_matrix_t f64m;
     int32_matrix_t i32m;
     int64_matrix_t i64m;
+    uint32_matrix_t u32m;
+    uint64_matrix_t u64m;
 } matrix_container_t;
 
 typedef struct {
