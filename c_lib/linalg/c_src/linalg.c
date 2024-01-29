@@ -3403,6 +3403,9 @@ float64_matrix_res_t f64m_matmul(float64_matrix_t m1, float64_matrix_t m2) {
 
 int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
     int32_matrix_res_t res;
+    int32_t a;
+    int32_t b;
+    int32_t c;
 
     if ((m1.x != m2.y)) {
         ERROR_RES(res, SHAPEERROR);
@@ -3413,10 +3416,6 @@ int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
     if (res.err != GOOD) {
         return res;
     }
-
-    int32_t a;
-    int32_t b;
-    int32_t c;
 
     for (size_t i=0; i<m1.y; i++) {
         for (size_t j=0; j<m2.x; j++) {
@@ -3459,6 +3458,9 @@ int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
 
 int64_matrix_res_t i64m_matmul(int64_matrix_t m1, int64_matrix_t m2) {
     int64_matrix_res_t res;
+    int64_t a;
+    int64_t b;
+    int64_t c;
 
     if ((m1.x != m2.y)) {
         ERROR_RES(res, SHAPEERROR);
@@ -3469,10 +3471,6 @@ int64_matrix_res_t i64m_matmul(int64_matrix_t m1, int64_matrix_t m2) {
     if (res.err != GOOD) {
         return res;
     }
-
-    int64_t a;
-    int64_t b;
-    int64_t c;
 
     for (size_t i=0; i<m1.y; i++) {
         for (size_t j=0; j<m2.x; j++) {
