@@ -74,6 +74,12 @@ typedef struct {
 } int64_matrix_t;
 
 typedef struct {
+    uint32_t** m;
+    size_t x;
+    size_t y;
+} uint32_matrix_t;
+
+typedef struct {
     float16_matrix_t res;
     error_t err;
 } float16_matrix_res_t;
