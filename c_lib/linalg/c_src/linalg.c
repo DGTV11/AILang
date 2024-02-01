@@ -3403,10 +3403,7 @@ float64_matrix_res_t f64m_matmul(float64_matrix_t m1, float64_matrix_t m2) {
 
 int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
     int32_matrix_res_t res;
-    int32_t a;
-    int32_t b;
-    int32_t c;
-
+    
     if ((m1.x != m2.y)) {
         ERROR_RES(res, SHAPEERROR);
         return res;
@@ -3417,6 +3414,9 @@ int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
         return res;
     }
 
+    int32_t a;
+    int32_t b;
+    int32_t c;
     for (size_t i=0; i<m1.y; i++) {
         for (size_t j=0; j<m2.x; j++) {
             for (size_t k=0; k<m1.x; k++) {
@@ -3427,14 +3427,18 @@ int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
                 } else if (b > 0) {
                     if (a > INT_MAX / b) {
                         ERROR_RES(res, INTOVERFLOW);
+                        return res;
                     } else if (a < INT_MIN / b) {
                         ERROR_RES(res, INTUNDERFLOW);
+                        return res;
                     }
                 } else if (b < 0) {
                     if (a < INT_MIN / b) {
                         ERROR_RES(res, INTOVERFLOW);
+                        return res;
                     } else if (a > INT_MAX / b) {
                         ERROR_RES(res, INTUNDERFLOW);
+                        return res;
                     }
                 }
                 c = a * b;
@@ -3458,9 +3462,7 @@ int32_matrix_res_t i32m_matmul(int32_matrix_t m1, int32_matrix_t m2) {
 
 int64_matrix_res_t i64m_matmul(int64_matrix_t m1, int64_matrix_t m2) {
     int64_matrix_res_t res;
-    int64_t a;
-    int64_t b;
-    int64_t c;
+    
 
     if ((m1.x != m2.y)) {
         ERROR_RES(res, SHAPEERROR);
@@ -3472,6 +3474,9 @@ int64_matrix_res_t i64m_matmul(int64_matrix_t m1, int64_matrix_t m2) {
         return res;
     }
 
+    int64_t a;
+    int64_t b;
+    int64_t c;
     for (size_t i=0; i<m1.y; i++) {
         for (size_t j=0; j<m2.x; j++) {
             for (size_t k=0; k<m1.x; k++) {
@@ -3482,14 +3487,18 @@ int64_matrix_res_t i64m_matmul(int64_matrix_t m1, int64_matrix_t m2) {
                 } else if (b > 0) {
                     if (a > LLONG_MAX / b) {
                         ERROR_RES(res, INTOVERFLOW);
+                        return res;
                     } else if (a < LLONG_MIN / b) {
                         ERROR_RES(res, INTUNDERFLOW);
+                        return res;
                     }
                 } else if (b < 0) {
                     if (a < LLONG_MIN / b) {
                         ERROR_RES(res, INTOVERFLOW);
+                        return res;
                     } else if (a > LLONG_MAX / b) {
                         ERROR_RES(res, INTUNDERFLOW);
+                        return res;
                     }
                 }
                 c = a * b;
@@ -3502,6 +3511,88 @@ int64_matrix_res_t i64m_matmul(int64_matrix_t m1, int64_matrix_t m2) {
                     return res;
                 }
 
+                res.res.m[i][j] += c;
+            }
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint32_matrix_res_t u32m_matmul(uint32_matrix_t m1, uint32_matrix_t m2) {
+    uint32_matrix_res_t res;
+    
+    if ((m1.x != m2.y)) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
+    res = u32m_fill(m1.y, m2.x, 0);
+    if (res.err != GOOD) {
+        return res;
+    }
+    
+    uint32_t a;
+    uint32_t b;
+    uint32_t c;
+    for (size_t i=0; i<m1.y; i++) {
+        for (size_t j=0; j<m2.x; j++) {
+            for (size_t k=0; k<m1.x; k++) {
+                a = m1.m[i][k];
+                b = m2.m[k][j];   
+                if (a == 0 || b == 0) {
+                    res.res.m[i][j] = 0;
+                } else if ((a + b) < a) {
+                    ERROR_RES(res, INTOVERFLOW);
+                }
+                c = a * b;
+
+                if (c > ULLONG_MAX - res.res.m[i][j]) {
+                    ERROR_RES(res, INTOVERFLOW);
+                    return res;
+                }
+                res.res.m[i][j] += c;
+            }
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint64_matrix_res_t u64m_matmul(uint64_matrix_t m1, uint64_matrix_t m2) {
+    uint64_matrix_res_t res;
+    
+    if ((m1.x != m2.y)) {
+        ERROR_RES(res, SHAPEERROR);
+        return res;
+    }
+
+    res = u64m_fill(m1.y, m2.x, 0);
+    if (res.err != GOOD) {
+        return res;
+    }
+
+    uint64_t a;
+    uint64_t b;
+    uint64_t c;
+    for (size_t i=0; i<m1.y; i++) {
+        for (size_t j=0; j<m2.x; j++) {
+            for (size_t k=0; k<m1.x; k++) {
+                a = m1.m[i][k];
+                b = m2.m[k][j];   
+                if (a == 0 || b == 0) {
+                    res.res.m[i][j] = 0;
+                } else if ((a + b) < a) {
+                    ERROR_RES(res, INTOVERFLOW);
+                }
+                c = a * b;
+
+                if (c > ULLONG_MAX - res.res.m[i][j]) {
+                    ERROR_RES(res, INTOVERFLOW);
+                    return res;
+                }
                 res.res.m[i][j] += c;
             }
         }
