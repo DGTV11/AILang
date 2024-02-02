@@ -19,7 +19,7 @@
 
 //*Normal result macros
 #define SET_DIMS(matrix, x_coord, y_coord) {matrix.x = x_coord; matrix.y = y_coord;}
-#define ERROR_RES(result, error) {result.err = xerror; SET_DIMS(result.res, 0, 0); result.res.m = NULL;}
+#define ERROR_RES(result, error) {result.err = error; SET_DIMS(result.res, 0, 0); result.res.m = NULL;}
 
 //*Matrix cast result macros
 #define MC_SET_RES_TYPE(result, type) {result.res_matrix.matrix_type = type;}
