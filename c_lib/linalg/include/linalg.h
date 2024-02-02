@@ -294,6 +294,8 @@ float32_matrix_res_t    f32m_exp(float32_matrix_t m);
 float64_matrix_res_t    f64m_exp(float64_matrix_t m);
 float64_matrix_res_t    i32m_exp(int32_matrix_t m);
 float64_matrix_res_t    i64m_exp(int64_matrix_t m);
+float64_matrix_res_t    u32m_exp(uint32_matrix_t m);
+float64_matrix_res_t    u64m_exp(uint64_matrix_t m);
 
 float16_matrix_res_t    f16m_transpose(float16_matrix_t m);
 float32_matrix_res_t    f32m_transpose(float32_matrix_t m);
