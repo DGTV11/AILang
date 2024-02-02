@@ -148,8 +148,19 @@ class Lexer:
                 case 'b': # BigInt
                     self.advance()
                     return Token(TT_BIGINT, num_str, pos_start, self.pos.copy()), None
+                case 'u': # Unsigned Int
+                    self.advance()
+                    match self.current_char:
+                        case 'i':
+                            self.advance()
+                            return Token(TT_UINT, num_str, pos_start, self.pos.copy()), None
+                        case 'l':
+                            self.advance()
+                            return Token(TT_ULONGINT, num_str, pos_start, self.pos.copy()), None
+                        case _:
+                            return None, err.InvalidSyntaxError(pos_start, self.pos, "Expected 'i' or 'l' after 'u'")
                 case _:
-                    return None, err.InvalidSyntaxError(pos_start, self.pos, "Expected 'i', 'l', or 'b' after integer")
+                    return None, err.InvalidSyntaxError(pos_start, self.pos, "Expected 'i', 'l', 'ui', 'ul', or 'b' after integer")
         else:
             #self.advance()
             match self.current_char:

@@ -677,6 +677,322 @@ class Int64(BaseValue):
         return self.__str__()
 Int64.zero = Int64(0)
 
+Type.UInt32 = Type('UInt32')
+class UInt32(BaseValue):
+    def __init__(self, value: str|int|numbers.u32):
+        super().__init__()
+        self.type = 'UInt32'
+
+        if isinstance(value, str) or isinstance(value, int):
+            self.value: numbers.u32 = numbers.u32(value)
+        else:
+            self.value: numbers.u32 = value
+    
+    def add_by(self, other):
+        if isinstance(other, UInt32):
+            try:
+                return UInt32(self.value + other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, UInt32):
+            try:
+                return UInt32(self.value - other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def mult_by(self, other):
+        if isinstance(other, UInt32):
+            try:
+                return UInt32(self.value * other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def div_by(self, other):
+        if isinstance(other, UInt32):
+            try:
+                return Float64(self.value / other.value), None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def pow_by(self, other):
+        if isinstance(other, UInt32):
+            return Float64(self.value ** other.value), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value == other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def get_comparison_ne(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def get_comparison_ne(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value < other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value > other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value <= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, UInt32):
+            return Integer(int(self.value >= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_and_by(self, other):
+        if isinstance(other, UInt32):
+            return UInt32(self.value & other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_or_by(self, other):
+        if isinstance(other, UInt32):
+            return UInt32(self.value | other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def bitwise_xor_by(self, other):
+        if isinstance(other, UInt32):
+            return UInt32(self.value ^ other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def left_shift_by(self, other):
+        if isinstance(other, UInt32):
+            return UInt32(self.value << other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def right_shift_by(self, other):
+        if isinstance(other, UInt32):
+            return UInt32(self.value >> other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def complement(self):
+        return UInt32(~self.value).set_context(self.context), None
+
+    def not_(self):
+        n = UInt32(0) if self.is_true() else UInt32(1)
+        return n, None
+
+    def copy(self):
+        copy = UInt32(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(UInt32.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+UInt32.zero = UInt32(0)
+
+Type.UInt64 = Type('UInt64')
+class UInt64(BaseValue):
+    def __init__(self, value: str|int|numbers.u64):
+        super().__init__()
+        self.type = 'UInt64'
+
+        if isinstance(value, str) or isinstance(value, int):
+            self.value: numbers.u64 = numbers.u64(value)
+        else:
+            self.value: numbers.u64 = value
+    
+    def add_by(self, other):
+        if isinstance(other, UInt64):
+            try:
+                return UInt64(self.value + other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, UInt64):
+            try:
+                return UInt64(self.value - other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def mult_by(self, other):
+        if isinstance(other, UInt64):
+            try:
+                return UInt64(self.value * other.value), None
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def div_by(self, other):
+        if isinstance(other, UInt64):
+            try:
+                return Float64(self.value / other.value), None
+            except ZeroDivisionError:
+                return None, err.RTError(
+                    other.pos_start, other.pos_end,
+                    'Division by zero',
+                    self.context
+                )
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def pow_by(self, other):
+        if isinstance(other, UInt64):
+            return Float64(self.value ** other.value), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_eq(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value == other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def get_comparison_ne(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+
+    def get_comparison_ne(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value != other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lt(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value < other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gt(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value > other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_lte(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value <= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def get_comparison_gte(self, other):
+        if isinstance(other, UInt64):
+            return Integer(int(self.value >= other.value)), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_and_by(self, other):
+        if isinstance(other, UInt64):
+            return UInt64(self.value & other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def bitwise_or_by(self, other):
+        if isinstance(other, UInt64):
+            return UInt64(self.value | other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def bitwise_xor_by(self, other):
+        if isinstance(other, UInt64):
+            return UInt64(self.value ^ other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def left_shift_by(self, other):
+        if isinstance(other, UInt64):
+            return UInt64(self.value << other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def right_shift_by(self, other):
+        if isinstance(other, UInt64):
+            return UInt64(self.value >> other.value).set_context(self.context), None
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def complement(self):
+        return UInt64(~self.value).set_context(self.context), None
+
+    def not_(self):
+        n = UInt64(0) if self.is_true() else UInt64(1)
+        return n, None
+
+    def copy(self):
+        copy = UInt64(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def is_true(self):
+        return self.get_comparison_ne(UInt64.zero)[0].value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.__str__()
+UInt64.zero = UInt64(0)
+
 ## Float types
 
 Type.Float16 = Type('Float16')

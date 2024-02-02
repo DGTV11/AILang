@@ -63,6 +63,44 @@ class Interpreter:
                         )
                     ) 
                 return RTResult().success(Int64(int_value).set_context(context).set_pos(node.pos_start, node.pos_end))
+            case 'ui':
+                int_value = int(node.tok.value)
+                if int_value > 4294967295:
+                    return RTResult().failure(
+                        err.IntegerOverflowError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}ui is above the upper unsigned 32-bit integer limit of 4294967295",
+                            context
+                        )
+                    )
+                elif int_value < 0:
+                    return RTResult().failure(
+                        err.IntegerOverflowError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}ui is below the lower unsigned 32-bit integer limit of 0",
+                            context
+                        )
+                    )
+                return RTResult().success(UInt32(int_value).set_context(context).set_pos(node.pos_start, node.pos_end))
+            case 'ul':
+                int_value = int(node.tok.value)
+                if int_value > 18446744073709551615:
+                    return RTResult().failure(
+                        err.IntegerOverflowError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}ul is above the upper unsigned 64-bit integer limit of 18446744073709551615",
+                            context
+                        )
+                    )
+                elif int_value < 0:
+                    return RTResult().failure(
+                        err.IntegerOverflowError(
+                            node.pos_start, node.pos_end,
+                            f"{int_value}ul is below the lower unsigned 64-bit integer limit of 0",
+                            context
+                        )
+                    )
+                return RTResult().success(UInt64(int_value).set_context(context).set_pos(node.pos_start, node.pos_end))
             case 'b':
                 return RTResult().success(Integer(int(node.tok.value)).set_context(context).set_pos(node.pos_start, node.pos_end))
             # FLOATS

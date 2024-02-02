@@ -505,6 +505,16 @@ class Parser:
             self.advance()
             return res.success(NumberNode(tok, 'l'))
         
+        elif tok.type == TT_UINT:
+            res.register_adv()
+            self.advance()
+            return res.success(NumberNode(tok, 'ui'))
+        
+        elif tok.type == TT_ULONGINT:
+            res.register_adv()
+            self.advance()
+            return res.success(NumberNode(tok, 'ul'))
+        
         elif tok.type == TT_BIGINT:
             res.register_adv()
             self.advance()
