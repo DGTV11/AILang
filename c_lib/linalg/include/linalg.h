@@ -302,3 +302,5 @@ float32_matrix_res_t    f32m_transpose(float32_matrix_t m);
 float64_matrix_res_t    f64m_transpose(float64_matrix_t m);
 int32_matrix_res_t      i32m_transpose(int32_matrix_t m);
 int64_matrix_res_t      i64m_transpose(int64_matrix_t m);
+uint32_matrix_res_t     u32m_transpose(uint32_matrix_t m);
+uint64_matrix_res_t     u64m_transpose(uint64_matrix_t m);

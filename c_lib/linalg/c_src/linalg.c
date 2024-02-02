@@ -4849,4 +4849,64 @@ int64_matrix_res_t i64m_transpose(int64_matrix_t m)
     return res;
 }
 
+uint32_matrix_res_t u32m_transpose(uint32_matrix_t m)
+{
+    uint32_matrix_res_t res;
+
+    SET_DIMS(res.res, m.y, m.x);
+
+    res.res.m = CALLOC(m.x, uint32_t *);
+    if (res.res.m == NULL)
+    {
+        ERROR_RES(res, MALLOCERROR);
+        return res;
+    }
+    for (size_t i = 0; i < m.y; i++)
+    {
+        res.res.m[i] = CALLOC(m.y, uint32_t);
+        if (res.res.m[i] == NULL)
+        {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j = 0; j < m.x; j++)
+        {
+            res.res.m[i][j] = m.m[j][i];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
+uint64_matrix_res_t u64m_transpose(uint64_matrix_t m)
+{
+    uint64_matrix_res_t res;
+
+    SET_DIMS(res.res, m.y, m.x);
+
+    res.res.m = CALLOC(m.x, uint64_t *);
+    if (res.res.m == NULL)
+    {
+        ERROR_RES(res, MALLOCERROR);
+        return res;
+    }
+    for (size_t i = 0; i < m.y; i++)
+    {
+        res.res.m[i] = CALLOC(m.y, uint64_t);
+        if (res.res.m[i] == NULL)
+        {
+            ERROR_RES(res, MALLOCERROR);
+            return res;
+        }
+        for (size_t j = 0; j < m.x; j++)
+        {
+            res.res.m[i][j] = m.m[j][i];
+        }
+    }
+
+    res.err = GOOD;
+    return res;
+}
+
 // Tests
