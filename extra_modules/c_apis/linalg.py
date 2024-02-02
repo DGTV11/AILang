@@ -2,8 +2,8 @@ import ctypes
 import os
 import extra_modules.execution_components.context_and_datatypes as dta
 from itertools import chain
-from extra_modules.execution_components.constant_system_values import SCIENTIFIC_STR_BUF_SIZE, INT_STR_BUF_SIZE, LONG_STR_BUF_SIZE
-from extra_modules.c_apis.numbers import numbers_c, f16, f32, f64, i32, i64
+from extra_modules.execution_components.constant_system_values import SCIENTIFIC_STR_BUF_SIZE, INT_STR_BUF_SIZE, LONG_STR_BUF_SIZE, UINT_STR_BUF_SIZE, ULONG_STR_BUF_SIZE
+from extra_modules.c_apis.numbers import numbers_c, f16, f32, f64, i32, i64, u32, u64
 
 linalg_c = ctypes.CDLL(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + '/c_lib/linalg/lib/linalg.so')
 
@@ -16,18 +16,24 @@ float32_t               = ctypes.c_float
 float64_t               = ctypes.c_double
 int32_t                 = ctypes.c_int32
 int64_t                 = ctypes.c_int64
+uint32_t                = ctypes.c_uint32
+uint64_t                = ctypes.c_uint64
 
 f16_subvector_container = ctypes.POINTER(float16_t)
 f32_subvector_container = ctypes.POINTER(float32_t)
 f64_subvector_container = ctypes.POINTER(float64_t)
 i32_subvector_container = ctypes.POINTER(int32_t)
 i64_subvector_container = ctypes.POINTER(int64_t)
+u32_subvector_container = ctypes.POINTER(uint32_t)
+u64_subvector_container = ctypes.POINTER(uint64_t)
 
 f16_matrix_container    = ctypes.POINTER(f16_subvector_container)
 f32_matrix_container    = ctypes.POINTER(f32_subvector_container)
 f64_matrix_container    = ctypes.POINTER(f64_subvector_container)
 i32_matrix_container    = ctypes.POINTER(i32_subvector_container)
 i64_matrix_container    = ctypes.POINTER(i64_subvector_container)
+u32_matrix_container    = ctypes.POINTER(u32_subvector_container)
+u64_matrix_container    = ctypes.POINTER(u64_subvector_container)
 
 # Structs
 class Cfloat16_matrix_t(ctypes.Structure):
@@ -65,6 +71,20 @@ class Cint64_matrix_t(ctypes.Structure):
         ("y", ctypes.c_size_t),
     ]
 
+class Cuint32_matrix_t(ctypes.Structure):
+    _fields_ = [
+        ("m", u32_matrix_container),
+        ("x", ctypes.c_size_t),
+        ("y", ctypes.c_size_t),
+    ]
+
+class Cuint64_matrix_t(ctypes.Structure):
+    _fields_ = [
+        ("m", u64_matrix_container),
+        ("x", ctypes.c_size_t),
+        ("y", ctypes.c_size_t),
+    ]
+
 class Cfloat16_matrix_res_t(ctypes.Structure):
     _fields_ = [
         ("res", Cfloat16_matrix_t),
@@ -95,6 +115,18 @@ class Cint64_matrix_res_t(ctypes.Structure):
         ("err", error_t),
     ]
 
+class Cuint32_matrix_res_t(ctypes.Structure):
+    _fields_ = [
+        ("res", Cuint32_matrix_t),
+        ("err", error_t),
+    ]
+
+class Cuint64_matrix_res_t(ctypes.Structure):
+    _fields_ = [
+        ("res", Cuint64_matrix_t),
+        ("err", error_t),
+    ]
+
 # Matrix cast structures and types
 class Cmatrix_container_t(ctypes.Union):
     _fields_ = [
@@ -103,6 +135,8 @@ class Cmatrix_container_t(ctypes.Union):
         ("f64m", Cfloat64_matrix_t),
         ("i32m", Cint32_matrix_t),
         ("i64m", Cint64_matrix_t),
+        ("u32m", Cuint32_matrix_t),
+        ("u64m", Cuint64_matrix_t),
     ]
 
 class Cmatrix_t(ctypes.Structure):
@@ -117,7 +151,7 @@ class Cmatrix_cast_res_t(ctypes.Structure):
         ("err", error_t),
     ]
 
-type matrix_t = f16_matrix|f32_matrix|f64_matrix|i32_matrix|i64_matrix
+type matrix_t = f16_matrix|f32_matrix|f64_matrix|i32_matrix|i64_matrix|u32_matrix|u64_matrix
 
 # Function prototypes
 
@@ -151,6 +185,12 @@ linalg_c.free_i32m.restype = ctypes.c_void_p
 linalg_c.free_i64m.argtypes = [Cint64_matrix_t]
 linalg_c.free_i64m.restype = ctypes.c_void_p
 
+linalg_c.free_u32m.argtypes = [Cuint32_matrix_t]
+linalg_c.free_u32m.restype = ctypes.c_void_p
+
+linalg_c.free_u64m.argtypes = [Cuint64_matrix_t]
+linalg_c.free_u64m.restype = ctypes.c_void_p
+
 linalg_c.copy_f16m.argtypes = [Cfloat16_matrix_t]
 linalg_c.copy_f16m.restype = Cfloat16_matrix_res_t
 
@@ -165,6 +205,12 @@ linalg_c.copy_i32m.restype = Cint32_matrix_res_t
 
 linalg_c.copy_i64m.argtypes = [Cint64_matrix_t]
 linalg_c.copy_i64m.restype = Cint64_matrix_res_t
+
+linalg_c.copy_u32m.argtypes = [Cuint32_matrix_t]
+linalg_c.copy_u32m.restype = Cuint32_matrix_res_t
+
+linalg_c.copy_u64m.argtypes = [Cuint64_matrix_t]
+linalg_c.copy_u64m.restype = Cuint64_matrix_res_t
 
 linalg_c.f16m_fill.argtypes = [ctypes.c_size_t, ctypes.c_size_t, float16_t]
 linalg_c.f16m_fill.restype = Cfloat16_matrix_res_t
@@ -181,6 +227,12 @@ linalg_c.i32m_fill.restype = Cint32_matrix_res_t
 linalg_c.i64m_fill.argtypes = [ctypes.c_size_t, ctypes.c_size_t, int64_t]
 linalg_c.i64m_fill.restype = Cint64_matrix_res_t
 
+linalg_c.u32m_fill.argtypes = [ctypes.c_size_t, ctypes.c_size_t, uint32_t]
+linalg_c.u32m_fill.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_fill.argtypes = [ctypes.c_size_t, ctypes.c_size_t, uint64_t]
+linalg_c.u64m_fill.restype = Cuint64_matrix_res_t
+
 linalg_c.f16m_row_vector_to_matrix.argtypes = [Cfloat16_matrix_t, ctypes.c_size_t]
 linalg_c.f16m_row_vector_to_matrix.restype = Cfloat16_matrix_res_t
 
@@ -195,6 +247,12 @@ linalg_c.i32m_row_vector_to_matrix.restype = Cint32_matrix_res_t
 
 linalg_c.i64m_row_vector_to_matrix.argtypes = [Cint64_matrix_t, ctypes.c_size_t]
 linalg_c.i64m_row_vector_to_matrix.restype = Cint64_matrix_res_t
+
+linalg_c.u32m_row_vector_to_matrix.argtypes = [Cuint32_matrix_t, ctypes.c_size_t]
+linalg_c.u32m_row_vector_to_matrix.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_row_vector_to_matrix.argtypes = [Cuint64_matrix_t, ctypes.c_size_t]
+linalg_c.u64m_row_vector_to_matrix.restype = Cuint64_matrix_res_t
 
 linalg_c.f16m_column_vector_to_matrix.argtypes = [Cfloat16_matrix_t, ctypes.c_size_t]
 linalg_c.f16m_column_vector_to_matrix.restype = Cfloat16_matrix_res_t
@@ -211,23 +269,11 @@ linalg_c.i32m_column_vector_to_matrix.restype = Cint32_matrix_res_t
 linalg_c.i64m_column_vector_to_matrix.argtypes = [Cint64_matrix_t, ctypes.c_size_t]
 linalg_c.i64m_column_vector_to_matrix.restype = Cint64_matrix_res_t
 
-linalg_c.f16m_to_f32m.argtypes = [Cfloat16_matrix_t]
-linalg_c.f16m_to_f32m.restype = Cfloat32_matrix_res_t
+linalg_c.u32m_column_vector_to_matrix.argtypes = [Cuint32_matrix_t, ctypes.c_size_t]
+linalg_c.u32m_column_vector_to_matrix.restype = Cuint32_matrix_res_t
 
-linalg_c.f16m_to_f64m.argtypes = [Cfloat16_matrix_t]
-linalg_c.f16m_to_f64m.restype = Cfloat64_matrix_res_t
-
-linalg_c.f32m_to_f16m.argtypes = [Cfloat32_matrix_t]
-linalg_c.f32m_to_f16m.restype = Cfloat16_matrix_res_t
-
-linalg_c.f32m_to_f64m.argtypes = [Cfloat32_matrix_t]
-linalg_c.f32m_to_f64m.restype = Cfloat64_matrix_res_t
-
-linalg_c.f64m_to_f16m.argtypes = [Cfloat64_matrix_t]
-linalg_c.f64m_to_f16m.restype = Cfloat16_matrix_res_t
-
-linalg_c.f64m_to_f32m.argtypes = [Cfloat64_matrix_t]
-linalg_c.f64m_to_f32m.restype = Cfloat32_matrix_res_t
+linalg_c.u64m_column_vector_to_matrix.argtypes = [Cuint64_matrix_t, ctypes.c_size_t]
+linalg_c.u64m_column_vector_to_matrix.restype = Cuint64_matrix_res_t
 
 linalg_c.matrix_cast.argtypes = [Cmatrix_t, matrix_type_t]
 linalg_c.matrix_cast.restype = Cmatrix_cast_res_t
@@ -247,6 +293,12 @@ linalg_c.i32m_add.restype = Cint32_matrix_res_t
 linalg_c.i64m_add.argtypes = [Cint64_matrix_t, Cint64_matrix_t]
 linalg_c.i64m_add.restype = Cint64_matrix_res_t
 
+linalg_c.u32m_add.argtypes = [Cuint32_matrix_t, Cuint32_matrix_t]
+linalg_c.u32m_add.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_add.argtypes = [Cuint64_matrix_t, Cuint64_matrix_t]
+linalg_c.u64m_add.restype = Cuint64_matrix_res_t
+
 linalg_c.f16m_sub.argtypes = [Cfloat16_matrix_t, Cfloat16_matrix_t]
 linalg_c.f16m_sub.restype = Cfloat16_matrix_res_t
 
@@ -261,6 +313,12 @@ linalg_c.i32m_sub.restype = Cint32_matrix_res_t
 
 linalg_c.i64m_sub.argtypes = [Cint64_matrix_t, Cint64_matrix_t]
 linalg_c.i64m_sub.restype = Cint64_matrix_res_t
+
+linalg_c.u32m_sub.argtypes = [Cuint32_matrix_t, Cuint32_matrix_t]
+linalg_c.u32m_sub.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_sub.argtypes = [Cuint64_matrix_t, Cuint64_matrix_t]
+linalg_c.u64m_sub.restype = Cuint64_matrix_res_t
 
 linalg_c.f16m_mul.argtypes = [Cfloat16_matrix_t, Cfloat16_matrix_t]
 linalg_c.f16m_mul.restype = Cfloat16_matrix_res_t
@@ -277,6 +335,12 @@ linalg_c.i32m_mul.restype = Cint32_matrix_res_t
 linalg_c.i64m_mul.argtypes = [Cint64_matrix_t, Cint64_matrix_t]
 linalg_c.i64m_mul.restype = Cint64_matrix_res_t
 
+linalg_c.u32m_mul.argtypes = [Cuint32_matrix_t, Cuint32_matrix_t]
+linalg_c.u32m_mul.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_mul.argtypes = [Cuint64_matrix_t, Cuint64_matrix_t]
+linalg_c.u64m_mul.restype = Cuint64_matrix_res_t
+
 linalg_c.f16m_div.argtypes = [Cfloat16_matrix_t, Cfloat16_matrix_t]
 linalg_c.f16m_div.restype = Cfloat16_matrix_res_t
 
@@ -287,10 +351,16 @@ linalg_c.f64m_div.argtypes = [Cfloat64_matrix_t, Cfloat64_matrix_t]
 linalg_c.f64m_div.restype = Cfloat64_matrix_res_t
 
 linalg_c.i32m_div.argtypes = [Cint32_matrix_t, Cint32_matrix_t]
-linalg_c.i32m_div.restype = Cint32_matrix_res_t
+linalg_c.i32m_div.restype = Cfloat64_matrix_res_t
 
 linalg_c.i64m_div.argtypes = [Cint64_matrix_t, Cint64_matrix_t]
-linalg_c.i64m_div.restype = Cint64_matrix_res_t
+linalg_c.i64m_div.restype = Cfloat64_matrix_res_t
+
+linalg_c.u32m_div.argtypes = [Cuint32_matrix_t, Cuint32_matrix_t]
+linalg_c.u32m_div.restype = Cfloat64_matrix_res_t
+
+linalg_c.u64m_div.argtypes = [Cuint64_matrix_t, Cuint64_matrix_t]
+linalg_c.u64m_div.restype = Cfloat64_matrix_res_t
 
 linalg_c.f16m_matmul.argtypes = [Cfloat16_matrix_t, Cfloat16_matrix_t]
 linalg_c.f16m_matmul.restype = Cfloat16_matrix_res_t
@@ -306,6 +376,12 @@ linalg_c.i32m_matmul.restype = Cint32_matrix_res_t
 
 linalg_c.i64m_matmul.argtypes = [Cint64_matrix_t, Cint64_matrix_t]
 linalg_c.i64m_matmul.restype = Cint64_matrix_res_t
+
+linalg_c.u32m_matmul.argtypes = [Cuint32_matrix_t, Cuint32_matrix_t]
+linalg_c.u32m_matmul.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_matmul.argtypes = [Cuint64_matrix_t, Cuint64_matrix_t]
+linalg_c.u64m_matmul.restype = Cuint64_matrix_res_t
 
 linalg_c.f16m_neg.argtypes = [Cfloat16_matrix_t]
 linalg_c.f16m_neg.restype = Cfloat16_matrix_res_t
@@ -332,10 +408,16 @@ linalg_c.f64m_exp.argtypes = [Cfloat64_matrix_t]
 linalg_c.f64m_exp.restype = Cfloat64_matrix_res_t
 
 linalg_c.i32m_exp.argtypes = [Cint32_matrix_t]
-linalg_c.i32m_exp.restype = Cint32_matrix_res_t
+linalg_c.i32m_exp.restype = Cfloat64_matrix_res_t
 
 linalg_c.i64m_exp.argtypes = [Cint64_matrix_t]
-linalg_c.i64m_exp.restype = Cint64_matrix_res_t
+linalg_c.i64m_exp.restype = Cfloat64_matrix_res_t
+
+linalg_c.u32m_exp.argtypes = [Cuint32_matrix_t]
+linalg_c.u32m_exp.restype = Cfloat64_matrix_res_t
+
+linalg_c.u64m_exp.argtypes = [Cuint64_matrix_t]
+linalg_c.u64m_exp.restype = Cfloat64_matrix_res_t
 
 linalg_c.f16m_transpose.argtypes = [Cfloat16_matrix_t]
 linalg_c.f16m_transpose.restype = Cfloat16_matrix_res_t
@@ -351,6 +433,12 @@ linalg_c.i32m_transpose.restype = Cint32_matrix_res_t
 
 linalg_c.i64m_transpose.argtypes = [Cint64_matrix_t]
 linalg_c.i64m_transpose.restype = Cint64_matrix_res_t
+
+linalg_c.u32m_transpose.argtypes = [Cuint32_matrix_t]
+linalg_c.u32m_transpose.restype = Cuint32_matrix_res_t
+
+linalg_c.u64m_transpose.argtypes = [Cuint64_matrix_t]
+linalg_c.u64m_transpose.restype = Cuint64_matrix_res_t
 
 # Datatypes
 class f16_matrix:
@@ -1250,7 +1338,10 @@ class i64_matrix:
                 case 1: raise MemoryError("Failed to allocate matrix copy")
                 case _: raise Exception("Unknown error")
         return i64_matrix(getattr(c_res, 'res'))
-    
+
+class u32_matrix:
+    pass
+
 # Fill and broadcast functions
 #*Fill functions
 def f16m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: f16) -> f16_matrix:
