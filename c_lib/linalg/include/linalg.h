@@ -19,7 +19,7 @@
 
 //*Normal result macros
 #define SET_DIMS(matrix, x_coord, y_coord) {matrix.x = x_coord; matrix.y = y_coord;}
-#define ERROR_RES(result, error) {result.err = error; SET_DIMS(result.res, 0, 0); result.res.m = NULL;}
+#define ERROR_RES(result, error) {result.err = xerror; SET_DIMS(result.res, 0, 0); result.res.m = NULL;}
 
 //*Matrix cast result macros
 #define MC_SET_RES_TYPE(result, type) {result.res_matrix.matrix_type = type;}
@@ -272,8 +272,8 @@ float32_matrix_res_t    f32m_div(float32_matrix_t m1, float32_matrix_t m2);
 float64_matrix_res_t    f64m_div(float64_matrix_t m1, float64_matrix_t m2);
 float64_matrix_res_t    i32m_div(int32_matrix_t m1, int32_matrix_t m2);
 float64_matrix_res_t    i64m_div(int64_matrix_t m1, int64_matrix_t m2);
-uint64_matrix_res_t     u32m_div(uint32_matrix_t m1, uint32_matrix_t m2);
-uint64_matrix_res_t     u64m_div(uint64_matrix_t m1, uint64_matrix_t m2);
+float64_matrix_res_t    u32m_div(uint32_matrix_t m1, uint32_matrix_t m2);
+float64_matrix_res_t    u64m_div(uint64_matrix_t m1, uint64_matrix_t m2);
 
 float16_matrix_res_t    f16m_matmul(float16_matrix_t m1, float16_matrix_t m2);
 float32_matrix_res_t    f32m_matmul(float32_matrix_t m1, float32_matrix_t m2);

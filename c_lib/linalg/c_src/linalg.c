@@ -2975,7 +2975,7 @@ uint32_matrix_res_t u32m_add(uint32_matrix_t m1, uint32_matrix_t m2)
 
             if (b > UINT_MAX - a)
             {
-                ERROR_RES(res, UINTOVERFLOW);
+                ERROR_RES(res, INTOVERFLOW);
                 return res;
             }
             res.res.m[i][j] = a + b;
@@ -3021,7 +3021,7 @@ uint64_matrix_res_t u64m_add(uint64_matrix_t m1, uint64_matrix_t m2)
 
             if (b > ULLONG_MAX - a)
             {
-                ERROR_RES(res, UINTOVERFLOW);
+                ERROR_RES(res, INTOVERFLOW);
                 return res;
             }
             res.res.m[i][j] = a + b;
@@ -3278,7 +3278,7 @@ uint32_matrix_res_t u32m_sub(uint32_matrix_t m1, uint32_matrix_t m2)
 
             if (b > a)
             {
-                ERROR_RES(res, UINTOVERFLOW);
+                ERROR_RES(res, INTOVERFLOW);
                 return res;
             }
             res.res.m[i][j] = a - b;
@@ -3324,7 +3324,7 @@ uint64_matrix_res_t u64m_sub(uint64_matrix_t m1, uint64_matrix_t m2)
 
             if (b > a)
             {
-                ERROR_RES(res, UINTOVERFLOW);
+                ERROR_RES(res, INTOVERFLOW);
                 return res;
             }
             res.res.m[i][j] = a - b;
