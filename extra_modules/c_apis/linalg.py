@@ -1445,32 +1445,15 @@ def i64m_column_vector_to_matrix(v: i64_matrix, no_columns: ctypes.c_size_t) -> 
             case _: raise Exception("Unknown error")
     return i64_matrix(getattr(c_res, 'res'))
 
-# Conversion functions
-def f16m_to_f32m(x: f16_matrix) -> f32_matrix:
-    return f32_matrix(linalg_c.f16m_to_f32m(x.m))
-
-def f16m_to_f64m(x: f16_matrix) -> f64_matrix:
-    return f64_matrix(linalg_c.f16m_to_f64m(x.m))
-
-def f32m_to_f16m(x: f32_matrix) -> f16_matrix:
-    return f16_matrix(linalg_c.f32m_to_f16m(x.m))
-
-def f32m_to_f64m(x: f32_matrix) -> f64_matrix:
-    return f64_matrix(linalg_c.f32m_to_f64m(x.m))
-
-def f64m_to_f16m(x: f64_matrix) -> f16_matrix:
-    return f16_matrix(linalg_c.f64m_to_f16m(x.m))
-
-def f64m_to_f32m(x: f64_matrix) -> f32_matrix:
-    return f32_matrix(linalg_c.f64m_to_f32m(x.m))
-
-#*Matrix casting
+# Matrix casting
 py_matrix_type_to_matrix_type_t = {
     f16_matrix: (matrix_type_t(0), 'f16m'),
     f32_matrix: (matrix_type_t(1), 'f32m'),
     f64_matrix: (matrix_type_t(2), 'f64m'),
     i32_matrix: (matrix_type_t(3), 'i32m'),
     i64_matrix: (matrix_type_t(4), 'i64m'),
+    u32_matrix: (matrix_type_t(5), 'u32m'),
+    u64_matrix: (matrix_type_t(6), 'u64m'),
 }
 
 int_to_py_matrix = {
@@ -1479,6 +1462,8 @@ int_to_py_matrix = {
     2: (f64_matrix, 'f64m'),
     3: (i32_matrix, 'i32m'),
     4: (i64_matrix, 'i64m'),
+    5: (u32_matrix, 'u32m'),
+    6: (u64_matrix, 'u64m'),
 }
 
 def matrix_cast(m: matrix_t, tgt_type: type) -> matrix_t:
