@@ -83,7 +83,7 @@ typedef struct {
     uint64_t** m;
     size_t x;
     size_t y;
-}
+} uint64_matrix_t;
 
 typedef struct {
     float16_matrix_t res;
