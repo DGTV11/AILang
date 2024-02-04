@@ -3278,7 +3278,7 @@ uint32_matrix_res_t u32m_sub(uint32_matrix_t m1, uint32_matrix_t m2)
 
             if (b > a)
             {
-                ERROR_RES(res, INTOVERFLOW);
+                ERROR_RES(res, INTUNDERFLOW);
                 return res;
             }
             res.res.m[i][j] = a - b;
@@ -3324,7 +3324,7 @@ uint64_matrix_res_t u64m_sub(uint64_matrix_t m1, uint64_matrix_t m2)
 
             if (b > a)
             {
-                ERROR_RES(res, INTOVERFLOW);
+                ERROR_RES(res, INTUNDERFLOW);
                 return res;
             }
             res.res.m[i][j] = a - b;
