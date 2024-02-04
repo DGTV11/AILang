@@ -971,7 +971,7 @@ class f64_matrix:
         
 class i32_matrix:
     def __init__(self, m):
-        #Type of m: list[list[Int32]]|list[list[i32]]|Cfloat32_matrix_t|i32_matrix
+        #Type of m: list[list[Int32]]|list[list[i32]]|Cint32_matrix_t|i32_matrix
 
         #*Check if m is a i32_matrix or Cint32_matrix_t instance
         if isinstance(m, i32_matrix):
@@ -1016,7 +1016,7 @@ class i32_matrix:
 
                 self.m = Cint32_matrix_t(m, ctypes.c_size_t(self.x), ctypes.c_size_t(self.y))
             else:
-                raise ValueError("Matrix elements must be of type Int32 or dta.Int32")
+                raise ValueError("Matrix elements must be of type Int32 or i32")
     
     def free(self):
         linalg_c.free_i32m(self.m)
@@ -1156,7 +1156,7 @@ class i32_matrix:
 
 class i64_matrix:
     def __init__(self, m):
-        #Type of m: list[list[Int64]]|list[list[i64]]|Cfloat64_matrix_t|i64_matrix
+        #Type of m: list[list[Int64]]|list[list[i64]]|Cint64_matrix_t|i64_matrix
 
         #*Check if m is a i64_matrix or Cint64_matrix_t instance
         if isinstance(m, i64_matrix):
@@ -1340,7 +1340,346 @@ class i64_matrix:
         return i64_matrix(getattr(c_res, 'res'))
 
 class u32_matrix:
-    pass
+    def __init__(self, m):
+        #Type of m: list[list[UInt32]]|list[list[u32]]|Cuint32_matrix_t|u32_matrix
+
+        #*Check if m is a u32_matrix or Cuint32_matrix_t instance
+        if isinstance(m, u32_matrix):
+            self.x = m.x
+            self.y = m.y
+            self.m = m.m
+        elif isinstance(m, Cuint32_matrix_t):
+            self.x = int(getattr(m, 'x'))
+            self.y = int(getattr(m, 'y'))
+            self.m = m
+        else:
+            #*Check nesting depth of m
+            if type(m) is not list or len(m) == 0 or not all(map(lambda v: type(v) is list, m)):
+                raise ValueError("Matrix must have a nesting depth of exactly 2")
+            
+            #*Check if m is empty
+            if len(m) == 1 and len(m[0]) == 0:
+                raise ValueError("Matrix must not be empty")
+            
+            #*Check size of each subvector in m
+            if not all(map(lambda v: len(v) == len(m[0]), m)):
+                raise ValueError("Matrix must be rectangular")
+
+            #*Check if all elements in m have equal type
+            first_type = type(m[0][0])
+            if not all(map(lambda x: type(x) is first_type, chain.from_iterable(m))):
+                raise ValueError("All matrix elements must be of the same type")
+
+            #*Check first type of the input data
+            if first_type is u32:
+                self.y = len(m)
+                self.x = len(m[0])
+
+                m = ctypes.cast((u32_subvector_container * self.y)(*list(map(lambda v: ctypes.cast((uint32_t * self.x)(*list(map(lambda x: x.val, v))), ctypes.POINTER(uint32_t)), m))), ctypes.POINTER(u32_subvector_container))
+                
+                self.m = Cuint32_matrix_t(m, ctypes.c_size_t(self.x), ctypes.c_size_t(self.y))
+            elif first_type is dta.UInt32:
+                self.y = len(m)
+                self.x = len(m[0])
+
+                m = ctypes.cast((u32_subvector_container * self.y)(*list(map(lambda v: ctypes.cast((uint32_t * self.x)(*list(map(lambda x: x.value.val, v))), ctypes.POINTER(uint32_t)), m))), ctypes.POINTER(u32_subvector_container))
+
+                self.m = Cuint32_matrix_t(m, ctypes.c_size_t(self.x), ctypes.c_size_t(self.y))
+            else:
+                raise ValueError("Matrix elements must be of type UInt32 or u32")
+    
+    def free(self):
+        linalg_c.free_u32m(self.m)
+        del self.x
+        del self.y
+
+    @staticmethod
+    def u32_stringify(u32: uint32_t):
+        c_stringified_value = ctypes.create_string_buffer(UINT_STR_BUF_SIZE)
+        numbers_c.conv_u32_to_str(u32, c_stringified_value)
+        return c_stringified_value.value.decode('utf-8')+'ui'
+
+    def __repr__(self): #All items are left-padded like this: [0.4213312, 0.6412   , 0.3112333]
+        matrix = list(map(lambda ptr: ptr[:self.x], getattr(self.m, 'm')[:self.y]))
+        max_str_len = max(map(lambda v: len(self.u32_stringify(v)), chain.from_iterable(matrix)))
+
+        stringified_vectors_with_padded_subvectors = list(map(lambda v: ' {'+', '.join(map(lambda x: self.u32_stringify(x).ljust(max_str_len, ' '), v))+'},', matrix))
+        
+        stringified_vectors_with_padded_subvectors[0]  = '{' + stringified_vectors_with_padded_subvectors[0][1:]
+        stringified_vectors_with_padded_subvectors[-1] = stringified_vectors_with_padded_subvectors[-1][:-2] + '}}'
+
+        return '\n'.join(stringified_vectors_with_padded_subvectors)
+    
+    def __str__(self):
+        return self.__repr__()
+            
+    def __add__(self, other):
+        if isinstance(other, u32_matrix):
+            c_res: Cuint32_matrix_res_t = linalg_c.u32m_add(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 4: raise OverflowError('Integer overflow')
+                    case _: raise Exception("Unknown error")
+            return u32_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __sub__(self, other):
+        if isinstance(other, u32_matrix):
+            c_res: Cuint32_matrix_res_t = linalg_c.u32m_sub(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 5: raise OverflowError('Integer underflow')
+                    case _: raise Exception("Unknown error")
+            return u32_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __mul__(self, other):
+        if isinstance(other, u32_matrix):
+            c_res: Cuint32_matrix_res_t = linalg_c.u32m_mul(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 4: raise OverflowError('Integer overflow')
+                    case _: raise Exception("Unknown error")
+            return u32_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __truediv__(self, other):
+        if isinstance(other, f64_matrix):
+            c_res: Cfloat64_matrix_res_t = linalg_c.u32m_div(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 3: raise ZeroDivisionError("Zero found in second operand matrix")
+                    case _: raise Exception("Unknown error")
+            return f64_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __matmul__(self, other):
+        if isinstance(other, u32_matrix):
+            c_res: Cuint32_matrix_res_t = linalg_c.u32m_matmul(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"A {self.x}x{self.y} matrix is not compatible with a {other.x}x{other.y} matrix for matrix multiplication")
+                    case 4: raise OverflowError('Integer overflow')
+                    case _: raise Exception("Unknown error")
+            return u32_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+    
+    def exp(self):
+        c_res: Cfloat64_matrix_res_t = linalg_c.u32m_exp(self.m)
+        err: int = getattr(c_res, 'err')
+        if err != 0:
+            match err:
+                case 1: raise MemoryError("Failed to allocate resulting matrix")
+                case _: raise Exception("Unknown error")
+        return f64_matrix(getattr(c_res, 'res'))
+    
+    def transpose(self):
+        c_res: Cuint32_matrix_res_t = linalg_c.u32m_transpose(self.m)
+        err: int = getattr(c_res, 'err')
+        if err != 0:
+            match err:
+                case 1: raise MemoryError("Failed to allocate resulting matrix")
+                case _: raise Exception("Unknown error")
+        return u32_matrix(getattr(c_res, 'res'))
+    
+    def copy(self):
+        c_res: Cuint32_matrix_res_t = linalg_c.copy_u32m(self.m)
+        err: int = getattr(c_res, 'err')
+        if err != 0:
+            match err:
+                case 1: raise MemoryError("Failed to allocate matrix copy")
+                case _: raise Exception("Unknown error")
+        return u32_matrix(getattr(c_res, 'res'))
+
+class u64_matrix:
+    def __init__(self, m):
+        #Type of m: list[list[UInt64]]|list[list[u64]]|Cuint64_matrix_t|u64_matrix
+
+        #*Check if m is a u64_matrix or Cuint64_matrix_t instance
+        if isinstance(m, u64_matrix):
+            self.x = m.x
+            self.y = m.y
+            self.m = m.m
+        elif isinstance(m, Cuint64_matrix_t):
+            self.x = int(getattr(m, 'x'))
+            self.y = int(getattr(m, 'y'))
+            self.m = m
+        else:
+            #*Check nesting depth of m
+            if type(m) is not list or len(m) == 0 or not all(map(lambda v: type(v) is list, m)):
+                raise ValueError("Matrix must have a nesting depth of exactly 2")
+            
+            #*Check if m is empty
+            if len(m) == 1 and len(m[0]) == 0:
+                raise ValueError("Matrix must not be empty")
+            
+            #*Check size of each subvector in m
+            if not all(map(lambda v: len(v) == len(m[0]), m)):
+                raise ValueError("Matrix must be rectangular")
+
+            #*Check if all elements in m have equal type
+            first_type = type(m[0][0])
+            if not all(map(lambda x: type(x) is first_type, chain.from_iterable(m))):
+                raise ValueError("All matrix elements must be of the same type")
+
+            #*Check first type of the input data
+            if first_type is u64:
+                self.y = len(m)
+                self.x = len(m[0])
+
+                m = ctypes.cast((u64_subvector_container * self.y)(*list(map(lambda v: ctypes.cast((uint64_t * self.x)(*list(map(lambda x: x.val, v))), ctypes.POINTER(uint64_t)), m))), ctypes.POINTER(u64_subvector_container))
+                
+                self.m = Cuint64_matrix_t(m, ctypes.c_size_t(self.x), ctypes.c_size_t(self.y))
+            elif first_type is dta.UInt64:
+                self.y = len(m)
+                self.x = len(m[0])
+
+                m = ctypes.cast((u64_subvector_container * self.y)(*list(map(lambda v: ctypes.cast((uint64_t * self.x)(*list(map(lambda x: x.value.val, v))), ctypes.POINTER(uint64_t)), m))), ctypes.POINTER(u64_subvector_container))
+
+                self.m = Cuint64_matrix_t(m, ctypes.c_size_t(self.x), ctypes.c_size_t(self.y))
+            else:
+                raise ValueError("Matrix elements must be of type UInt64 or u64")
+    
+    def free(self):
+        linalg_c.free_u64m(self.m)
+        del self.x
+        del self.y
+
+    @staticmethod
+    def u64_stringify(u64: uint64_t):
+        c_stringified_value = ctypes.create_string_buffer(UINT_STR_BUF_SIZE)
+        numbers_c.conv_u64_to_str(u64, c_stringified_value)
+        return c_stringified_value.value.decode('utf-8')+'ui'
+
+    def __repr__(self): #All items are left-padded like this: [0.4213312, 0.6412   , 0.3112333]
+        matrix = list(map(lambda ptr: ptr[:self.x], getattr(self.m, 'm')[:self.y]))
+        max_str_len = max(map(lambda v: len(self.u64_stringify(v)), chain.from_iterable(matrix)))
+
+        stringified_vectors_with_padded_subvectors = list(map(lambda v: ' {'+', '.join(map(lambda x: self.u64_stringify(x).ljust(max_str_len, ' '), v))+'},', matrix))
+        
+        stringified_vectors_with_padded_subvectors[0]  = '{' + stringified_vectors_with_padded_subvectors[0][1:]
+        stringified_vectors_with_padded_subvectors[-1] = stringified_vectors_with_padded_subvectors[-1][:-2] + '}}'
+
+        return '\n'.join(stringified_vectors_with_padded_subvectors)
+    
+    def __str__(self):
+        return self.__repr__()
+            
+    def __add__(self, other):
+        if isinstance(other, u64_matrix):
+            c_res: Cuint64_matrix_res_t = linalg_c.u64m_add(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 4: raise OverflowError('Integer overflow')
+                    case _: raise Exception("Unknown error")
+            return u64_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __sub__(self, other):
+        if isinstance(other, u64_matrix):
+            c_res: Cuint64_matrix_res_t = linalg_c.u64m_sub(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 5: raise OverflowError('Integer underflow')
+                    case _: raise Exception("Unknown error")
+            return u64_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __mul__(self, other):
+        if isinstance(other, u64_matrix):
+            c_res: Cuint64_matrix_res_t = linalg_c.u64m_mul(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 4: raise OverflowError('Integer overflow')
+                    case _: raise Exception("Unknown error")
+            return u64_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __truediv__(self, other):
+        if isinstance(other, f64_matrix):
+            c_res: Cfloat64_matrix_res_t = linalg_c.u64m_div(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"Matrix sizes must be equal ({self.x}x{self.y} != {other.x}x{other.y})")
+                    case 3: raise ZeroDivisionError("Zero found in second operand matrix")
+                    case _: raise Exception("Unknown error")
+            return f64_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+        
+    def __matmul__(self, other):
+        if isinstance(other, u64_matrix):
+            c_res: Cuint64_matrix_res_t = linalg_c.u64m_matmul(self.m, other.m)
+            err: int = getattr(c_res, 'err')
+            if err != 0:
+                match err:
+                    case 1: raise MemoryError("Failed to allocate resulting matrix")
+                    case 2: raise ValueError(f"A {self.x}x{self.y} matrix is not compatible with a {other.x}x{other.y} matrix for matrix multiplication")
+                    case 4: raise OverflowError('Integer overflow')
+                    case _: raise Exception("Unknown error")
+            return u64_matrix(getattr(c_res, 'res'))
+        else:
+            raise ValueError("Matrix types must be same")
+    
+    def exp(self):
+        c_res: Cfloat64_matrix_res_t = linalg_c.u64m_exp(self.m)
+        err: int = getattr(c_res, 'err')
+        if err != 0:
+            match err:
+                case 1: raise MemoryError("Failed to allocate resulting matrix")
+                case _: raise Exception("Unknown error")
+        return f64_matrix(getattr(c_res, 'res'))
+    
+    def transpose(self):
+        c_res: Cuint64_matrix_res_t = linalg_c.u64m_transpose(self.m)
+        err: int = getattr(c_res, 'err')
+        if err != 0:
+            match err:
+                case 1: raise MemoryError("Failed to allocate resulting matrix")
+                case _: raise Exception("Unknown error")
+        return u64_matrix(getattr(c_res, 'res'))
+    
+    def copy(self):
+        c_res: Cuint64_matrix_res_t = linalg_c.copy_u64m(self.m)
+        err: int = getattr(c_res, 'err')
+        if err != 0:
+            match err:
+                case 1: raise MemoryError("Failed to allocate matrix copy")
+                case _: raise Exception("Unknown error")
+        return u64_matrix(getattr(c_res, 'res'))
 
 # Fill and broadcast functions
 #*Fill functions
