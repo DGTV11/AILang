@@ -1743,6 +1743,30 @@ def i64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: i64) -> i64_ma
             case _: raise Exception("Unknown error")
     return i64_matrix(getattr(c_res, 'res'))
 
+def u32m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: u32) -> u32_matrix:
+    if x.value < 1 or y.value < 1:
+        raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
+
+    c_res: Cuint32_matrix_res_t = linalg_c.u32m_fill(x, y, fill_value.val)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix")
+            case _: raise Exception("Unknown error")
+    return u32_matrix(getattr(c_res, 'res'))
+
+def u64m_fill(x: ctypes.c_size_t, y: ctypes.c_size_t, fill_value: u64) -> u64_matrix:
+    if x.value < 1 or y.value < 1:
+        raise ValueError("Matrix dimensions must be above or equal to 1 row and 1 column")
+
+    c_res: Cuint64_matrix_res_t = linalg_c.u64m_fill(x, y, fill_value.val)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix")
+            case _: raise Exception("Unknown error")
+    return u64_matrix(getattr(c_res, 'res'))
+
 #*(Row vector->matrix) broadcast functions
 def f16m_row_vector_to_matrix(v: f16_matrix, no_rows: ctypes.c_size_t) -> f16_matrix:
     if no_rows.value < 1:
@@ -1809,6 +1833,32 @@ def i64m_row_vector_to_matrix(v: i64_matrix, no_rows: ctypes.c_size_t) -> i64_ma
             case _: raise Exception("Unknown error")
     return i64_matrix(getattr(c_res, 'res'))
 
+def u32m_row_vector_to_matrix(v: u32_matrix, no_rows: ctypes.c_size_t) -> u32_matrix:
+    if no_rows.value < 1:
+        raise ValueError("Number of rows must be above or equal to 1")
+
+    c_res: Cuint32_matrix_res_t = linalg_c.u32m_row_vector_to_matrix(v.m, no_rows)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix")
+            case 2: raise ValueError(f"Input matrix has {v.y} rows (expected 1 row)")
+            case _: raise Exception("Unknown error")
+    return u32_matrix(getattr(c_res, 'res'))
+
+def u64m_row_vector_to_matrix(v: u64_matrix, no_rows: ctypes.c_size_t) -> u64_matrix:
+    if no_rows.value < 1:
+        raise ValueError("Number of rows must be above or equal to 1")
+
+    c_res: Cuint64_matrix_res_t = linalg_c.u64m_row_vector_to_matrix(v.m, no_rows)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix")
+            case 2: raise ValueError(f"Input matrix has {v.y} rows (expected 1 row)")
+            case _: raise Exception("Unknown error")
+    return u64_matrix(getattr(c_res, 'res'))
+
 #*(Column vector->matrix) broadcast functions
 def f16m_column_vector_to_matrix(v: f16_matrix, no_columns: ctypes.c_size_t) -> f16_matrix:
     if no_columns.value < 1:
@@ -1874,6 +1924,32 @@ def i64m_column_vector_to_matrix(v: i64_matrix, no_columns: ctypes.c_size_t) -> 
             case 2: raise ValueError(f"Input matrix has {v.x} columns (expected 1 column)")
             case _: raise Exception("Unknown error")
     return i64_matrix(getattr(c_res, 'res'))
+
+def u32m_column_vector_to_matrix(v: u32_matrix, no_columns: ctypes.c_size_t) -> u32_matrix:
+    if no_columns.value < 1:
+        raise ValueError("Number of columns must be above or equal to 1")
+
+    c_res: Cuint32_matrix_res_t = linalg_c.u32m_column_vector_to_matrix(v.m, no_columns)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix")
+            case 2: raise ValueError(f"Input matrix has {v.x} columns (expected 1 column)")
+            case _: raise Exception("Unknown error")
+    return u32_matrix(getattr(c_res, 'res'))
+
+def u64m_column_vector_to_matrix(v: u64_matrix, no_columns: ctypes.c_size_t) -> u64_matrix:
+    if no_columns.value < 1:
+        raise ValueError("Number of columns must be above or equal to 1")
+
+    c_res: Cuint64_matrix_res_t = linalg_c.u64m_column_vector_to_matrix(v.m, no_columns)
+    err: int = getattr(c_res, 'err')
+    if err != 0:
+        match err:
+            case 1: raise MemoryError("Failed to allocate matrix")
+            case 2: raise ValueError(f"Input matrix has {v.x} columns (expected 1 column)")
+            case _: raise Exception("Unknown error")
+    return u64_matrix(getattr(c_res, 'res'))
 
 # Matrix casting
 py_matrix_type_to_matrix_type_t = {
