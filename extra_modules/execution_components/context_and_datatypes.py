@@ -2861,6 +2861,8 @@ class BuiltInFunction(BaseFunction):
         'Float64Matrix':    linalg.f64_matrix,
         'Int32Matrix':      linalg.i32_matrix,
         'Int64Matrix':      linalg.i64_matrix,
+        'UInt32Matrix':     linalg.u32_matrix,
+        'UInt64Matrix':     linalg.u64_matrix,
     }
     matrixcast_conv_matrix_type_to_matrix_wrapper = {
         linalg.f16_matrix:  Float16Matrix,
@@ -2868,8 +2870,10 @@ class BuiltInFunction(BaseFunction):
         linalg.f64_matrix:  Float64Matrix,
         linalg.i32_matrix:  Int32Matrix,
         linalg.i64_matrix:  Int64Matrix,
+        linalg.u32_matrix:  UInt32Matrix,
+        linalg.u64_matrix:  UInt64Matrix,
     }
-    execute_matrix_cast.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix]], ['tgt_type', [Type.Type]]]
+    execute_matrix_cast.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix, Type.UInt32Matrix, Type.UInt64Matrix]], ['tgt_type', [Type.Type]]]
 
     def execute_matrix_fill(self, exec_ctx):
         res = RTResult()
@@ -2899,6 +2903,14 @@ class BuiltInFunction(BaseFunction):
                     return res.success(Int64Matrix(
                         linalg.i64m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
                     ))
+                case 'UInt32':
+                    return res.success(UInt32Matrix(
+                        linalg.u32m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
+                    ))
+                case 'UInt64':
+                    return res.success(UInt64Matrix(
+                        linalg.u64m_fill(ctypes.c_size_t(x.value), ctypes.c_size_t(y.value), fill_value.value)
+                    ))
                 case _:
                     return res.failure(
                         err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
@@ -2915,7 +2927,7 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
             )
-    execute_matrix_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float16, Type.Float32, Type.Float64, Type.Int32, Type.Int64]]]
+    execute_matrix_fill.arg_prototypes = [['x', [Type.Integer]], ['y', [Type.Integer]], ['fill_value', [Type.Float16, Type.Float32, Type.Float64, Type.Int32, Type.Int64, Type.UInt32, Type.UInt64]]]
 
     def execute_row_vector_to_matrix(self, exec_ctx):
         res = RTResult()
@@ -2944,6 +2956,14 @@ class BuiltInFunction(BaseFunction):
                     return res.success(Int64Matrix(
                         linalg.i64m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
+                case 'UInt32Matrix':
+                    return res.success(UInt32Matrix(
+                        linalg.u32m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'UInt64Matrix':
+                    return res.success(UInt64Matrix(
+                        linalg.u64m_row_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
                 case _:
                     return res.failure(
                         err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
@@ -2960,7 +2980,7 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
             )
-    execute_row_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix]], ['no_rows', [Type.Integer]]]
+    execute_row_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix, Type.UInt32Matrix, Type.UInt64Matrix]], ['no_rows', [Type.Integer]]]
 
     def execute_column_vector_to_matrix(self, exec_ctx):
         res = RTResult()
@@ -2989,6 +3009,14 @@ class BuiltInFunction(BaseFunction):
                     return res.success(Int64Matrix(
                         linalg.i64m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
                     ))
+                case 'UInt32Matrix':
+                    return res.success(UInt32Matrix(
+                        linalg.u32m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
+                case 'UInt64Matrix':
+                    return res.success(UInt64Matrix(
+                        linalg.u64m_column_vector_to_matrix(v.matrix, ctypes.c_size_t(no_rows.value))
+                    ))
                 case _:
                     return res.failure(
                         err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
@@ -3005,7 +3033,7 @@ class BuiltInFunction(BaseFunction):
             return res.failure(
                 err.UnknownRTError(self.pos_start, self.pos_end, e, self.context)
             )
-    execute_column_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix]], ['no_rows', [Type.Integer]]]
+    execute_column_vector_to_matrix.arg_prototypes = [['v', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix, Type.UInt32Matrix, Type.UInt64Matrix]], ['no_rows', [Type.Integer]]]
 
     def execute_transpose_matrix(self, exec_ctx):
         res = RTResult()
@@ -3029,11 +3057,19 @@ class BuiltInFunction(BaseFunction):
                 return res.success(Float32Matrix(matrix_res))
             case 'Float64Matrix':
                 return res.success(Float64Matrix(matrix_res))
+            case 'Int32Matrix':
+                return res.success(Int32Matrix(matrix_res))
+            case 'Int64Matrix':
+                return res.success(Int64Matrix(matrix_res))
+            case 'UInt32Matrix':
+                return res.success(UInt32Matrix(matrix_res))
+            case 'UInt64Matrix':
+                return res.success(UInt64Matrix(matrix_res))
             case _:
                 return res.failure(
                     err.UnknownRTError(self.pos_start, self.pos_end, "Unknown error", self.context)
                 )
-    execute_transpose_matrix.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix]]]
+    execute_transpose_matrix.arg_prototypes = [['m', [Type.Float16Matrix, Type.Float32Matrix, Type.Float64Matrix, Type.Int32Matrix, Type.Int64Matrix, Type.UInt32Matrix, Type.UInt64Matrix]]]
 BuiltInFunction.print                           = BuiltInFunction('print')
 BuiltInFunction.stringify                       = BuiltInFunction('stringify')
 BuiltInFunction.print_without_end               = BuiltInFunction('print_without_end')
