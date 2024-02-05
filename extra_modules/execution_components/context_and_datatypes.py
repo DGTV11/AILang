@@ -2613,6 +2613,8 @@ class BuiltInFunction(BaseFunction):
         'Float64':      numbers.f64,
         'Int32':        numbers.i32,
         'Int64':        numbers.i64,
+        'UInt32':       numbers.u32,
+        'UInt64':       numbers.u64,
     }
     numcast_conv_num_type_to_num_wrapper = {
         int:            Integer,
@@ -2621,8 +2623,10 @@ class BuiltInFunction(BaseFunction):
         numbers.f64:    Float64,
         numbers.i32:    Int32,
         numbers.i64:    Int64,
+        numbers.u32:    UInt32,
+        numbers.u64:    UInt64,
     }
-    execute_numerical_cast.arg_prototypes = [['x', [Type.Integer, Type.Int32, Type.Int64, Type.Float16, Type.Float32, Type.Float64]], ['tgt_type', [Type.Type]]]
+    execute_numerical_cast.arg_prototypes = [['x', [Type.Integer, Type.Int32, Type.Int64, Type.Float16, Type.Float32, Type.Float64, Type.UInt32, Type.UInt64]], ['tgt_type', [Type.Type]]]
 
     def execute_matrix_cast(self, exec_ctx):
         res = RTResult()
