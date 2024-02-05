@@ -1,5 +1,5 @@
 # Imports
-from extra_modules.execution_components.context_and_datatypes import Float16, Float32, Float64, Int32, Int64
+from extra_modules.execution_components.context_and_datatypes import Float16, Float32, Float64, Int32, Int64, UInt32, UInt64
 
 # Initalise
 local_pusher = []
@@ -25,3 +25,7 @@ local_pusher.append(('i32_max',     Int32('2147483647')))
 
 local_pusher.append(('i64_min',     Int64('-9223372036854775808')))
 local_pusher.append(('i64_max',     Int64('9223372036854775807')))
+
+local_pusher.append(('u32_max',     UInt32('4294967295')))
+
+local_pusher.append(('u64_max',     UInt64('18446744073709551615')))
