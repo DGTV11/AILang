@@ -14,10 +14,9 @@ Roadmap:
 
 
 Immediate changes:
-1: Implement AILang API for unsigned integer matrices
-2: Implement AILang front-end for unsigned integer matrices
-3: Implement Python APIs for RNG
-4: Implement AILang front-end for RNG
+1: Implement AILang front-end for unsigned integer matrices
+2: Implement Python APIs for RNG
+3: Implement AILang front-end for RNG
 
 
 Note:
