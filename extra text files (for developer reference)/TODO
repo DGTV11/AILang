@@ -14,7 +14,6 @@ Roadmap:
 
 
 Immediate changes:
-1: Implement unsigned integer matrices
 2: Implement AILang API for unsigned integer matrices
 3: Implement AILang front-end for unsigned integers and unsigned integer matrices
 4: Implement unsigned integers functionality for AILang lexer and parser
