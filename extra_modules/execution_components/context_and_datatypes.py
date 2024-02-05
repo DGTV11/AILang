@@ -1836,6 +1836,208 @@ class Int64Matrix(BaseValue):
     def free_mem(self):
         self.matrix.free()
 
+Type.UInt32Matrix = Type('UInt32Matrix')
+class UInt32Matrix(BaseValue):
+    def __init__(self, matrix: linalg.u32_matrix):
+        super().__init__()
+        self.type = 'UInt32Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, UInt32Matrix):
+            try:
+                return UInt32Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, UInt32Matrix):
+            try:
+                return UInt32Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, UInt32Matrix):
+            try:
+                return UInt32Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, UInt32Matrix):
+            try:
+                return UInt32Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, UInt32Matrix):
+            try:
+                return UInt32Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def copy(self):
+        try:
+            return UInt32Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.copywarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
+Type.UInt64Matrix = Type('UInt64Matrix')
+class UInt64Matrix(BaseValue):
+    def __init__(self, matrix: linalg.u64_matrix):
+        super().__init__()
+        self.type = 'UInt64Matrix'
+        self.matrix = matrix
+    
+    def __repr__(self):
+        return repr(self.matrix)
+    
+    def __str__(self):
+        return str(self.matrix)
+
+    def add_by(self, other):
+        if isinstance(other, UInt64Matrix):
+            try:
+                return UInt64Matrix(self.matrix + other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def sub_by(self, other):
+        if isinstance(other, UInt64Matrix):
+            try:
+                return UInt64Matrix(self.matrix - other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def mult_by(self, other):
+        if isinstance(other, UInt64Matrix):
+            try:
+                return UInt64Matrix(self.matrix * other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def div_by(self, other):
+        if isinstance(other, UInt64Matrix):
+            try:
+                return UInt64Matrix(self.matrix / other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except ZeroDivisionError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+        
+    def matmult_by(self, other):
+        if isinstance(other, UInt64Matrix):
+            try:
+                return UInt64Matrix(self.matrix @ other.matrix), None
+            except MemoryError as e:
+                return None, err.MallocError(self.pos_start, other.pos_end, e, self.context)
+            except ValueError as e:
+                return None, err.RTError(self.pos_start, other.pos_end, e, self.context)
+            except OverflowError as e:
+                return None, err.IntegerOverflowError(self.pos_start, other.pos_end, e, self.context)
+            except Exception as e:
+                return None, err.UnknownRTError(self.pos_start, other.pos_end, e, self.context)
+        else:
+            return None, BaseValue.illegal_operation(self, other)
+    
+    def copy(self):
+        try:
+            return UInt64Matrix(self.matrix.copy())
+        except Exception as e:
+            wrn.copywarning(self.pos_start, self.pos_end, e)
+            return Null()
+
+    def is_true(self):
+        return True
+    
+    def free_mem(self):
+        self.matrix.free()
+
 ## Array types
 Type.String = Type('String')
 class String(BaseValue):
