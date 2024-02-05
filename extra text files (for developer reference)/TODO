@@ -15,8 +15,9 @@ Roadmap:
 
 
 Immediate changes:
-1: Implement Python APIs for RNG
-2: Implement AILang front-end for RNG
+1: Add unsigned integer RNGs
+2: Implement Python APIs for RNG
+3: Implement AILang front-end for RNG
 
 
 Note:
