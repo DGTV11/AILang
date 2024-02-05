@@ -5,12 +5,39 @@
 #include "../include/random.h"
 
 // Integer RNGs
-//*i32
-void seed_local_pcgi32(pcg32_random_t *rng, uint64_t seed, uint64_t seq)
+//*u32
+void seed_local_pcgu32(pcg32_random_t *rng, uint64_t seed, uint64_t seq)
 {
     pcg32_srandom_r(rng, seed, seq);
 }
 
+uint32_t gen_local_pcgu32(pcg32_random_t *rng)
+{
+    return pcg32_random_r(rng);
+}
+
+uint32_t bounded_gen_local_pcgu32(pcg32_random_t *rng, uint32_t bound)
+{
+    return pcg32_boundedrand_r(rng, bound);
+}
+
+//*u64
+void seed_local_pcgu64(pcg32x2_random_t *rng, uint64_t seed1, uint64_t seed2, uint64_t seq1, uint64_t seq2)
+{
+    pcg32x2_srandom_r(rng, seed1, seed2, seq1, seq2);
+}
+
+uint64_t gen_local_pcgu64(pcg32x2_random_t *rng)
+{
+    return pcg32x2_random_r(rng);
+}
+
+uint64_t bounded_gen_local_pcgu64(pcg32x2_random_t *rng, uint64_t bound)
+{
+    return pcg32x2_boundedrand_r(rng, bound);
+}
+
+//*i32
 int32_t gen_local_pcgi32(pcg32_random_t *rng)
 {
     return pcg32_random_r(rng);
@@ -36,11 +63,6 @@ i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t *rng, int32_t lower_bou
 }
 
 //*i64
-void seed_local_pcgi64(pcg32x2_random_t *rng, uint64_t seed1, uint64_t seed2, uint64_t seq1, uint64_t seq2)
-{
-    pcg32x2_srandom_r(rng, seed1, seed2, seq1, seq2);
-}
-
 int64_t gen_local_pcgi64(pcg32x2_random_t *rng)
 {
     return pcg32x2_random_r(rng);

@@ -56,13 +56,21 @@ typedef struct {
 } f64resWboolErr_t;
 
 // Functions
+//*u32
+void seed_local_pcgu32(pcg32_random_t* rng, uint64_t seed, uint64_t seq);
+uint32_t gen_local_pcgu32(pcg32_random_t* rng);
+uint32_t bounded_gen_local_pcgu32(pcg32_random_t* rng, uint32_t bound);
+
+//*u64
+void seed_local_pcgu64(pcg32x2_random_t* rng, uint64_t seed1, uint64_t seed2, uint64_t seq1, uint64_t seq2);
+uint64_t gen_local_pcgu64(pcg32x2_random_t* rng);
+uint64_t bounded_gen_local_pcgu64(pcg32x2_random_t* rng, uint64_t bound);
+
 //*i32
-void seed_local_pcgi32(pcg32_random_t* rng, uint64_t seed, uint64_t seq);
 int32_t gen_local_pcgi32(pcg32_random_t* rng);
 i32resWboolErr_t bounded_gen_local_pcgi32(pcg32_random_t* rng, int32_t lower_bound, int32_t upper_bound);
 
 //*i64
-void seed_local_pcgi64(pcg32x2_random_t* rng, uint64_t seed1, uint64_t seed2, uint64_t seq1, uint64_t seq2);
 int64_t gen_local_pcgi64(pcg32x2_random_t* rng);
 i64resWboolErr_t bounded_gen_local_pcgi64(pcg32x2_random_t* rng, int64_t lower_bound, int64_t upper_bound);
 
