@@ -171,6 +171,10 @@ class Interpreter:
                     matrix = Int32Matrix(linalg.i32_matrix(subvectors))
                 case 'Int64':
                     matrix = Int64Matrix(linalg.i64_matrix(subvectors))
+                case 'UInt32':
+                    matrix = UInt32Matrix(linalg.u32_matrix(subvectors))
+                case 'UInt64':
+                    matrix = UInt64Matrix(linalg.u64_matrix(subvectors))
                 case _:
                     return res.failure(err.RTError(
                         node.pos_start, node.pos_end,
