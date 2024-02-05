@@ -42,3 +42,8 @@ class f64resWboolErr_t(ctypes.Structure):
         ("n", float64_t),
         ("has_err", ctypes.c_bool),
     ]
+
+# Functions
+
+## u32
+#TODO: implement functions
