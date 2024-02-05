@@ -1097,7 +1097,7 @@ class u32:
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: uint32_t = numbers_c.str2u32(c_stringified_value)
         elif isinstance(val, int):
-            self.val: uint32_t = int32_t(val)
+            self.val: uint32_t = uint32_t(val)
         elif isinstance(val, uint32_t):
             self.val: uint32_t = val
 
@@ -1246,7 +1246,7 @@ class u64:
             c_stringified_value = ctypes.create_string_buffer(val.encode('utf-8'))
             self.val: uint64_t = numbers_c.str2u64(c_stringified_value)
         elif isinstance(val, int):
-            self.val: uint64_t = int64_t(val)
+            self.val: uint64_t = uint64_t(val)
         elif isinstance(val, uint64_t):
             self.val: uint64_t = val
 
